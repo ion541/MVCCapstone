@@ -7,6 +7,7 @@ using System.Web.Routing;
 using System.Web.Security;
 using MVCCapstone.Models;
 using PagedList;
+using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {
@@ -121,7 +122,7 @@ namespace MVCCapstone.Controllers
             else
             {
                 // if no roles were selected, select them all by default
-                ViewBag.RoleSelected = roleHelper.GetAllRoleId();
+                ViewBag.RoleSelected = RoleHelper.GetAllRoleId();
             }
 
             List<int>  roleList = ViewBag.RoleSelected;
@@ -130,7 +131,7 @@ namespace MVCCapstone.Controllers
             AccountSearchViewModel model = new AccountSearchViewModel();
 
             model.PaginationUserInfoModel = GenerateUserList(account, page, display, sort, dir, roleList);
-            model.AvailableRoles = roleHelper.GetRoleList();       // get the roles available to search for in the database
+            model.AvailableRoles = RoleHelper.GetRoleList();       // get the roles available to search for in the database
             model.DisplayList = DisplayList(display);   // populate the number of users to display for pagination
             model.hiddenId = ""; // default empty for the search / filter form memory which will be posted as well
 
@@ -156,8 +157,8 @@ namespace MVCCapstone.Controllers
 
                             userRole.Account = AccHelper.GetUserName(userId);
                             userRole.UserId = userId;
-                            userRole.CurrentRole = roleHelper.GetUserCurrentRole(userId);
-                            userRole.SelectRole = roleHelper.GetRoleStringList();
+                            userRole.CurrentRole = RoleHelper.GetUserCurrentRole(userId);
+                            userRole.SelectRole = RoleHelper.GetRoleStringList();
 
                             // data posted in the role update form will retain the values for the search / query form
                             userRole.hiddenAccount = account;

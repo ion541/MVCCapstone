@@ -10,6 +10,7 @@ using Microsoft.Web.WebPages.OAuth;
 using WebMatrix.WebData;
 using MVCCapstone.Filters;
 using MVCCapstone.Models;
+using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {

@@ -8,6 +8,7 @@ using System.Web.Routing;
 using System.Web.Security;
 using MVCCapstone.Models;
 using PagedList;
+using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {
@@ -106,7 +107,7 @@ namespace MVCCapstone.Controllers
             AccountSearchViewModel model = new AccountSearchViewModel();
 
             model.PaginationUserInfoModel = GenerateUserList(account, page, display, roleList);
-            model.AvailableRoles = roleHelper.GetRoleList();       // get the roles available to search for in the database
+            model.AvailableRoles = RoleHelper.GetRoleList();       // get the roles available to search for in the database
             model.DisplayList = DisplayList(display);   // populate the number of users to display for pagination
 
             // Check to see if the Edit parameter exists
@@ -125,8 +126,8 @@ namespace MVCCapstone.Controllers
 
                         userRole.Account = AccHelper.GetUserName(userId);
                         userRole.UserId = userId;
-                        userRole.CurrentRole = roleHelper.GetUserCurrentRole(userId);
-                        userRole.SelectRole = roleHelper.GetRoleStringList();
+                        userRole.CurrentRole = RoleHelper.GetUserCurrentRole(userId);
+                        userRole.SelectRole = RoleHelper.GetRoleStringList();
                         
                         // used for the search form memory
                         userRole.hiddenAccount = account;
@@ -136,8 +137,8 @@ namespace MVCCapstone.Controllers
 
                         model.UserRoles = userRole;
 
-                        //model.UserRoles.UserRoles = roleHelper.GetUserRoles(userId);
-                        ViewBag.UserRoles = roleHelper.GetUserRoles(userId);
+                        //model.UserRoles.UserRoles = RoleHelper.GetUserRoles(userId);
+                        ViewBag.UserRoles = RoleHelper.GetUserRoles(userId);
                     }
                     else
                     {
