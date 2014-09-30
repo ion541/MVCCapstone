@@ -1,0 +1,23 @@
+﻿@if (Request.IsAuthenticated) {
+    <text>
+        @Html.ActionLink(User.Identity.Name, "Manage", new { controller = "Account", id = ""})
+
+        @if (User.IsInRole("admin")) 
+        { 
+         // Displays only for users with the admin role
+         @Html.ActionLink("Admin Controls", "Index", "Admin")    
+        }
+
+        @Html.ActionLink("Bookmark","Index","Bookmark")
+        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" })) {
+            @Html.AntiForgeryToken()
+            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+        }
+
+    </text>
+} else {
+  <text>
+        @Html.ActionLink("Register", "Register", "Account", routeValues: null, htmlAttributes: new { id = "registerLink"})
+       @Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })
+   </text>
+}

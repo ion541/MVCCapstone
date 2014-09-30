@@ -1,0 +1,23 @@
+﻿@model MVCCapstone.Models.AccountManagementModel
+@{
+    string action = @HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+}
+
+<!-- Password Change Form -->
+@using (Html.BeginForm(@action, "Admin"))
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Get Account ID</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.AccountID)
+                @Html.TextBoxFor(m => m.AccountID)
+                @Html.ValidationMessageFor(m => m.AccountID)
+            </li>
+        </ol>
+        
+        <input type="submit" value="Set Role" />
+    </fieldset>
+}

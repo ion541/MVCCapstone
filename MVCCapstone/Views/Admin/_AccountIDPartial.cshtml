@@ -1,0 +1,42 @@
+﻿@model MVCCapstone.Models.AccountSearchViewModel
+@{
+
+    
+    string action = HttpContext.Current.Request.RequestContext.RouteData.Values["action"].ToString();
+    string accountName = "";
+
+    // if there was a posted account name, set the value in the textbox
+    if (Request.QueryString["account"] != null)
+    {
+        accountName = Request.QueryString["account"].ToString();
+    }
+    
+    
+}
+
+
+@using (Html.BeginForm(@action, "Admin")) {
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Get User List Form</legend>
+        <ol>
+
+            <li>
+                @Html.LabelFor(m => m.AccountListModel.AccountName)
+                @Html.TextBoxFor(m => m.AccountListModel.AccountName, new {@Value = @accountName} )
+                @Html.ValidationMessageFor(m => m.AccountListModel.AccountName)
+            </li>
+
+            <li> 
+                <b>Display @Html.DropDownList("DisplayList") users </b>
+            </li>
+        </ol>
+
+        <input type="submit" value="Generate List" />
+    </fieldset>
+}
+
+
+
+

@@ -1,0 +1,39 @@
+﻿@model MVCCapstone.Models.ChangeQuestionModel
+
+
+<!-- Password Change Form -->
+@using (Html.BeginForm("ManageQuestionPost", "Account")) {
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    
+    <fieldset>
+        <legend>Change Password Form</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.Question)
+                @Html.TextBoxFor(m => m.Question, new { Style="width: 600px", Value = @ViewBag.UserQuestion, ReadOnly = "readonly"})
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Answer)
+                @Html.TextBoxFor(m => m.Answer)
+               <hr />
+            </li>
+
+            <li>
+                @Html.LabelFor(m => m.NewQuestion)
+                @Html.DropDownList("qList")
+                @Html.ValidationMessageFor(model => model.NewQuestion)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.NewAnswer)
+                @Html.TextBoxFor(m => m.NewAnswer)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.NewAnswerConfirm)
+                @Html.TextBoxFor(m => m.NewAnswerConfirm)
+            </li>
+        </ol>
+       
+        <input type="submit" value="Change Question/Answer" />
+    </fieldset>
+}

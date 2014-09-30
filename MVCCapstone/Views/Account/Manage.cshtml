@@ -1,0 +1,40 @@
+﻿
+@{
+    ViewBag.Title = "Manage Account";
+    string manageParameter = ViewBag.Parameter; // determined at the controller
+    
+    string stateCSS;
+    
+    if (ViewBag.State == "Success") { // light blue
+        stateCSS = "message-success";
+    } else {
+        stateCSS = "message-error";    // dark red
+    }
+}
+
+<hgroup class="title">
+    <h1>@ViewBag.Title</h1>
+</hgroup>
+
+    <p>You're logged in as <strong>@User.Identity.Name</strong>.</p>
+
+    @Html.Partial("_ManagePartial")
+
+    <p class="@stateCSS">@ViewBag.StatusMessage</p>
+
+@{
+    // Loads the appropriate partial page based off the url Manage parameter
+    switch (manageParameter)
+    {
+        case "Password":
+            @Html.Partial("_ChangePasswordPartial")
+            break;
+        case "Question":
+            @Html.Partial("_ChangeQuestionPartial")
+            break;
+    }
+}
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

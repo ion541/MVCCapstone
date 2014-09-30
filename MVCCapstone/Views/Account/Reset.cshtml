@@ -1,0 +1,51 @@
+﻿@model MVCCapstone.Models.ResetPasswordModel
+
+@{
+    ViewBag.Title = "Reset";
+    bool ChangeView = ViewBag.DisplayHiddenFields != null ? true : false;   // reveals the question / answer field and makes the account name field read only
+       
+}
+
+<h2>Reset</h2>
+
+<p class="message-error">@ViewBag.StatusMessage</p>
+
+@using (Html.BeginForm("Reset", "Account"))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+    
+    <fieldset>
+        <legend>Change Password Form</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.Account)
+                @if (ChangeView)
+                {
+                    // Once the user has inputted in an existing account name, make the field read only
+                    @Html.TextBoxFor(m => m.Account, new { Value = @ViewBag.Account, ReadOnly = "readonly" })  
+                } else {
+                     @Html.TextBoxFor(m => m.Account, new { Value = @ViewBag.Account })
+                }
+            </li>
+
+            @if (ChangeView)
+            {
+            <li>
+                @Html.LabelFor(m => m.Question)
+                @Html.TextBoxFor(m => m.Question, new { Style="width: 600px", Value = @ViewBag.UserQuestion, ReadOnly = "readonly"})
+            </li>
+             }
+
+            @if (ChangeView)
+            {
+            <li>
+                @Html.LabelFor(m => m.Answer)
+                @Html.TextBoxFor(m => m.Answer)
+            </li>
+             }
+        </ol>
+        
+        <input type="submit" value="@(ChangeView != true ? "Get Question" : "Submit Answer")" />
+    </fieldset>
+}
