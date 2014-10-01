@@ -186,10 +186,12 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AccountHelper.cs" />
+    <Compile Include="Helpers\BookHelper.cs" />
     <Compile Include="Helpers\RoleHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AdminModel.cs" />
     <Compile Include="Models\BookModel.cs" />
+    <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\RoleModel.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

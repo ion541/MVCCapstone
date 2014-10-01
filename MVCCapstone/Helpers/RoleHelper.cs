@@ -11,6 +11,7 @@ namespace MVCCapstone.Helpers
     /// </summary>
     public class RoleHelper
     {
+
         /// <summary>
         /// Get a list of roles available to be filtered
         /// </summary>
@@ -32,18 +33,6 @@ namespace MVCCapstone.Helpers
             return roleList;
         }
 
-        /// <summary>
-        /// Get all the roles in the database as a list of strings
-        /// </summary>
-        /// <returns>a list containing the strings of roles</returns>
-        public static List<string> GetRoleStringList()
-        {
-            UsersContext db = new UsersContext();
-
-            var roles = db.UserRoles.OrderBy(u => u.RoleId).Select(u => u.RoleName).ToList();
-
-            return roles;
-        }
 
         /// <summary>
         /// Get the string of the role the user is currently in
@@ -81,19 +70,28 @@ namespace MVCCapstone.Helpers
             return userRoleList;
         }
 
+
         /// <summary>
-        /// Get a list of all the role id's in the database
+        /// Get all the role name in the role table
         /// </summary>
-        /// <returns>a list of integers containing the role id</returns>
-        public static List<int> GetAllRoleId()
+        /// <returns>List of string containing role names</returns>
+        public static List<string> GetRoleNames()
         {
             UsersContext db = new UsersContext();
 
-            List<int> roleIdList = (from r in db.UserRoles
-                                    select r.RoleId).ToList();
-            return roleIdList;
+            return db.UserRoles.OrderBy(u => u.RoleId).Select(u => u.RoleName).ToList();
         }
 
 
+        /// <summary>
+        /// Get all the role ids in the role table
+        /// </summary>
+        /// <returns>List of int containing role ids</returns>
+        public static List<int> GetRoleIds()
+        {
+            UsersContext db = new UsersContext();
+
+            return db.DbRoles.Select(m => m.RoleId).ToList();
+        }
     }
 }

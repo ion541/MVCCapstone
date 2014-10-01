@@ -4,24 +4,21 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MVCCapstone.Models;
+using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {
     public class SearchController : Controller
     {
-        private SearchDBContext db = new SearchDBContext();
+        private UsersContext db = new UsersContext();
 
         //
         // GET: /Search/
 
         public ActionResult Index()
         {
-            var genreList = from g in db.Genres
-                            select g;
-            genreList = genreList.OrderBy(g => g.Genre_ID);
-
             ViewBag.Language = db.Languages.ToList();
-            ViewBag.Genre = genreList.ToList();
+            ViewBag.Genre = db.Genres.ToList();
 
             return View();
         }

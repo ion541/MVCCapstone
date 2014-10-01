@@ -65,7 +65,7 @@ namespace MVCCapstone.Helpers
         /// <param name="userName"></param>
         /// <param name="question"></param>
         /// <param name="answer"></param>
-        public static void UpdateUserQuestion(string userName, int question, string answer)
+        public static void UpdateUserQuestion(string userName, int id, string answer)
         {
             UsersContext db = new UsersContext();
 
@@ -74,7 +74,7 @@ namespace MVCCapstone.Helpers
                  where u.UserName == userName
                  select u).First();
 
-            user.Question_ID = question;
+            user.Question_ID = id;
             user.Answer = answer;
             db.SaveChanges();
         }

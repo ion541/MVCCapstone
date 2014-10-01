@@ -19,7 +19,6 @@ namespace MVCCapstone.Models
         public List<UserRole> UserRoles { get; set; }
     }
 
-
     public class AccountListModel
     {
         [RegularExpression("([a-zA-Z0-9_-]+)", ErrorMessage = "Only letters, numbers, and characters '-' and '_' are allowed.")]
@@ -28,7 +27,6 @@ namespace MVCCapstone.Models
 
         public string Display { get; set; }
     }
-
 
 
     public class AccountDisplayModel
@@ -40,7 +38,6 @@ namespace MVCCapstone.Models
         [Display(Name = "Account Name")]
         public string UserName { get; set; }
     }
-
 
     public class AccountManagementModel
     {
@@ -57,7 +54,16 @@ namespace MVCCapstone.Models
 
     public class BookManagementModel
     {
+        [Required]
+        [Display(Name = "Book Title")]
+        public string BookTitle { get; set; }
 
+        [Required]
+        [Display(Name = "Author")]
+        public string Author { get; set; }
 
+        [Required]
+        [Display(Name = "ISBN")]
+        public string ISBN { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace MVCCapstone.Controllers
 {
     public class TestingController : Controller
     {
-
+        /*
         private UsersContext db = new UsersContext();
 
         [NonAction]
@@ -127,7 +127,7 @@ namespace MVCCapstone.Controllers
                         userRole.Account = AccHelper.GetUserName(userId);
                         userRole.UserId = userId;
                         userRole.CurrentRole = RoleHelper.GetUserCurrentRole(userId);
-                        userRole.SelectRole = RoleHelper.GetRoleStringList();
+                        userRole.SelectRole = db.UserRoles.OrderBy(u => u.RoleId).Select(u => u.RoleName).ToList();
                         
                         // used for the search form memory
                         userRole.hiddenAccount = account;
@@ -225,8 +225,9 @@ namespace MVCCapstone.Controllers
         {
             return View();
         }
+    
+    */
     }
-
 
 
 

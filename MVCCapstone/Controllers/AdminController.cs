@@ -122,9 +122,10 @@ namespace MVCCapstone.Controllers
             else
             {
                 // if no roles were selected, select them all by default
-                ViewBag.RoleSelected = RoleHelper.GetAllRoleId();
+                ViewBag.RoleSelected = RoleHelper.GetRoleIds();
             }
 
+            // used to search for the selected roles
             List<int>  roleList = ViewBag.RoleSelected;
 
             // model used to store information and display on the view
@@ -158,7 +159,7 @@ namespace MVCCapstone.Controllers
                             userRole.Account = AccHelper.GetUserName(userId);
                             userRole.UserId = userId;
                             userRole.CurrentRole = RoleHelper.GetUserCurrentRole(userId);
-                            userRole.SelectRole = RoleHelper.GetRoleStringList();
+                            userRole.SelectRole = RoleHelper.GetRoleNames() ;
 
                             // data posted in the role update form will retain the values for the search / query form
                             userRole.hiddenAccount = account;
@@ -181,20 +182,16 @@ namespace MVCCapstone.Controllers
                 }
             }
 
-
             ViewBag.RoleChangeMessage =     message == ManageMessageId.EditOwnRole ? "You are forbidden from changing your own role." :
                                             message == ManageMessageId.EditRolesSuccessful ? "The user role has been updated successfully." :
                                             message == ManageMessageId.EditRolesUnsuccessful ? "An issue has occurred, the user role was not changed. Pleaes contact the developer with steps on how to recreate the problem." :
                                             "";
-
 
             // if there was a posted account name, set the value in the textbox
             if (Request.QueryString["account"] != null)
             {
                 ViewBag.AccountNameFieldValue = Request.QueryString["account"].ToString();
             }
-
-
 
             return View(model);
         }
@@ -209,14 +206,19 @@ namespace MVCCapstone.Controllers
         public ActionResult Account(AccountSearchViewModel model, PostedRoles postedRoles)
         {
 
-            // user has posted to the form to update a user's role
+            // check to see which form posted
+            // currently only two forms which post different models
             if (model.UserRoles != null)
             {
+                // the user has posted the model to update a users information
                 ManageMessageId statusMessage;
 
+                // remove the user from the current role assigned
                 Roles.RemoveUserFromRoles(model.UserRoles.Account, Roles.GetRolesForUser(model.UserRoles.Account));
+                // assign the user to the selected role
                 Roles.AddUserToRoles(model.UserRoles.Account, model.UserRoles.SelectRole.ToArray());
 
+                // message to to see if the user is now in the role posted
                 statusMessage = Roles.IsUserInRole(model.UserRoles.Account, model.UserRoles.SelectRole[0].ToString()) ? ManageMessageId.EditRolesSuccessful : ManageMessageId.EditRolesUnsuccessful;
 
 
@@ -234,8 +236,9 @@ namespace MVCCapstone.Controllers
             {
                 // user has posted to the form to update the list of users to be displayed
 
-                string roleIdSelected = "";
+                string roleIdSelected = ""; // used as a URL parameter
 
+                // break down the role id posted and seperate them using "-"
                 if (postedRoles.UserRoleIDs != null)
                 {
                     roleIdSelected = postedRoles.UserRoleIDs[0];
@@ -243,11 +246,12 @@ namespace MVCCapstone.Controllers
                         roleIdSelected = roleIdSelected + "-" + postedRoles.UserRoleIDs[i];
                 }
 
-                if (Request["hiddenId"] != "0")
+                // see if the id selected in the model to update a users information exist
+                if (Request["hiddenId"] != "0") // 0 is a default value representing no user was selected to edit
                 {
                     return RedirectToAction("Account", "Admin", new
                     {
-                        userId = Request["hiddenId"].ToString(),
+                        userId = Request["hiddenId"].ToString(),    // redirect with the id which will populate the other update user form
                         roles = roleIdSelected,
                         account = model.AccountListModel.AccountName,
                         display = Request["DisplayValue"].ToString()
