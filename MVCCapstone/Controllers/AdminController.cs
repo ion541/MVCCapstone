@@ -255,6 +255,8 @@ namespace MVCCapstone.Controllers
                                 message == ManageMessageId.SuccessfulInsert ? "The book has been successfully added into the database." :
                                 message == ManageMessageId.ISBNInDatabase ? "The ISBN inputted is already in the database." :
                                 message == ManageMessageId.UnsuccessfulInsert ? "The book was not successfully inserted into the database." :
+                                message == ManageMessageId.TestingTrue ? "Test condition is true" :
+                                message == ManageMessageId.TestingFalse ? "Testing condition is false" :
                                 "";
 
             model.AvaialbleGenres = BookHelper.GetGenreList();
@@ -262,13 +264,14 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
+
+
         //
         // POST: /Admin/Book
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         public ActionResult Book(BookManagementModel model, PostedGenres postedGenres, HttpPostedFileBase Image = null)
         {
-
             TempData["model"] = model;  // pass the model data back to the next action
 
             // ISBN must be unique, see if it is
@@ -310,9 +313,10 @@ namespace MVCCapstone.Controllers
 
 
             int forum_id;
-            // since it is empty, create a new forum id for this book
+
             if (model.ForumId == null)
             {
+               // no forum id provided, create a new forum id for this book
                 model.ForumId = BookHelper.CreateNewForumId().ToString();
             }
             else
@@ -320,9 +324,9 @@ namespace MVCCapstone.Controllers
                 forum_id = Int32.Parse(model.ForumId);
                 bool ForumIdExist = BookHelper.CheckForForumIdExistence(forum_id);
 
+                // check to see if the inputted forum id exists
                 if (!ForumIdExist)
                 {
-                    // the inputted forum id does not exist, return with an error message
                     return RedirectToAction("Book", "Admin", new { message = ManageMessageId.ForumIdDoesNotExist });
                 }
             }
@@ -337,17 +341,22 @@ namespace MVCCapstone.Controllers
          
             // at this point, the image was uploaded if it existed and the forum id has been valid / generated
             bool BookInserted = BookHelper.InsertBookRecord(model, language, imageId);
-
-
-            // break down the role id posted and seperate them using "-"
+            string bookId = BookHelper.GetLastBookId().ToString();
+            
+            
             if (postedGenres.GenreId != null)
             {
                 for (int i = 0; i < postedGenres.GenreId.Count(); i++)
                 {
-                    //BookHelper.InsertGenreRecord(postedGenres.GenreId[i]);
+                    BookHelper.InsertBookGenre(bookId, postedGenres.GenreId[i]);
                 }
-
             }
+            else
+            {
+                BookHelper.InsertBookGenreDefault(bookId);
+            }
+
+
             if (BookInserted)
             {
                 // if we made it here, then nothing went wrong
@@ -376,7 +385,9 @@ namespace MVCCapstone.Controllers
         SuccessfulInsert,
         UnsuccessfulInsert,
         UploadingImageError,
-        ISBNInDatabase
+        ISBNInDatabase,
+        TestingTrue,
+        TestingFalse
     }
 
     /// <summary>

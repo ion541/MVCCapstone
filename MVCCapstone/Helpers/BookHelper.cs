@@ -44,6 +44,25 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
+        /// Get the value for the specified language id
+        /// </summary>
+        /// <param name="languageID">the id of the language</param>
+        /// <returns>the value associated with the id</returns>
+        public static string GetLanguage(string languageID)
+        {
+            UsersContext db = new UsersContext();
+            int intLanguageId = Int32.Parse(languageID);
+
+            string language = (from l in db.Languages
+                               where l.Language_ID == intLanguageId
+                               select l.Value).First();
+            return language;
+
+
+        }
+
+
+        /// <summary>
         /// Get a list of the class GenreList that contains the genre id and table and return it
         /// </summary>
         /// <returns>A list of the GenreList class</returns>
@@ -63,6 +82,23 @@ namespace MVCCapstone.Helpers
             }
 
             return roleList;
+        }
+
+        public static List<string> GetBookGenreList(string bookId)
+        {
+            UsersContext db = new UsersContext();
+
+            List<string> genreIds = (from bg in db.BookGenre
+                                        where bg.BookId == bookId
+                                        select bg.GenreId).ToList();
+
+            List<int> genreConvert = genreIds.Select(int.Parse).ToList();
+
+            List<string> genreList = (from g in db.Genres
+                                      where genreConvert.Contains(g.Genre_ID)
+                                      select g.Value).ToList();
+
+            return genreList;
         }
 
         /// <summary>
@@ -100,10 +136,6 @@ namespace MVCCapstone.Helpers
             return count == 1 ? true : false;
         }
 
-        public static void InsertGenreRecord(int BookId, int GenreId)
-        {
-
-        }
 
         public static string InsertImageRecord(string filePath)
         {
@@ -120,6 +152,42 @@ namespace MVCCapstone.Helpers
             return imageId;
 
         }
+
+        public static string GetDefaultImage()
+        {
+            return "Images/default_image.jpg";
+        }
+
+
+        public static string GetImagePath(string bookImageId)
+        {
+            UsersContext db = new UsersContext();
+
+            string defaultImage = "Images/default_image.jpg";
+
+            if (bookImageId == null)
+            {
+                return defaultImage;
+            }
+            
+            int intImageId = Int32.Parse(bookImageId);
+
+            var ImagePath = (from i in db.Image
+                             where i.ImageId == intImageId
+                             select i.Path);
+
+            if (ImagePath.Count() == 0)
+            {
+                return defaultImage;
+            }
+            else
+            {
+                return ImagePath.First();
+            }
+
+       
+        }
+
 
         public static bool InsertBookRecord(BookManagementModel model, string language, string imageId)
         {
@@ -146,6 +214,54 @@ namespace MVCCapstone.Helpers
             { 
                 return false; 
             }
+        }
+
+        /// <summary>
+        /// Gets the most recent book id added to the table
+        /// </summary>
+        /// <returns>book id</returns>
+        public static int GetLastBookId()
+        {
+            UsersContext db = new UsersContext();
+            int latestBookId = db.Book.OrderByDescending(b => b.BookId).Select(b => b.BookId).First();
+
+            return latestBookId;
+
+        }
+
+        public static void InsertBookGenre(string bookId, string genreId)
+        {
+            UsersContext db = new UsersContext();
+
+            int count = (from bg in db.BookGenre
+                         where bg.BookId == bookId 
+                            && bg.GenreId == genreId
+                         select bg).Count();
+
+            if (count == 0)
+            {
+                BookGenre bookGenre = new BookGenre();
+                bookGenre.BookId = bookId;
+                bookGenre.GenreId = genreId;
+
+                db.BookGenre.Add(bookGenre);
+                db.SaveChanges();
+            }
+        }
+
+        public static void InsertBookGenreDefault(string bookId)
+        {
+            UsersContext db = new UsersContext();
+            string defaultId = (from g in db.Genres
+                                where g.Value == "Unset"
+                                select g.Genre_ID).First().ToString();
+
+            BookGenre bookGenre = new BookGenre();
+            bookGenre.BookId = bookId;
+            bookGenre.GenreId = defaultId;
+
+            db.BookGenre.Add(bookGenre);
+            db.SaveChanges();
         }
                   
     }

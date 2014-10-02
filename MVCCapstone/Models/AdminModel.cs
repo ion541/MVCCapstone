@@ -76,7 +76,7 @@ namespace MVCCapstone.Models
 
         public IList<GenreList> AvaialbleGenres { get; set; }
         public IList<GenreList> SelectedGenre { get; set; }
-        public PostedGenres PostedGenre { get; set; }
+        public PostedGenres PostedGenres { get; set; }
 
         [Required]
         [Display(Name = "Publisher")]

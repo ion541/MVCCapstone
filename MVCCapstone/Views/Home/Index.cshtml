@@ -1,7 +1,55 @@
 ﻿@{
     ViewBag.Title = "Index";
+    List<MVCCapstone.Models.BookDisplayModel> bookList = ViewBag.BookList as List<MVCCapstone.Models.BookDisplayModel>;
+    string genreString = "";
 }
 
 <h2>Index</h2>
 
 @TempData["message"]
+
+<table class="table">
+@foreach (MVCCapstone.Models.BookDisplayModel book in bookList)
+{
+    <tr>
+        <th>Image</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>ISBN</th>
+        <th>Publisher</th>
+        <th>Published</th>
+        <th>Language</th>
+        <th>Genres</th>
+    </tr>
+ <tr>
+     <td><img style="width: 100px; height: 100px" src="@book.ImagePath" /></td>
+     <td>@book.Title</td>
+     <td>@book.Author</td>
+     <td>@book.ISBN</td>
+     <td>@book.Publisher</td>
+     <td>@book.Published</td>
+     <td>@book.Language</td>
+     <td>
+        
+         @foreach (string genre in book.Genre)
+         {
+             if (genreString == "")
+             {
+                 genreString = genre;
+             }
+             else
+             {
+                 genreString = genreString + ", " + genre;
+             }
+         }
+
+
+         @genreString
+         @{
+            genreString = "";   
+         }
+     </td>
+ </tr>   
+}
+
+</table>  

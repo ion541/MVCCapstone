@@ -25,6 +25,7 @@ namespace MVCCapstone.Models
             public DbSet<Forum> Forum { get; set; }
             public DbSet<Book> Book { get; set; }
             public DbSet<Image> Image { get; set; }
+            public DbSet<BookGenre> BookGenre { get; set; }
         }
 
         [Table("Question")]
@@ -98,5 +99,16 @@ namespace MVCCapstone.Models
             public string Path { get; set; }
             public DateTime DateAdded { get; set; }
         }
+
+        [Table("BookGenre")]
+        public class BookGenre
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int BookGenreId { get; set; }
+            public string BookId { get; set; }
+            public string GenreId { get; set; }
+        }
+
     
 }
