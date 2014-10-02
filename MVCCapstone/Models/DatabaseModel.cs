@@ -22,6 +22,9 @@ namespace MVCCapstone.Models
             public DbSet<DBRoles> DbRoles { get; set; }
             public DbSet<Genre> Genres { get; set; }
             public DbSet<Language> Languages { get; set; }
+            public DbSet<Forum> Forum { get; set; }
+            public DbSet<Book> Book { get; set; }
+            public DbSet<Image> Image { get; set; }
         }
 
         [Table("Question")]
@@ -60,6 +63,40 @@ namespace MVCCapstone.Models
             [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
             public int Language_ID { get; set; }
             public string Value { get; set; }
+        }
+
+        [Table("Forum")]
+        public class Forum
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int ForumId { get; set; }
+        }
+
+        [Table("Book")]
+        public class Book
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int BookId { get; set; }
+            public string Title { get; set; }
+            public string Author { get; set; }
+            public string ImageId { get; set; }
+            public string Publisher { get; set; }
+            public string Published { get; set; }
+            public string LanguageId { get; set; }
+            public string ISBN { get; set; }
+            public string ForumId { get; set; }
+        }
+
+        [Table("Image")]
+        public class Image
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int ImageId { get; set; }
+            public string Path { get; set; }
+            public DateTime DateAdded { get; set; }
         }
     
 }

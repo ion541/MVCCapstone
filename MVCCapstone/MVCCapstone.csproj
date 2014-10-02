@@ -186,12 +186,15 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AccountHelper.cs" />
+    <Compile Include="Helpers\AdminHelper.cs" />
     <Compile Include="Helpers\BookHelper.cs" />
+    <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="Helpers\RoleHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AdminModel.cs" />
     <Compile Include="Models\BookModel.cs" />
     <Compile Include="Models\DatabaseModel.cs" />
+    <Compile Include="Models\ForumModel.cs" />
     <Compile Include="Models\RoleModel.cs" />
     <Compile Include="Models\Search.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -268,6 +271,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
+    <Content Include="Images\default_image.jpg" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
@@ -339,6 +343,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Images\Book\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />

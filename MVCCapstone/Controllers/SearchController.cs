@@ -22,6 +22,5 @@ namespace MVCCapstone.Controllers
 
             return View();
         }
-
     }
 }

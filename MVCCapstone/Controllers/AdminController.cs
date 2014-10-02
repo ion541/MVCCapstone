@@ -8,6 +8,8 @@ using System.Web.Security;
 using MVCCapstone.Models;
 using PagedList;
 using MVCCapstone.Helpers;
+using System.Globalization;
+using System.IO;
 
 namespace MVCCapstone.Controllers
 {
@@ -16,43 +18,6 @@ namespace MVCCapstone.Controllers
 
         private UsersContext db = new UsersContext();
 
-        [NonAction]
-        private IPagedList<UserInfo> GenerateUserList(string account, int page, int display, string sortby, string dir, List<int> roleSelected = null)
-        {
-            if (roleSelected == null)
-                roleSelected = new List<int>();
-           
-            // query containing the data based off of the inputs
-            var userList = (from d in db.UserProfiles
-                                             join u in db.DbRoles on d.UserId equals u.UserId
-                                             join r in db.UserRoles on u.RoleId equals r.RoleId
-                                             where d.UserName.Contains(account) && roleSelected.Contains(r.RoleId)
-                                             select new UserInfo { UserId = d.UserId, UserName = d.UserName, RoleName = r.RoleName });
-
-
-            // sort the query by the field and direction
-            switch (sortby)
-            {
-                case "role":
-                    userList = ((dir == "asc") ? userList.OrderBy(u => u.UserName) : userList.OrderByDescending(u => u.RoleName));
-                    break;
-
-                case "account":
-                    userList = ((dir == "asc") ? userList.OrderBy(u => u.UserName) : userList.OrderByDescending(u => u.UserName));
-                    break;
-
-                case "id":
-                default:
-                    userList = ((dir == "asc") ? userList.OrderBy(u => u.UserId) : userList.OrderByDescending(u => u.UserId));
-                    break;
-            }
-
-            // convert the query into a pagination list
-            IPagedList<UserInfo> orderedUserList = userList.ToPagedList(page, display) as IPagedList<UserInfo>;
-
-
-            return orderedUserList;
-        }
 
         /// <summary>
         /// Create a list of numbers used for selecting the numbers of items to be displayed on the pagination
@@ -111,7 +76,7 @@ namespace MVCCapstone.Controllers
        
         // GET: /Admin/Account
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult Account(ManageMessageId? message, string account = "", int page = 1, int display = 10, string sort = "id", string dir = "asc")
+        public ActionResult Account(ManageMessageId? message, string account = "", int page = 1, int display = 10, string sort = "id", bool asc = true)
         {
 
             if (Request.QueryString["roles"] != null)
@@ -131,7 +96,7 @@ namespace MVCCapstone.Controllers
             // model used to store information and display on the view
             AccountSearchViewModel model = new AccountSearchViewModel();
 
-            model.PaginationUserInfoModel = GenerateUserList(account, page, display, sort, dir, roleList);
+            model.PaginationUserInfoModel = AdminHelper.GenerateUserList(account, page, display, sort, asc, roleList);
             model.AvailableRoles = RoleHelper.GetRoleList();       // get the roles available to search for in the database
             model.DisplayList = DisplayList(display);   // populate the number of users to display for pagination
             model.hiddenId = ""; // default empty for the search / filter form memory which will be posted as well
@@ -275,10 +240,127 @@ namespace MVCCapstone.Controllers
         //
         // GET: /Admin/Book
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult Book()
+        public ActionResult Book(ManageMessageId? message)
         {
-            return View();
+
+            BookManagementModel model = new BookManagementModel();
+            if (TempData["model"] != null)
+                model = TempData["model"] as BookManagementModel;
+
+
+            ViewBag.Message =   message == ManageMessageId.ForumIdDoesNotExist ? "The Inputted Forum Id does not exist" :
+                                message == ManageMessageId.ForumIdNotValid ? "The Forum Id inputted was not valid." :
+                                message == ManageMessageId.InvalidDate ? "The date inputted is not valid." :
+                                message == ManageMessageId.UploadingImageError ? "An error has occurred while updating the image." :
+                                message == ManageMessageId.SuccessfulInsert ? "The book has been successfully added into the database." :
+                                message == ManageMessageId.ISBNInDatabase ? "The ISBN inputted is already in the database." :
+                                message == ManageMessageId.UnsuccessfulInsert ? "The book was not successfully inserted into the database." :
+                                "";
+
+            model.AvaialbleGenres = BookHelper.GetGenreList();
+            model.Language = LanguageHelper.DisplayList();
+            return View(model);
         }
+
+        //
+        // POST: /Admin/Book
+        [HttpPost]
+        [RoleAuthorize(Roles = "admin")]
+        public ActionResult Book(BookManagementModel model, PostedGenres postedGenres, HttpPostedFileBase Image = null)
+        {
+
+            TempData["model"] = model;  // pass the model data back to the next action
+
+            // ISBN must be unique, see if it is
+            if (!BookHelper.CheckISBN(model.ISBN))
+            {
+                return RedirectToAction("Book", "Admin", new { message = ManageMessageId.ISBNInDatabase });
+            }
+
+            string imageId = null;
+            if (Image != null)
+            {
+                try
+                {
+                    // get the string to the path of the book images
+                    string bookPath = BookHelper.GetServerPath();
+
+                    // creates a unique name for the file
+                    string fileName =   Guid.NewGuid().ToString() + System.IO.Path.GetExtension(Image.FileName);
+                    // get the path to where the images are stored
+                    string basePath = Server.MapPath("~/" + bookPath);
+
+                    // create the directory if it does not exist
+                    if (System.IO.File.Exists(basePath))
+                        System.IO.Directory.CreateDirectory(bookPath);
+
+                    // Try and save the file directly to the server
+                    Image.SaveAs(Path.Combine(basePath, fileName));
+                  
+                    string filePath = basePath + fileName;
+
+                    // insert a record of the image path and return the id of the record
+                    imageId = BookHelper.InsertImageRecord(bookPath + fileName);
+                }
+                catch
+                {
+                    RedirectToAction("Book", "Admin", new { message = ManageMessageId.UploadingImageError });
+                }
+            }
+
+
+            int forum_id;
+            // since it is empty, create a new forum id for this book
+            if (model.ForumId == null)
+            {
+                model.ForumId = BookHelper.CreateNewForumId().ToString();
+            }
+            else
+            {
+                forum_id = Int32.Parse(model.ForumId);
+                bool ForumIdExist = BookHelper.CheckForForumIdExistence(forum_id);
+
+                if (!ForumIdExist)
+                {
+                    // the inputted forum id does not exist, return with an error message
+                    return RedirectToAction("Book", "Admin", new { message = ManageMessageId.ForumIdDoesNotExist });
+                }
+            }
+
+            DateTime day;
+            if (!DateTime.TryParseExact(model.Published,"dd/MM/yyyy",CultureInfo.InvariantCulture, DateTimeStyles.None, out day)) {
+                return RedirectToAction("Book", "Admin", new {message = ManageMessageId.InvalidDate });
+            }
+  
+
+            string language = Request["LanguageId"].ToString();
+         
+            // at this point, the image was uploaded if it existed and the forum id has been valid / generated
+            bool BookInserted = BookHelper.InsertBookRecord(model, language, imageId);
+
+
+            // break down the role id posted and seperate them using "-"
+            if (postedGenres.GenreId != null)
+            {
+                for (int i = 0; i < postedGenres.GenreId.Count(); i++)
+                {
+                    //BookHelper.InsertGenreRecord(postedGenres.GenreId[i]);
+                }
+
+            }
+            if (BookInserted)
+            {
+                // if we made it here, then nothing went wrong
+                return RedirectToAction("Book", "Admin", new { message = ManageMessageId.SuccessfulInsert });
+            }
+            else
+            {
+                return RedirectToAction("Book", "Admin", new { message = ManageMessageId.UnsuccessfulInsert });
+            }
+             
+        }
+
+
     }
 
 
@@ -287,15 +369,23 @@ namespace MVCCapstone.Controllers
     {
         EditRolesSuccessful,
         EditRolesUnsuccessful,
-        EditOwnRole
+        EditOwnRole,
+        ForumIdNotValid,
+        ForumIdDoesNotExist,
+        InvalidDate,
+        SuccessfulInsert,
+        UnsuccessfulInsert,
+        UploadingImageError,
+        ISBNInDatabase
     }
 
     /// <summary>
     /// Attribute that inherits the Authorize attribute.
     /// 
     /// If the user is not logged in, it will redirect the user to the log in page.
-    /// If the user is logged in, it will redirect to the user to the  error page instead of always redirecting to the Log in page in the event of unauthorization
-    /// The same process is repeated when the user logs in and doesn't have the authority to access it.
+    /// 
+    /// If the user is logged in, it will redirect the user to the  error page instead of always redirecting to the Log in page in the event of unauthorization
+    /// The process above is repeated when the user logs in and doesn't have the authority to access it.
     /// </summary>
     public class RoleAuthorize : AuthorizeAttribute
     {

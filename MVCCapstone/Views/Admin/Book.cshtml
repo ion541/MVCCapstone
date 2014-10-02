@@ -1,8 +1,94 @@
-﻿@{
+﻿@model MVCCapstone.Models.BookManagementModel
+@using MvcCheckBoxList.Model
+@{
     ViewBag.Title = "Book Management";
+
+    var GenreSelected = new List<int>();
+
+    if (ViewBag.GenreSelected != null)
+    {
+        GenreSelected = ViewBag.GenreSelected as List<int>;
+    }
 }
 
 
   @Html.Partial("Index")
 
  <h2>Book Management</h2>
+
+@ViewBag.Testing;
+
+<div class="message-success">@ViewBag.Message</div>
+
+@using (Html.BeginForm("Book", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <legend>Get User List Form</legend>
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.BookTitle)
+                @Html.TextBoxFor(m => m.BookTitle, new {placeholder = "Title of Book" })
+                @Html.ValidationMessageFor(m => m.BookTitle)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Author)
+                @Html.TextBoxFor(m => m.Author, new {placeholder = "First-Last Name" })
+                @Html.ValidationMessageFor(m => m.Author)
+            </li>
+            <li>
+                @Html.TextBoxFor(m => m.Image, new { type = "file", accept="jpg"})
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Publisher)
+                @Html.TextBoxFor(m => m.Publisher)
+                 @Html.ValidationMessageFor(m => m.Publisher) 
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Published)
+                @Html.TextBoxFor(m => m.Published, "{0:dd/MM/yyyy}", new {placeholder = "dd/mm/yyyy"})
+                 @Html.ValidationMessageFor(m => m.Published) 
+            </li>
+
+            <li>
+                <div class="form-group">
+                <label class="col-sm-1 control-label">Genre</label>
+                    <div class="col-sm-11">
+                    @Html.CheckBoxListFor(m => m.PostedGenre.GenreId, 
+                            m => m.AvaialbleGenres,            
+                            m => m.GenreId,                   
+                            m => m.Genre,              
+                            m => GenreSelected.Contains(m.GenreId),
+                            new HtmlListInfo(HtmlTag.vertical_columns, 4, new {@class="col-md-3"} , TextLayout.RightToLeft))
+                    </div>
+                </div>
+            </li>
+            <li>
+                <div class="form-group">
+                    @Html.LabelFor(m => m.ISBN)
+                    @Html.TextBoxFor(m => m.ISBN, new {placeholder = "13 digits" })
+                    @Html.ValidationMessageFor(m => m.ISBN)
+                </div>
+            </li>
+            <li> 
+                @Html.LabelFor(m => m.Language)
+                <b> @Html.DropDownList("LanguageId", Model.Language)</b>
+            </li>
+        </ol>
+        <br />
+        <ol>
+            <li>
+                @Html.LabelFor(m => m.ForumId  )
+                @Html.TextBoxFor(m => m.ForumId)
+                @Html.ValidationMessageFor(m => m.ForumId)
+            </li>
+        </ol>
+        <input type="submit" value="Submit Book" />
+    </fieldset>
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
