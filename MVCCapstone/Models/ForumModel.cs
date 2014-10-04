@@ -7,6 +7,5 @@ namespace MVCCapstone.Models
 {
     public class ForumModel
     {
-
     }
 }

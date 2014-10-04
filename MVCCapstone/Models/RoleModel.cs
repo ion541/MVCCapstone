@@ -11,28 +11,6 @@ using MVCCapstone.Models;
 namespace MVCCapstone.Models
 {
 
-
-    [Table("webpages_Roles")]
-    public class UserRole
-    {
-        [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int RoleId { get; set; }
-        public string RoleName { get; set; }
-    }
-
-    [Table("webpages_UsersInRoles")]
-    public class DBRoles
-    {
-        [Key]
-        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
-        public int RoleId { get; set; }
-        public int UserId { get; set; }
-
-    }
-
-    
-
     public class UserInfo
     {
         [Key]

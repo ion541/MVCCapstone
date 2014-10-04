@@ -36,9 +36,8 @@ namespace MVCCapstone.Controllers
         //
         // GET: Account/
         public ActionResult Index()
-        {
+        { 
             return RedirectToAction("Manage", "Account");
-          
         }
 
 

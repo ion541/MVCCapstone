@@ -300,8 +300,6 @@ namespace MVCCapstone.Controllers
                     // Try and save the file directly to the server
                     Image.SaveAs(Path.Combine(basePath, fileName));
                   
-                    string filePath = basePath + fileName;
-
                     // insert a record of the image path and return the id of the record
                     imageId = BookHelper.InsertImageRecord(bookPath + fileName);
                 }

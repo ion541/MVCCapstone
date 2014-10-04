@@ -13,20 +13,19 @@ namespace MVCCapstone
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-
-
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 
+            // anything urls that fall down to here will be treated as a 404
             routes.MapRoute(
-                "404-PageNotFound",
-                "{*url}",
+                name: "404",
+                url: "{*url}",
                 defaults: new { controller = "Error", action = "PageNotFound" }
-            );
-           
+           );
+  
         }
     }
 }

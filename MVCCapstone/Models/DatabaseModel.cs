@@ -17,7 +17,8 @@ namespace MVCCapstone.Models
             }
 
             public DbSet<UserProfile> UserProfiles { get; set; }
-            public DbSet<QuestionT> Questions { get; set; }
+            public DbSet<Question> Questions { get; set; }
+            public DbSet<MemberShip> Membership { get; set; }
             public DbSet<UserRole> UserRoles { get; set; }
             public DbSet<DBRoles> DbRoles { get; set; }
             public DbSet<Genre> Genres { get; set; }
@@ -29,7 +30,7 @@ namespace MVCCapstone.Models
         }
 
         [Table("Question")]
-        public class QuestionT
+        public class Question
         {
             [Key]
             [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
@@ -46,6 +47,35 @@ namespace MVCCapstone.Models
             public string UserName { get; set; }
             public int Question_ID { get; set; }
             public string Answer { get; set; }
+        }
+
+        [Table("webpages_Membership")]
+        public class MemberShip
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int UserId { get; set; }
+            public DateTime CreateDate { get; set; }
+            public DateTime LastPasswordFailureDate { get; set; }
+        }
+
+        [Table("webpages_Roles")]
+        public class UserRole
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int RoleId { get; set; }
+            public string RoleName { get; set; }
+        }
+
+        [Table("webpages_UsersInRoles")]
+        public class DBRoles
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int RoleId { get; set; }
+            public int UserId { get; set; }
+
         }
 
         [Table("Genre")]

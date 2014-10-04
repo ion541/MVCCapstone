@@ -64,8 +64,7 @@ namespace MVCCapstone.Models
         [Display(Name = "Author")]
         public string Author { get; set; }
 
-        [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
-        [StringLength(13, ErrorMessage = "The {0} must be {2} characters long.", MinimumLength = 13)]
+        [RegularExpression("^(([0-9]{10})|([0-9]{13}))$", ErrorMessage = "Must be either 10 or 13 digits")]
         [Required]
         [Display(Name = "ISBN")]
         public string ISBN { get; set; }

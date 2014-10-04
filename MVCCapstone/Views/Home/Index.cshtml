@@ -1,54 +1,27 @@
 ﻿@{
     ViewBag.Title = "Index";
     List<MVCCapstone.Models.BookDisplayModel> bookList = ViewBag.BookList as List<MVCCapstone.Models.BookDisplayModel>;
-    string genreString = "";
 }
 
-<h2>Index</h2>
 
-@TempData["message"]
+<div class="message-success">@TempData["message"]</div>
 
 <table class="table">
+<tr>
+    <th>Title</th>
+    <th>Author</th>
+    <th>Language</th>
+    <th>Genres</th>
+</tr>
 @foreach (MVCCapstone.Models.BookDisplayModel book in bookList)
 {
-    <tr>
-        <th>Image</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>ISBN</th>
-        <th>Publisher</th>
-        <th>Published</th>
-        <th>Language</th>
-        <th>Genres</th>
-    </tr>
+
  <tr>
-     <td><img style="width: 100px; height: 100px" src="@book.ImagePath" /></td>
-     <td>@book.Title</td>
+     <td><img style="width: 100px; height:100px;" src="@book.ImagePath" /></td>
+     <td>@Html.RouteLink(book.Title, new { controller = "Book", action="Details", BookId = book.BookId })
      <td>@book.Author</td>
-     <td>@book.ISBN</td>
-     <td>@book.Publisher</td>
-     <td>@book.Published</td>
      <td>@book.Language</td>
-     <td>
-        
-         @foreach (string genre in book.Genre)
-         {
-             if (genreString == "")
-             {
-                 genreString = genre;
-             }
-             else
-             {
-                 genreString = genreString + ", " + genre;
-             }
-         }
-
-
-         @genreString
-         @{
-            genreString = "";   
-         }
-     </td>
+     <td>@book.Genre</td>
  </tr>   
 }
 
