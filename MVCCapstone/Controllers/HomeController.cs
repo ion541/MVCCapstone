@@ -19,7 +19,7 @@ namespace MVCCapstone.Controllers
             if (User.Identity.IsAuthenticated && User.IsInRole("locked"))
             {
                 WebSecurity.Logout();
-                return RedirectToAction("LockedAccount", "Error");
+                return RedirectToAction("lockedaccount", "error");
             }
 
             // list of books to be displayed
@@ -30,28 +30,34 @@ namespace MVCCapstone.Controllers
             foreach (Book book in bookList)
             {
                 BookDisplayModel bookModel = new BookDisplayModel();
-                bookModel.BookId = book.BookId.ToString();
-                bookModel.Title = book.Title;
-                bookModel.Author = book.Author;
-                //bookModel.ISBN = book.ISBN;
-                //bookModel.Published = book.Published;
-                //bookModel.Publisher = book.Publisher;
-                bookModel.Language = BookHelper.GetLanguage(book.LanguageId);
-                bookModel.Genre = BookHelper.GetBookGenreList(book.BookId.ToString());  // find every genre the book is associated with
-                
-                // image can be null, if it is, use a default image otherwise attempt to find the image
-                if (book.ImageId == null)
+
+               // to be viewable, the state of the book must be visible and the user is not an admin
+                if (book.State != "Visible" && !(User.IsInRole("admin")))
                 {
-                    bookModel.ImagePath = BookHelper.GetDefaultImage();
+                   continue; // do not display this book in the view
                 }
                 else
                 {
-                     bookModel.ImagePath = BookHelper.GetImagePath(book.ImageId.ToString(), ImageBasePath);
+                    // book is set to be viewable or the the user is an admin
+                    bookModel.BookId = book.BookId.ToString();
+                    bookModel.Title = book.Title;
+                    bookModel.Author = book.Author;
+                    bookModel.Language = BookHelper.GetLanguage(book.LanguageId);
+                    bookModel.Genre = BookHelper.GetBookGenreList(book.BookId.ToString());  // find every genre the book is associated with
+
+
+
+                    // image can be null, if it is, use a default image otherwise attempt to find the image
+                    if (book.ImageId == null)
+                    {
+                        bookModel.ImagePath = BookHelper.GetDefaultImage();
+                    }
+                    else
+                    {
+                        bookModel.ImagePath = BookHelper.GetImagePath(book.ImageId.ToString(), ImageBasePath);
+                    }
+                    model.Add(bookModel);
                 }
-
-               
-
-                model.Add(bookModel);
             }
             ViewBag.BookList = model;
 

@@ -10,7 +10,6 @@ namespace MVCCapstone.Controllers
     {
         //
         // GET: /Error/
-
         public ActionResult Index(ErrorMessages? Message)
         {
             
@@ -19,15 +18,19 @@ namespace MVCCapstone.Controllers
                 : Message == ErrorMessages.ErrorUnauthorized ? "You do not have the authorization to access this page"
                 : Message == ErrorMessages.ErrorLockedAccount ? "Your account has been locked."
                 : Message == ErrorMessages.ErrorIndirectAccess ? "You attempted to indirectly access a page."
+                : Message == ErrorMessages.BookIdInvalid ? "The book you are attempting to find does not exist."
+                : Message == ErrorMessages.BookDeleted ? "The book is deleted / You do not have permission to view the book."
                 : "Error message does not exist.";
 
             return View();
         }
 
-
+        /// <summary>
+        /// Each error has its own controller allowing the developer to handle each error differently if needed
+        /// </summary>
+        #region ErrorHandlers
         public ActionResult PageNotFound()
         {
-
             return RedirectToAction("Index", "Error", new { Message = ErrorMessages.ErrorPageNotFound });
         }
 
@@ -46,13 +49,28 @@ namespace MVCCapstone.Controllers
             return RedirectToAction("Index", "Error", new { Message = ErrorMessages.ErrorIndirectAccess });
         }
 
+        public ActionResult NotValidBookId()
+        {
+            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.BookIdInvalid });
+        }
 
+        public ActionResult BookDeleted()
+        {
+            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.BookDeleted });
+        }
+        #endregion
+
+        /// <summary>
+        /// Enumeration for error messages
+        /// </summary>
         public enum ErrorMessages
         {
             ErrorPageNotFound,
             ErrorUnauthorized,
             ErrorLockedAccount,
-            ErrorIndirectAccess
+            ErrorIndirectAccess,
+            BookIdInvalid,
+            BookDeleted
         }
 
     }

@@ -19,7 +19,7 @@
                     <div class="col-md-3">
                         <!-- Capstone Title -->
                       
-                            <p class="site-title">@Html.ActionLink("Capstone Project", "Index", "Home")</p>
+                            <p class="site-title">@Html.ActionLink("Capstone Project", "index", "home")</p>
                      
                     </div>
 
@@ -28,7 +28,7 @@
                         <input type="search" name ="titleSearch" placeholder="Enter Book Title...."/>
                     
                        
-                         @Html.ActionLink("Advance", "Index", new { controller = "Search" }, new { style = "text-decoration: none", type = "button", @class = "btn btn-default nounderline" })
+                         @Html.ActionLink("Advance", "index", new { controller = "Search" }, new { style = "text-decoration: none", type = "button", @class = "btn btn-default nounderline" })
                       
                     </div>
 
@@ -80,6 +80,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="/Scripts/bootstrap.min.js"></script>
         @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryval")
         @RenderSection("scripts", required: false)
     </body>
     

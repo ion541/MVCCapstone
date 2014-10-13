@@ -345,6 +345,8 @@
     <Content Include="Views\Testing\Index.cshtml" />
     <Content Include="Views\Book\Index.cshtml" />
     <Content Include="Views\Book\Details.cshtml" />
+    <Content Include="Views\Book\_BookState.cshtml" />
+    <Content Include="Views\Book\_BookmarkAdded.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

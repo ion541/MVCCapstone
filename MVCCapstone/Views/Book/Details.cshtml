@@ -1,14 +1,66 @@
 ﻿@model MVCCapstone.Models.BookDisplayModel
+
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = Model.Title;   
 }
+<div class="row">
+    <div id="Bookmark">
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-8">
+        <div class="col-md-3">
+            <img style="width: 100px; height: 100px;" src="@Model.ImagePath" /> <br />
+        </div>
+        <div class="col-md-9">
+            Title: @Model.Title <br />
+            Author: @Model.Author <br />
+            Published: @Model.Published <br />
+            Publisher: @Model.Publisher <br />
+            ISBN: @Model.ISBN <br />
+            Genre: @Model.Genre <br />
+            Synopsis: @Model.Synopsis <br />
+        </div>
+    </div>
 
-<h2>Details</h2>
+@if (User.Identity.IsAuthenticated) {
+    <div class="col-md-4">
+        <div class="col-md-4">
+             @Ajax.ActionLink("Bookmark",
+                        "bookmark",
+                        new { bookid = Model.BookId },
+                        new AjaxOptions
+                        {
+                            HttpMethod = "POST",
+                            InsertionMode = InsertionMode.Replace,
+                            UpdateTargetId = "Bookmark"
+                        },
+                        new {@class="btn btn-success" }
+                    )
+        </div>
 
-<img style="width: 100px; height: 100px;" src="@Model.ImagePath" /> <br />
-@Model.Title <br />
-@Model.Author <br />
-@Model.Published <br />
-@Model.Publisher <br />
-@Model.ISBN <br />
-@Model.Genre <br />
+        <div class="col-md-8">
+            @if (User.IsInRole("admin"))
+            {
+                @Ajax.ActionLink("Change State",
+                    "changestate",
+                    new { bookid = Model.BookId },
+                    new AjaxOptions
+                    {
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "State"
+                    },
+                    new {@class="btn btn-primary" }
+                )
+    
+                <div id="State">
+                    Current State: @Model.State
+                </div>
+            }
+        </div>
+    
+    </div>
+}     
+
+</div>

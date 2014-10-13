@@ -27,6 +27,7 @@ namespace MVCCapstone.Models
             public DbSet<Book> Book { get; set; }
             public DbSet<Image> Image { get; set; }
             public DbSet<BookGenre> BookGenre { get; set; }
+            public DbSet<Bookmark> Bookmark { get; set; }
         }
 
         [Table("Question")]
@@ -118,6 +119,8 @@ namespace MVCCapstone.Models
             public string LanguageId { get; set; }
             public string ISBN { get; set; }
             public string ForumId { get; set; }
+            public string Synopsis { get; set; }
+            public string State { get; set; }
         }
 
         [Table("Image")]
@@ -140,5 +143,16 @@ namespace MVCCapstone.Models
             public string GenreId { get; set; }
         }
 
+
+        [Table("Bookmark")]
+        public class Bookmark
+        {
+            [Key]
+            [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+            public int BookmarkId { get; set; }
+            public int BookId { get; set; }
+            public int UserId { get; set; }
+            public DateTime DateAdded { get; set; }
+        }
     
 }

@@ -28,6 +28,22 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
+        /// Gets the user id by the user name
+        /// </summary>
+        /// <param name="userName">the name of the account</param>
+        /// <returns></returns>
+        public static int GetUserId(string userName)
+        {
+            UsersContext db = new UsersContext();
+
+            var userId = db.UserProfiles.Where(m => m.UserName == userName).Select(m => m.UserId);
+            if (userId.Count() == 0)
+                return -1;
+
+            return userId.First();
+        }
+
+        /// <summary>
         /// Get the secret question in the database of the selected user
         /// </summary>
         /// <param name="userName">the user name</param>

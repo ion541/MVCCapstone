@@ -17,8 +17,7 @@
 {
 
  <tr>
-     <td><img style="width: 100px; height:100px;" src="@book.ImagePath" /></td>
-     <td>@Html.RouteLink(book.Title, new { controller = "Book", action="Details", BookId = book.BookId })
+     <td>@Html.RouteLink(book.Title, new { controller = "book", action="details", bookid = book.BookId })
      <td>@book.Author</td>
      <td>@book.Language</td>
      <td>@book.Genre</td>

@@ -36,6 +36,12 @@
                 @Html.ValidationMessageFor(m => m.Author)
             </li>
             <li>
+                @Html.LabelFor(m => m.Synopsis)
+                @Html.TextAreaFor(m => m.Synopsis, new {placeholder ="Synopsis of Book", rows=3, columns=40})
+                @Html.ValidationMessageFor(m => m.Synopsis)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Image)
                 @Html.TextBoxFor(m => m.Image, new { type = "file", accept="jpg"})
             </li>
             <li>

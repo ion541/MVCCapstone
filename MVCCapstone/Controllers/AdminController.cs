@@ -272,6 +272,7 @@ namespace MVCCapstone.Controllers
         [RoleAuthorize(Roles = "admin")]
         public ActionResult Book(BookManagementModel model, PostedGenres postedGenres, HttpPostedFileBase Image = null)
         {
+
             TempData["model"] = model;  // pass the model data back to the next action
 
             // ISBN must be unique, see if it is

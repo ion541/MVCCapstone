@@ -276,6 +276,8 @@ namespace MVCCapstone.Helpers
             Book.Published = model.Published;
             Book.Publisher = model.Publisher;
             Book.ISBN = model.ISBN;
+            Book.Synopsis = model.Synopsis;
+            Book.State = "Visible";
             Book.ForumId = model.ForumId;
 
             UsersContext db = new UsersContext();
@@ -348,6 +350,65 @@ namespace MVCCapstone.Helpers
             db.BookGenre.Add(bookGenre);
             db.SaveChanges();
         }
-                  
+
+
+        /// <summary>
+        /// Switches the current state of the book to the other (Visible / Hidden)
+        /// </summary>
+        /// <param name="bookId">the id of the book to be switched</param>
+        /// <returns>a string indicating its current status after the state switch</returns>
+        public static string ChangeState(string bookId)
+        {
+          
+            int idBook;
+            if (!Int32.TryParse(bookId, out idBook))
+                return "The book id is not valid";
+
+            UsersContext db = new UsersContext();
+   
+            Book book = db.Book.Find(idBook);
+            if (book == null)
+                return "The book was not found.";
+
+            if (book.State == "Visible")
+            {
+                book.State = "Hidden";
+            }
+            else
+            {
+                book.State = "Visible";
+            }
+            db.SaveChanges();
+
+            return "Current State: " + book.State;
+        }
+
+        public static string Bookmark(string username, string bookId)
+        {
+
+            int idBook;
+            if (!Int32.TryParse(bookId, out idBook))
+                return "Book is is invalid.";
+
+
+            int idUser = AccHelper.GetUserId(username);
+            if (idUser == -1)
+                return "Unable to find user in database.";
+
+            UsersContext db = new UsersContext();
+
+            if (db.Bookmark.Where(m => m.BookId == idBook && m.UserId == idUser).Count() > 0)
+                return "Already bookmarked";
+
+            Bookmark bookmark = new Bookmark();
+            bookmark.UserId = idUser;
+            bookmark.BookId = idBook;
+            bookmark.DateAdded = DateTime.Today;
+            db.Bookmark.Add(bookmark);
+            db.SaveChanges();
+
+            return "Successfully bookmarked";
+        }
+
     }
 }

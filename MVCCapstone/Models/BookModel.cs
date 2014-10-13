@@ -16,7 +16,10 @@ namespace MVCCapstone.Models
         public string Language { get; set; }
         public string Genre { get; set; }
         public string ISBN { get; set; }
+        public string Synopsis { get; set; }
+        public string State { get; set; }
     }
+
     
 
 

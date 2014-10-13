@@ -21,21 +21,39 @@ namespace MVCCapstone.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult Details(int bookid)
+        public ActionResult Details(string bookid)
         {
 
-            Book book = db.Book.Find(bookid);
-           
+            int ïdValidBook;
+            if (!Int32.TryParse(bookid, out ïdValidBook))
+            {
+                return RedirectToAction("NotValidBookId", "Error");
+            }
+
+            Book book = db.Book.Find(ïdValidBook);
+            // if the book id is invalid, redirect to the error page
+            if (book == null)
+                return RedirectToAction("NotValidBookId", "Error");
+
+
+            // books that are set to hidden can only be viewed by admins
+            if (book.State == "Hidden" && !User.IsInRole("admin"))
+                return RedirectToAction("BookDeleted", "Error");
   
+           
             BookDisplayModel model = new BookDisplayModel();
+
             model.BookId = book.BookId.ToString();
             model.Title = book.Title;
             model.Author = book.Author;
             model.ISBN = book.ISBN;
             model.Published = book.Published;
             model.Publisher = book.Publisher;
+            model.State = book.State;
             model.Language = BookHelper.GetLanguage(book.LanguageId);
             model.Genre = BookHelper.GetBookGenreList(book.BookId.ToString());  // find every genre the book is associated with
+            model.Synopsis = (book.Synopsis == null) ? "N/A" : book.Synopsis;
+                
 
             //image can be null, if it is, use a default image otherwise attempt to find the image 
             if (book.ImageId == null)
@@ -51,5 +69,19 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
+
+        public PartialViewResult ChangeState(string bookid)
+        {
+            if (User.Identity.IsAuthenticated)
+                ViewBag.State = BookHelper.ChangeState(bookid);
+            return PartialView("_BookState");
+        }
+
+        public ActionResult Bookmark(string bookid)
+        {
+            if (User.Identity.IsAuthenticated)
+                ViewBag.Bookmark = BookHelper.Bookmark(User.Identity.Name, bookid);
+            return PartialView("_BookmarkAdded");
+        }
     }
 }

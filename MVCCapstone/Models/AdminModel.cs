@@ -14,9 +14,9 @@ namespace MVCCapstone.Models
     public class UserInfoModel
     {
         [Editable(false)]
+        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Account Name")]
         public int UserId { get; set; }
-
 
         public List<UserRole> UserRoles { get; set; }
     }
@@ -37,6 +37,7 @@ namespace MVCCapstone.Models
         [Display(Name = "Account ID")]
         public string UserId { get; set; }
 
+        [StringLength(20, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Account Name")]
         public string UserName { get; set; }
     }
@@ -57,12 +58,18 @@ namespace MVCCapstone.Models
     public class BookManagementModel
     {
         [Required]
+        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Book Title")]
         public string BookTitle { get; set; }
 
         [Required]
+        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Author")]
         public string Author { get; set; }
+
+        [Display(Name = "Synopsis")]
+        [StringLength(8000, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        public string Synopsis { get; set; }
 
         [RegularExpression("^(([0-9]{10})|([0-9]{13}))$", ErrorMessage = "Must be either 10 or 13 digits")]
         [Required]
@@ -78,9 +85,9 @@ namespace MVCCapstone.Models
         public PostedGenres PostedGenres { get; set; }
 
         [Required]
+        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Publisher")]
         public string Publisher { get; set; }
-
 
         [Required]
         [RegularExpression("^(3[01]|[12][0-9]|0[1-9])/(1[0-2]|0[1-9])/[0-9]{4}$", ErrorMessage = "Must be in the format of dd/mm/yyyy")]
@@ -93,6 +100,8 @@ namespace MVCCapstone.Models
         [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
         [Display(Name = "Forum Id")]
         public string ForumId { get; set; }
+
+        public string State { get; set; }
     }
 
     public class PostedGenres
