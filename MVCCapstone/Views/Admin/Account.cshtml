@@ -103,16 +103,16 @@
         <tr>
             <th></th>
             <th>User Id
-                @Html.ActionLink(" ", "Account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="id", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
-                @Html.ActionLink(" ", "Account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="id", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
+                @Html.ActionLink(" ", "account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="id", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
+                @Html.ActionLink(" ", "account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="id", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
             </th>
             <th>Account Name
-                @Html.ActionLink(" ", "Account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="account", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
-                @Html.ActionLink(" ", "Account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="account", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
+                @Html.ActionLink(" ", "account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="account", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
+                @Html.ActionLink(" ", "account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="account", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
             </th>
             <th>Role
-                @Html.ActionLink(" ", "Account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="role", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
-                @Html.ActionLink(" ", "Account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="role", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
+                @Html.ActionLink(" ", "account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="role", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
+                @Html.ActionLink(" ", "account", new { userId = Request.QueryString["userId"],roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort="role", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
             </th>
         </tr>
 
@@ -121,7 +121,7 @@
         foreach (var user in Model.PaginationUserInfoModel)
         {
         <tr>
-            <td>@Html.ActionLink("E","Account", new {userId = user.UserId, roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}, new {@class = "btn btn-default"})</td>
+            <td>@Html.ActionLink("E","account", new {userId = user.UserId, roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}, new {@class = "btn btn-default"})</td>
             <td>@user.UserId</td>
             <td>@user.UserName </td>
             <td>@user.RoleName</td>

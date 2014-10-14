@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using MVCCapstone.Models;
+using PagedList;
 
 
 namespace MVCCapstone.Helpers
@@ -277,7 +278,7 @@ namespace MVCCapstone.Helpers
             Book.Publisher = model.Publisher;
             Book.ISBN = model.ISBN;
             Book.Synopsis = model.Synopsis;
-            Book.State = "Visible";
+            Book.State = "Visible"; // default, should be visible to other users
             Book.ForumId = model.ForumId;
 
             UsersContext db = new UsersContext();
@@ -380,9 +381,15 @@ namespace MVCCapstone.Helpers
             }
             db.SaveChanges();
 
-            return "Current State: " + book.State;
+            return book.State;
         }
 
+        /// <summary>
+        /// Adds a record into the bookmark table that contains the userid, bookid, and time added
+        /// </summary>
+        /// <param name="username">the username</param>
+        /// <param name="bookId">the book id</param>
+        /// <returns>a message that informs the user of the bookmarking </returns>
         public static string Bookmark(string username, string bookId)
         {
 
@@ -408,6 +415,54 @@ namespace MVCCapstone.Helpers
             db.SaveChanges();
 
             return "Successfully bookmarked";
+        }
+
+        public static string RemoveBookmark(string username, string bookid)
+        {
+            int idBook;
+            if (!Int32.TryParse(bookid, out idBook))
+                return "Book is is invalid.";
+
+
+            int idUser = AccHelper.GetUserId(username);
+            if (idUser == -1)
+                return "Unable to find user in database.";
+
+            UsersContext db = new UsersContext();
+            Bookmark bookmark = db.Bookmark.Where(m => m.BookId == idBook && m.UserId == idUser).First();
+            if (bookmark == null)
+                return "The bookmark you are attempting to remove does not exist.";
+
+            db.Bookmark.Remove(bookmark);
+            db.SaveChanges();
+
+            return "The bookmark was successfully removed.";
+        }
+
+        public static IPagedList<BookmarkDisplayModel> GetBookMarkList(string username, int page, string sortby, bool ascend)
+        {
+            
+            UsersContext db = new UsersContext();
+
+            var bookmarkList = (from d in db.UserProfiles
+                                join bm in db.Bookmark on d.UserId equals bm.UserId
+                                join b in db.Book on bm.BookId equals b.BookId
+                                where d.UserName.Contains(username)
+                                select new BookmarkDisplayModel { BookId = b.BookId, Author = b.Author, Title = b.Title, DateAdded = bm.DateAdded });
+
+            switch (sortby)
+            {
+                case "title":
+                    bookmarkList = ((ascend) ? bookmarkList.OrderBy(u => u.Title) : bookmarkList.OrderByDescending(u => u.Title));
+                    break;
+                case "date":
+                default:
+                    bookmarkList = ((ascend) ? bookmarkList.OrderBy(u => u.DateAdded) : bookmarkList.OrderByDescending(u => u.DateAdded));
+                    break;
+            }
+    
+
+            return bookmarkList.ToPagedList(page, 20) as IPagedList<BookmarkDisplayModel>;
         }
 
     }

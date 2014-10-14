@@ -1,3 +1,10 @@
 ﻿
-
-@ViewBag.State
+@if (ViewBag.State == "Visible") {
+ <span class="message-success">
+     Current State:  @ViewBag.State
+ </span>
+} else {
+<span class="message-error">
+     Current State: @ViewBag.State
+ </span>
+}

@@ -77,11 +77,33 @@ namespace MVCCapstone.Controllers
             return PartialView("_BookState");
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bookid"></param>
+        /// <returns></returns>
         public ActionResult Bookmark(string bookid)
         {
             if (User.Identity.IsAuthenticated)
                 ViewBag.Bookmark = BookHelper.Bookmark(User.Identity.Name, bookid);
             return PartialView("_BookmarkAdded");
         }
+
+
+        /// <summary>
+        /// Autocomplete for the search
+        /// </summary>
+        /// <param name="term"></param>
+        /// <returns></returns>
+        public ActionResult Autocomplete(string term)
+        {
+
+            // Get Tags from database
+            string[] bookList = db.Book.Where( m => m.Title.Contains(term)).Select(m => m.Title).ToArray();
+
+            return this.Json(bookList, JsonRequestBehavior.AllowGet);
+        }
+
+
     }
 }

@@ -7,6 +7,7 @@
         <link href="~/Content/css/bootstrap.min.css" rel="stylesheet">
         <meta name="viewport" content="width=device-width" />
         @Styles.Render("~/Content/css")
+        @Styles.Render("~/Content/themes/base/css")
         @Scripts.Render("~/bundles/modernizr")
     </head>
     <body>
@@ -25,7 +26,7 @@
 
                     <!-- Search Bar -->
                     <div class="col-md-4">
-                        <input type="search" name ="titleSearch" placeholder="Enter Book Title...."/>
+                        <input id="titleSearch" type="search" name ="titleSearch" placeholder="Enter Book Title...."/>
                     
                        
                          @Html.ActionLink("Advance", "index", new { controller = "Search" }, new { style = "text-decoration: none", type = "button", @class = "btn btn-default nounderline" })
@@ -80,8 +81,30 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="/Scripts/bootstrap.min.js"></script>
         @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
         @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/Scripts/capstone.js")
         @RenderSection("scripts", required: false)
+
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#titleSearch').autocomplete({
+                    source: '@Url.Action("autocomplete","book")'
+                });
+
+                $("#titleSearch").bind( "autocompleteselect", function(event, ui) {
+                   
+                });
+
+                $('#titleSearch').bind('keypress', function (e) {
+                    if (e.keyCode == 13) {
+                       
+                    }
+                });
+            })
+        </script>
+
     </body>
     
 </html>

@@ -481,14 +481,13 @@ textarea {
     color: #e80c4d;
     font-size: 1.1em;
     font-weight: bold;
-    margin: 20px 0 10px 0;
 }
 
 .message-success {
+    clear: both;
     color: #7ac0da;
-    font-size: 1.3em;
+    font-size: 1.1em;
     font-weight: bold;
-    margin: 20px 0 10px 0;
 }
 
 .error {

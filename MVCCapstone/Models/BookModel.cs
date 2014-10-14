@@ -19,9 +19,4 @@ namespace MVCCapstone.Models
         public string Synopsis { get; set; }
         public string State { get; set; }
     }
-
-    
-
-
-
 }

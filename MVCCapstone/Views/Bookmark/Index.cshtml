@@ -1,5 +1,60 @@
-﻿@{
-    ViewBag.Title = "Index";
+﻿@model IPagedList<MVCCapstone.Models.BookmarkDisplayModel>
+@using PagedList
+@using PagedList.Mvc 
+@{
+    ViewBag.Title = "Bookmark";
 }
 
-<h2>Index</h2>
+
+<div class="row">
+    &nbsp;
+    <span class="message-success" id="message">
+    </span>
+</div>
+
+<div class="row">
+    <table class="table">
+       
+        <tr>
+            <th></th>
+            <th class="col-md-8">Title
+                    @Html.ActionLink(" ", "index", new { username = Request.QueryString["username"], page =  Request.QueryString["page"],  sort="title", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
+                    @Html.ActionLink(" ", "index", new { username = Request.QueryString["username"], page =  Request.QueryString["page"],  sort="title", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
+            </th>
+            <th class="col-md-3">Date Added
+                    @Html.ActionLink(" ", "index", new { username = Request.QueryString["username"], page =  Request.QueryString["page"],  sort="date", asc="true"}, new {@class = "glyphicon glyphicon-chevron-up"})
+                    @Html.ActionLink(" ", "index", new { username = Request.QueryString["username"], page =  Request.QueryString["page"],  sort="date", asc="false"}, new {@class = "glyphicon glyphicon-chevron-down"})
+            </th>
+        </tr>
+
+        @if (Model.Count > 0) {
+            foreach (var bookmark in Model)
+            {
+    
+            <tr id="@bookmark.BookId">
+                <td>@Ajax.ActionLink("R",
+                                    "remove", new {bookid = @bookmark.BookId}, 
+                                    new AjaxOptions{HttpMethod = "POST", 
+                                                    InsertionMode = InsertionMode.Replace,
+                                                    OnSuccess = "removeRow(" + @bookmark.BookId +")"
+                                    }, 
+                                    new {@class="btn btn-default"})</td>
+                <td><strong>@Html.ActionLink(bookmark.Title, "details", new {controller="book", action="details", bookid = bookmark.BookId })</strong> by @bookmark.Author</td>
+                <td>@bookmark.DateAdded.ToShortDateString()</td>
+            </tr>
+       
+            }
+        } else {
+            <tr>
+                <td colspan="3">You have not bookmarked anything</td>
+            </tr>
+        }
+
+    </table>
+</div>
+<div class="row">
+    <div class="pagedList">
+        @Html.PagedListPager(Model, page => Url.Action("index", new { username = Request.QueryString["username"], page, sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}), PagedListRenderOptions.ClassicPlusFirstAndLast)
+    </div>
+</div>
+   

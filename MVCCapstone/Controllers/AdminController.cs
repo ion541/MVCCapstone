@@ -62,6 +62,9 @@ namespace MVCCapstone.Controllers
 
 
 
+
+
+
         //
         // GET: /Admin/
         [RoleAuthorize(Roles = "admin")]
@@ -237,6 +240,9 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+
+
         //
         // GET: /Admin/Book
         [RoleAuthorize(Roles = "admin")]
@@ -255,14 +261,14 @@ namespace MVCCapstone.Controllers
                                 message == ManageMessageId.SuccessfulInsert ? "The book has been successfully added into the database." :
                                 message == ManageMessageId.ISBNInDatabase ? "The ISBN inputted is already in the database." :
                                 message == ManageMessageId.UnsuccessfulInsert ? "The book was not successfully inserted into the database." :
-                                message == ManageMessageId.TestingTrue ? "Test condition is true" :
-                                message == ManageMessageId.TestingFalse ? "Testing condition is false" :
                                 "";
 
             model.AvaialbleGenres = BookHelper.GetGenreList();
             model.Language = LanguageHelper.DisplayList();
             return View(model);
         }
+
+
 
 
 
@@ -372,7 +378,9 @@ namespace MVCCapstone.Controllers
     }
 
 
-
+    /// <summary>
+    /// enumeration for messages throughout the admin controller
+    /// </summary>
     public enum ManageMessageId
     {
         EditRolesSuccessful,

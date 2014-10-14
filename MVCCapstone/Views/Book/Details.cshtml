@@ -4,22 +4,60 @@
     ViewBag.Title = Model.Title;   
 }
 <div class="row">
-    <div id="Bookmark">
+
+    <div class="col-md-8" id="Bookmark">
+        <span class="message-success">
+        </span>
+    </div>
+
+    <div class="col-md-4">
+        @if (User.IsInRole("admin"))
+            {
+            <div class="col-md-12">
+                @Ajax.ActionLink("Change State",
+                    "changestate",
+                    new { bookid = Model.BookId },
+                    new AjaxOptions
+                    { 
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "State",
+                    },
+                    new {@class="btn btn-primary" }
+                )
+               <div id="State">
+                   @if (Model.State == "Visible")
+                   {
+                       <span class="message-success">Current State: @Model.State</span>
+                   }
+                   else
+                   {
+                       <span class="message-error">Current State: @Model.State</span>
+                   }
+               </div>
+                    
+               
+            </div>
+            }
     </div>
 </div>
+
+<br />
 <div class="row">
+
     <div class="col-md-8">
         <div class="col-md-3">
             <img style="width: 100px; height: 100px;" src="@Model.ImagePath" /> <br />
         </div>
+
         <div class="col-md-9">
-            Title: @Model.Title <br />
-            Author: @Model.Author <br />
-            Published: @Model.Published <br />
-            Publisher: @Model.Publisher <br />
-            ISBN: @Model.ISBN <br />
-            Genre: @Model.Genre <br />
-            Synopsis: @Model.Synopsis <br />
+            <b>Title</b>: @Model.Title <br />
+            <b>Author</b>: @Model.Author <br />
+            <b>Published</b>: @Model.Published <br />
+            <b>Publisher</b>: @Model.Publisher <br />
+            <b>ISBN</b>: @Model.ISBN <br />
+            <b>Genre</b>: @Model.Genre <br />
+            <b>Synopsis</b>: @Model.Synopsis <br />  
         </div>
     </div>
 
@@ -38,28 +76,6 @@
                         new {@class="btn btn-success" }
                     )
         </div>
-
-        <div class="col-md-8">
-            @if (User.IsInRole("admin"))
-            {
-                @Ajax.ActionLink("Change State",
-                    "changestate",
-                    new { bookid = Model.BookId },
-                    new AjaxOptions
-                    {
-                        HttpMethod = "POST",
-                        InsertionMode = InsertionMode.Replace,
-                        UpdateTargetId = "State"
-                    },
-                    new {@class="btn btn-primary" }
-                )
-    
-                <div id="State">
-                    Current State: @Model.State
-                </div>
-            }
-        </div>
-    
     </div>
 }     
 
