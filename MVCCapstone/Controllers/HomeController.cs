@@ -9,6 +9,7 @@ using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {
+    [ValidateInput(false)]
     public class HomeController : Controller
     {
         public UsersContext db = new UsersContext();
@@ -43,7 +44,7 @@ namespace MVCCapstone.Controllers
                     bookModel.Title = book.Title;
                     bookModel.Author = book.Author;
                     bookModel.Language = BookHelper.GetLanguage(book.LanguageId);
-                    bookModel.Genre = BookHelper.GetBookGenreList(book.BookId.ToString());  // find every genre the book is associated with
+                    bookModel.Genre = BookHelper.GetBookGenreList(book.BookId);  // find every genre the book is associated with
 
 
 

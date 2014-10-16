@@ -20,7 +20,6 @@ namespace MVCCapstone.Models
         public string RoleName { get; set; }
     }
 
-
     public class RoleList
     {
         [Key]
@@ -29,25 +28,6 @@ namespace MVCCapstone.Models
         public string RoleName { get; set; }
     }
 
-
-    public class AccountSearchViewModel
-    {
-        public IList<RoleList> AvailableRoles { get; set; }
-        public IList<RoleList> SelectedRoles { get; set; }
-        public PostedRoles PostedRoles { get; set; }
-        public string hiddenId { get; set; }
-
-        public AccountListModel AccountListModel { get; set; }
-
-        public List<SelectListItem> DisplayList { get; set; }
-
-        public IPagedList<UserInfo> PaginationUserInfoModel { get; set; }
-
-        public EditUserModel UserRoles { get; set; }
-       
-    }
-
-  
     public class PostedRoles
     {
         public string[] UserRoleIDs { get; set; }

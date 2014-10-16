@@ -14,8 +14,8 @@ using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {
+    [ValidateInput(false)]
     [Authorize]
-    //[InitializeSimpleMembership]
     public class AccountController : Controller
     {
 

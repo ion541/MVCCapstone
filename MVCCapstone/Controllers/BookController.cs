@@ -8,6 +8,7 @@ using MVCCapstone.Models;
 
 namespace MVCCapstone.Controllers
 {
+    [ValidateInput(false)]
     public class BookController : Controller
     {
 
@@ -51,7 +52,7 @@ namespace MVCCapstone.Controllers
             model.Publisher = book.Publisher;
             model.State = book.State;
             model.Language = BookHelper.GetLanguage(book.LanguageId);
-            model.Genre = BookHelper.GetBookGenreList(book.BookId.ToString());  // find every genre the book is associated with
+            model.Genre = BookHelper.GetBookGenreList(book.BookId);  // find every genre the book is associated with
             model.Synopsis = (book.Synopsis == null) ? "N/A" : book.Synopsis;
                 
 
@@ -98,8 +99,16 @@ namespace MVCCapstone.Controllers
         public ActionResult Autocomplete(string term)
         {
 
+            string[] bookList;
             // Get Tags from database
-            string[] bookList = db.Book.Where( m => m.Title.Contains(term)).Select(m => m.Title).ToArray();
+            if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
+            {
+                bookList = db.Book.Where(m => m.Title.Contains(term)).Select(m => m.Title).ToArray();
+            }
+            else
+            {
+                bookList = db.Book.Where(m => m.Title.Contains(term) && m.State != "Hidden").Select(m => m.Title).ToArray();
+            }
 
             return this.Json(bookList, JsonRequestBehavior.AllowGet);
         }

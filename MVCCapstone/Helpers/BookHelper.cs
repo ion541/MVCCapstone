@@ -81,9 +81,8 @@ namespace MVCCapstone.Helpers
             List<GenreList> roleList = new List<GenreList>();
 
             foreach (GenreList role in genres)
-            {
                 roleList.Add(role);
-            }
+
 
             return roleList;
         }
@@ -93,14 +92,14 @@ namespace MVCCapstone.Helpers
         /// </summary>
         /// <param name="bookId">the id of the book to be searched for</param>
         /// <returns></returns>
-        public static string GetBookGenreList(string bookId)
+        public static string GetBookGenreList(int bookId)
         {
             UsersContext db = new UsersContext();
 
             // gets the list of genre id associated with the book id
             List<int> genreIds = (from bg in db.BookGenre
                                         where bg.BookId == bookId
-                                        select bg.GenreId).Select(int.Parse).ToList();
+                                        select bg.GenreId).ToList();
 
             // get the list of strings associated with the genre id
             List<string> genreList = (from g in db.Genres
@@ -312,7 +311,7 @@ namespace MVCCapstone.Helpers
         /// </summary>
         /// <param name="bookId">the id the book</param>
         /// <param name="genreId">the id of the gren</param>
-        public static void InsertBookGenre(string bookId, string genreId)
+        public static void InsertBookGenre(int bookId, int genreId)
         {
             UsersContext db = new UsersContext();
 
@@ -337,12 +336,12 @@ namespace MVCCapstone.Helpers
         /// Insert the default genre value for books that wernt assigned genres
         /// </summary>
         /// <param name="bookId">the id of the book associated with the genre</param>
-        public static void InsertBookGenreDefault(string bookId)
+        public static void InsertBookGenreDefault(int bookId)
         {
             UsersContext db = new UsersContext();
-            string defaultId = (from g in db.Genres
-                                where g.Value == "Unset"
-                                select g.Genre_ID).First().ToString();
+            int defaultId = (from g in db.Genres
+                             where g.Value == "Unset"
+                             select g.Genre_ID).First();
 
             BookGenre bookGenre = new BookGenre();
             bookGenre.BookId = bookId;
@@ -429,7 +428,7 @@ namespace MVCCapstone.Helpers
                 return "Unable to find user in database.";
 
             UsersContext db = new UsersContext();
-            Bookmark bookmark = db.Bookmark.Where(m => m.BookId == idBook && m.UserId == idUser).First();
+            Bookmark bookmark = db.Bookmark.Where(m => m.BookId == idBook && m.UserId == idUser).FirstOrDefault();
             if (bookmark == null)
                 return "The bookmark you are attempting to remove does not exist.";
 
@@ -463,6 +462,55 @@ namespace MVCCapstone.Helpers
     
 
             return bookmarkList.ToPagedList(page, 20) as IPagedList<BookmarkDisplayModel>;
+        }
+
+        /// <summary>
+        /// Returns a list of books where any new books discovered in the query list will be aded to the current list
+        /// </summary>
+        /// <param name="currentList">the list of books to be added to</param>
+        /// <param name="queryList">the list of new books to be added to the current list</param>
+        /// <param name="firstBooksAdded">boolean used to determine if books have been added to the current list</param>
+        /// <returns>a list of unique books containing both the query and current list</returns>
+        public static List<Book> AddAllNewBooks(List<Book> currentList, List<Book> queryList, out bool currentListBooksNotEmpty)
+        {
+            currentListBooksNotEmpty = true;
+
+            foreach (Book book in queryList)
+            {
+                if (!currentList.Contains(book))
+                    currentList.Add(book);
+            }
+
+            return currentList;
+        }
+
+        /// <summary>
+        /// Compares both the query list and current list and return a new list of books that contains books in both list
+        /// 
+        /// If this is the first time books are being added to the current list and therefore nothing to compare / match,
+        /// this method will call and return the list from the AddAllBooks method
+        /// </summary>
+        /// <param name="currentList">the list of books to be checked</param>
+        /// <param name="queryList">the list of books to be matched</param>
+        /// <param name="currentListEmpty">boolean used to determine if books have been added to the current list</param>
+        /// <param name="currentListBooksNotEmpty"></param>
+        /// <returns>a list of books that only contains the books in both list or the query list of books if the current list is empty </returns>
+        public static List<Book> ReturnSameBooks(List<Book> currentList, List<Book> queryList, bool currentListEmpty, out bool currentListBooksNotEmpty)
+        {
+            currentListBooksNotEmpty = true;
+
+            if (currentListEmpty == false)
+                return AddAllNewBooks(currentList, queryList, out currentListEmpty);
+
+            List<Book> newList = new List<Book>();
+            
+            foreach (Book book in queryList)
+            {
+                if (currentList.Contains(book))
+                    newList.Add(book);
+            }
+
+            return newList;
         }
 
     }

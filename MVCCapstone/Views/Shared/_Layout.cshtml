@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8" />
@@ -19,9 +20,8 @@
                
                     <div class="col-md-3">
                         <!-- Capstone Title -->
-                      
-                            <p class="site-title">@Html.ActionLink("Capstone Project", "index", "home")</p>
                      
+                            <p class="site-title">@Html.ActionLink("Capstone Project", "index", "home")</p>          
                     </div>
 
                     <!-- Search Bar -->
@@ -29,7 +29,7 @@
                         <input id="titleSearch" type="search" name ="titleSearch" placeholder="Enter Book Title...."/>
                     
                        
-                         @Html.ActionLink("Advance", "index", new { controller = "Search" }, new { style = "text-decoration: none", type = "button", @class = "btn btn-default nounderline" })
+                         @Html.ActionLink("Advance", "Advanced", new { controller = "Search", action = "Advanced" }, new { style = "text-decoration: none", type = "button", @class = "btn btn-default nounderline" })
                       
                     </div>
 
@@ -90,16 +90,18 @@
         <script type="text/javascript">
             $(document).ready(function () {
                 $('#titleSearch').autocomplete({
-                    source: '@Url.Action("autocomplete","book")'
+                    source: '@Url.Action("autocomplete","book")',
+                    minLength: 2,
+                    select: function (event, ui) {  
+                        $(location).attr('href', "/Search/Advanced/?title=" + encodeURIComponent(ui.item.value));
+                    }
                 });
-
-                $("#titleSearch").bind( "autocompleteselect", function(event, ui) {
-                   
-                });
+     
+                $("#titleSearch").bind("autocompleteselect", function (event, ui) {});
 
                 $('#titleSearch').bind('keypress', function (e) {
                     if (e.keyCode == 13) {
-                       
+                        $(location).attr('href', "/Search/Advanced/?title=" + encodeURIComponent($('#titleSearch').val()));
                     }
                 });
             })

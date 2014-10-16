@@ -198,7 +198,7 @@
     <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\ForumModel.cs" />
     <Compile Include="Models\RoleModel.cs" />
-    <Compile Include="Models\Search.cs" />
+    <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -277,7 +277,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Scripts\capstone.js" />
+    <Content Include="Scripts\capstone.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -301,6 +303,7 @@
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
+    <Content Include="Views\Search\_SearchResult.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -331,7 +334,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
-    <Content Include="Views\Search\Index.cshtml" />
+    <Content Include="Views\Search\Advanced.cshtml" />
     <Content Include="Views\Bookmark\Index.cshtml" />
     <Content Include="Views\Account\_ManagePartial.cshtml" />
     <Content Include="Views\Account\_ChangeQuestionPartial.cshtml" />

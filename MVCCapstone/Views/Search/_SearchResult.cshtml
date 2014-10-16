@@ -1,0 +1,31 @@
+﻿@model MVCCapstone.Models.SearchModel
+
+
+@ViewBag.Testing
+
+@if (Model.books != null) {
+    @:<table class="table table-hover table-condensed">
+    if (Model.books.Count() > 0)
+    {
+        <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Date Published</th>
+        </tr>
+        foreach (var book in Model.books)
+        {
+        <tr>
+            <td>@Html.RouteLink(book.Title, new { controller = "book", action="details", bookid = book.BookId })
+            <td>@book.Author</td>  
+            <td>@book.Published</td>  
+        </tr>   
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="3">There are no books that matches your query</td>
+        </tr>  
+    }
+    @:</table>
+}

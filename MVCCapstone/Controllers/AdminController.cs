@@ -13,6 +13,7 @@ using System.IO;
 
 namespace MVCCapstone.Controllers
 {
+    [ValidateInput(false)]
     public class AdminController : Controller
     {
 
@@ -346,14 +347,14 @@ namespace MVCCapstone.Controllers
          
             // at this point, the image was uploaded if it existed and the forum id has been valid / generated
             bool BookInserted = BookHelper.InsertBookRecord(model, language, imageId);
-            string bookId = BookHelper.GetLastBookId().ToString();
+            int bookId = BookHelper.GetLastBookId();
             
             
             if (postedGenres.GenreId != null)
             {
                 for (int i = 0; i < postedGenres.GenreId.Count(); i++)
                 {
-                    BookHelper.InsertBookGenre(bookId, postedGenres.GenreId[i]);
+                    BookHelper.InsertBookGenre(bookId, Int32.Parse(postedGenres.GenreId[i]));
                 }
             }
             else

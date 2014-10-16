@@ -139,8 +139,8 @@ namespace MVCCapstone.Models
             [Key]
             [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
             public int BookGenreId { get; set; }
-            public string BookId { get; set; }
-            public string GenreId { get; set; }
+            public int BookId { get; set; }
+            public int GenreId { get; set; }
         }
 
 

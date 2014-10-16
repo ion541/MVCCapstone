@@ -1,0 +1,88 @@
+﻿@model MVCCapstone.Models.SearchModel
+@{
+    ViewBag.Title = "Advance Search";
+  
+    var GenreSelected = new List<int>();
+
+    if (ViewBag.GenreSelected != null)
+    {
+        GenreSelected = ViewBag.GenreSelected as List<int>;
+    }
+}
+<div class="row">
+    @using (Ajax.BeginForm(null, null, new AjaxOptions { UpdateTargetId = "result" }, new {@class="form-horizontal" }))
+    {
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.title, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                   @Html.TextBoxFor(m => m.query.title, new {placeholder = "Title of Book", @class = "form-control"})
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.author, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                   @Html.TextBoxFor(m => m.query.author, new {placeholder = "Author of Book", @class = "form-control"})
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.author, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-10" id="query_genre">
+            @Html.CheckBoxListFor(m => m.postedGenres.GenreId , 
+                    m => m.availableGenres,            
+                    m => m.GenreId,               
+                    m => m.Genre,              
+                    m => GenreSelected.Contains(m.GenreId),
+                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.vertical_columns, 4, new {@class="col-md-3"} , MvcCheckBoxList.Model.TextLayout.Default))
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.yearFrom, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-2">
+                @Html.TextBoxFor(m => m.query.yearFrom, new {placeholder = "Year From", @class = "form-control"})
+            </div>
+            <div class="col-sm-1">
+                @Html.Label("AND", new {placeholder = "Year", @class = "control-label col-sm-1"})
+            </div>
+            <div class="col-sm-2">
+                @Html.TextBoxFor(m => m.query.yearTo, new {placeholder = "Year To", @class = "form-control"})
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.publisher, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                   @Html.TextBoxFor(m => m.query.publisher, new {placeholder = "Publisher of Book", @class = "form-control"})
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.isbn, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                   @Html.TextBoxFor(m => m.query.isbn, new {placeholder = "ISBN of Book", @class = "form-control"})
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(m => m.query.language, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                @Html.DropDownListFor(m => m.query.language, Model.availableLanguage, new { @class = "col-sm-3" })  
+            </div>
+        </div>
+        <input class="pull-right btn btn-default" type="submit" value="Search" />
+    }
+</div>
+
+<div class="row">
+    <div id="result" class="table-responsive">
+        @Html.Partial("_SearchResult")
+    </div>
+</div>
+
+
+
+
+
+
+

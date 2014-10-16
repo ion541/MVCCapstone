@@ -12,7 +12,7 @@ using PagedList;
 
 namespace MVCCapstone.Controllers
 {
-
+    [ValidateInput(false)]
     [Authorize]
     public class BookmarkController : Controller
     {

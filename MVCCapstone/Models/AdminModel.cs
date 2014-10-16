@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using PagedList;
 
 namespace MVCCapstone.Models
 {
@@ -52,6 +53,23 @@ namespace MVCCapstone.Models
         [Required]
         [Display(Name = "Role")]
         public string Role { get; set; }
+    }
+
+    public class AccountSearchViewModel
+    {
+        public IList<RoleList> AvailableRoles { get; set; }
+        public IList<RoleList> SelectedRoles { get; set; }
+        public PostedRoles PostedRoles { get; set; }
+        public string hiddenId { get; set; }
+
+        public AccountListModel AccountListModel { get; set; }
+
+        public List<SelectListItem> DisplayList { get; set; }
+
+        public IPagedList<UserInfo> PaginationUserInfoModel { get; set; }
+
+        public EditUserModel UserRoles { get; set; }
+
     }
 
 

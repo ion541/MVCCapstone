@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace MVCCapstone.Controllers
 {
+    [ValidateInput(false)]
     public class ErrorController : Controller
     {
         //
@@ -20,6 +21,7 @@ namespace MVCCapstone.Controllers
                 : Message == ErrorMessages.ErrorIndirectAccess ? "You attempted to indirectly access a page."
                 : Message == ErrorMessages.BookIdInvalid ? "The book you are attempting to find does not exist."
                 : Message == ErrorMessages.BookDeleted ? "The book is deleted / You do not have permission to view the book."
+                : Message == ErrorMessages.General ? "An error has occurred. Please contact the administrator with steps on how to reproduce the problem."
                 : "Error message does not exist.";
 
             return View();
@@ -58,6 +60,11 @@ namespace MVCCapstone.Controllers
         {
             return RedirectToAction("Index", "Error", new { Message = ErrorMessages.BookDeleted });
         }
+
+        public ActionResult General()
+        {
+            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.General });
+        }
         #endregion
 
         /// <summary>
@@ -70,7 +77,8 @@ namespace MVCCapstone.Controllers
             ErrorLockedAccount,
             ErrorIndirectAccess,
             BookIdInvalid,
-            BookDeleted
+            BookDeleted,
+            General
         }
 
     }
