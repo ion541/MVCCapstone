@@ -59,7 +59,7 @@ namespace MVCCapstone.Helpers
 
             string language = (from l in db.Languages
                                where l.Language_ID == intLanguageId
-                               select l.Value).First();
+                               select l.Value).First( );
             return language;
 
 
@@ -273,8 +273,13 @@ namespace MVCCapstone.Helpers
             Book.Author = model.Author;
             Book.LanguageId = language;
             Book.ImageId = imageId;
-            Book.Published = model.Published;
             Book.Publisher = model.Publisher;
+
+            string[] dateString = model.Published.Split('/');
+            int[] date = Array.ConvertAll<string, int>(dateString, int.Parse);
+            DateTime published = new DateTime(date[2], date[1], date[0]);
+            Book.Published = published;
+
             Book.ISBN = model.ISBN;
             Book.Synopsis = model.Synopsis;
             Book.State = "Visible"; // default, should be visible to other users

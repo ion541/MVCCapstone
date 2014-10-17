@@ -48,7 +48,7 @@ namespace MVCCapstone.Controllers
             model.Title = book.Title;
             model.Author = book.Author;
             model.ISBN = book.ISBN;
-            model.Published = book.Published;
+            model.Published = book.Published.ToShortDateString();
             model.Publisher = book.Publisher;
             model.State = book.State;
             model.Language = BookHelper.GetLanguage(book.LanguageId);

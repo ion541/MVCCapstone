@@ -115,7 +115,7 @@ namespace MVCCapstone.Models
             public string Author { get; set; }
             public string ImageId { get; set; }
             public string Publisher { get; set; }
-            public string Published { get; set; }
+            public DateTime Published { get; set; }
             public string LanguageId { get; set; }
             public string ISBN { get; set; }
             public string ForumId { get; set; }

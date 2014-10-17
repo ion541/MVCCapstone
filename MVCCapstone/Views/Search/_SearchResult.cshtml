@@ -1,23 +1,36 @@
 ﻿@model MVCCapstone.Models.SearchModel
+@{
+    List<string> errorMessages = ViewBag.ErrorMessages as List<string>;    
+}
 
+@if (errorMessages != null)
+{
+    if (errorMessages.Count() > 0)
+    {
+    <div class="row">
+        <ul class="list-unstyled">
+            <li class="info"><b>Warning:</b></li>
+        @foreach (var error in ViewBag.ErrorMessages)
+        {
+            <li class="text-danger">@error</li>
+        }  
+        </ul>
+    </div>
+    }
 
-@ViewBag.Testing
+}
 
 @if (Model.books != null) {
     @:<table class="table table-hover table-condensed">
     if (Model.books.Count() > 0)
     {
         <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Date Published</th>
+            <th class="col-md-6">Title / Author</th>
         </tr>
         foreach (var book in Model.books)
         {
         <tr>
-            <td>@Html.RouteLink(book.Title, new { controller = "book", action="details", bookid = book.BookId })
-            <td>@book.Author</td>  
-            <td>@book.Published</td>  
+            <td><strong>@Html.RouteLink(book.Title, new { controller = "book", action="details", bookid = book.BookId })</strong> by @book.Author</td>
         </tr>   
         }
     }
