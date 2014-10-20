@@ -1,0 +1,50 @@
+﻿@model MVCCapstone.Models.ThreadModel
+@{
+    ViewBag.Title = Model.bookTitle;
+}
+
+<div class="row">
+    <h2>@Model.bookTitle</h2>
+
+    @if (Model.series)
+    {
+        <p><strong>This thread is shared with </strong>
+            @foreach (MVCCapstone.Models.SharedWith book in Model.sharedWith)
+            {
+                @: | @Html.RouteLink(book.title, new { controller = "book", action="details", bookid = book.bookid }) 
+            }
+        </p>
+    }
+</div>
+
+<div class="row">
+    <table class="table table-bordered">
+        <tr>
+            @if (User.Identity.IsAuthenticated && User.IsInRole("admin")) { <th class="col-sm-1"></th> }
+            <th>Title / Thread Starter</th>
+            <th class="col-sm-2">Replies / Views</th>
+            <th class="col-sm-2">Latest Post</th>
+        </tr>
+        @if (Model.threadList.Count() == 0)
+        {
+            <tr>
+               @if (User.Identity.IsAuthenticated && User.IsInRole("admin")) { 
+                    <td colspan="4">There are no threads for this book / series</td>
+               } else {
+                    <td colspan="3">There are no threads for this book / series</td>
+               }
+            </tr>
+        }
+
+    </table>
+</div>
+
+<div class="row">
+    <br />
+    @if (User.Identity.IsAuthenticated)
+    {
+    <div class="pull-left">
+        @Html.ActionLink("Create Thread","createthread", new {bookid = Model.bookid}, new {@class = "btn btn-primary"})
+    </div>
+    }
+</div>

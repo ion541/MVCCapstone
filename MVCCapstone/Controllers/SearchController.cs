@@ -68,8 +68,8 @@ namespace MVCCapstone.Controllers
         public ActionResult Advanced(SearchModel model)
         {
             
-            List<Book> currentList = new List<Book>();
-            List<Book> queryList;
+            List<Book> currentList = new List<Book>(); // list of books to be displayed
+            List<Book> queryList;   // list of books to be added / compared to the current list
             List<string> errorMessages = new List<string>();
             
             // used to determine if the booklist is adding books for the first time
@@ -82,12 +82,14 @@ namespace MVCCapstone.Controllers
                 currentList = BookHelper.AddAllNewBooks(currentList, queryList, out currentListBooksNotEmpty);
             }
 
+
             // filter the current list down by books that contains a author similar to the inputted author
             if (model.query.author != null)
             {
                 queryList = db.Book.Where(m => m.Author.Contains(model.query.author)).OrderBy(m => m.Title).ToList();
                 currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
             }
+
 
             // filter the current list down by books that contains a publisher similar to the inputted publisher
             if (model.query.publisher != null)
@@ -96,22 +98,70 @@ namespace MVCCapstone.Controllers
                 currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
             }
 
-            // filter the current list down by the books the contains a similar 
-            if (model.query.yearFrom != null && model.query.yearTo != null)
+
+            // filter the current list down by the books that are published 
+            if (model.query.yearFrom != null || model.query.yearTo != null)
             {
                 int intYearFrom, intYearTo;
-                // make sure that the year range inputted are integers
-                if (Int32.TryParse(model.query.yearTo, out intYearTo) && Int32.TryParse(model.query.yearFrom, out intYearFrom))
+                DateTime yearTo = new DateTime(), yearFrom = new DateTime();
+
+                // check to see if the year from is an integer
+                bool validFrom = Int32.TryParse(model.query.yearFrom, out intYearFrom);
+                if (validFrom)
                 {
-                    DateTime yearFrom = new DateTime(intYearFrom, 1, 1);
-                    DateTime yearTo = new DateTime(intYearTo, 12, 31);
-   
+                    if (intYearFrom > 0)
+                    {
+                        yearFrom = new DateTime(intYearFrom, 1, 1);   // valid year input, set year from to the beginning of the year
+                    }
+                    else
+                    {
+                        validFrom = false;  // year from is an integer but is negative
+                    }
+                }
+                // check to see if the year to is an integer
+                bool validTo = Int32.TryParse(model.query.yearTo, out intYearTo);
+                if (validTo)
+                {
+                    if (intYearTo > 0)
+                    {
+                        yearTo = new DateTime(intYearTo, 12, 31); // valid to input, set year to to the end of the year
+                    }
+                    else
+                    {
+                        validTo = false; // year to is an integer but is negative
+                    }
+                } 
+
+                // make sure the user input range is appropriate
+                if (validTo && validFrom && (intYearFrom > intYearTo))
+                {
+                    errorMessages.Add("Your Year From is greater then your Year To");
+                }
+                if (intYearFrom < 0 || intYearTo < 0)
+                {
+                    errorMessages.Add("Your years inputted must be greater then 0");
+                }
+                // get all dates published after the year from 
+                else if (model.query.yearFrom != null && model.query.yearTo == null && validFrom)
+                {
+                    queryList = db.Book.Where(m => m.Published >= yearFrom).OrderBy(m => m.Title).ToList();
+                    currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
+                }
+                // get all books published before the year to
+                else if (model.query.yearFrom == null & model.query.yearTo != null && validTo)
+                {
+                    queryList = db.Book.Where(m => m.Published <= yearTo).OrderBy(m => m.Title).ToList();
+                    currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
+                }
+                // get all books published between the year from and year to
+                else if (validTo && validFrom)
+                {
                     queryList = db.Book.Where(m => m.Published >= yearFrom && m.Published <= yearTo).OrderBy(m => m.Title).ToList();
                     currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
                 }
                 else
                 {
-                    errorMessages.Add("Your published range input is invalid.");
+                    errorMessages.Add("Your published range input must be numbers");
                 }
             }
 
@@ -122,6 +172,7 @@ namespace MVCCapstone.Controllers
                 queryList = db.Book.Where(m => m.LanguageId == model.query.language).ToList();
                 currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
             }
+
 
             // filter the current list down by books that contains a isbn similar to the inputted isbn
             if (model.query.isbn != null)
@@ -138,7 +189,8 @@ namespace MVCCapstone.Controllers
                 }
             }
             
-            // filter by genres if at least a single genre was selected
+
+            // filter if at least a single genre was selected
             if (model.postedGenres != null)
             {
                 if (model.postedGenres.GenreId.Count() > 0)

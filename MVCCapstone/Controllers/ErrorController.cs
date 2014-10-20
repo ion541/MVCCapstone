@@ -18,17 +18,17 @@ namespace MVCCapstone.Controllers
                 Message == ErrorMessages.ErrorPageNotFound ? "The page you are looking for does not exist"
                 : Message == ErrorMessages.ErrorUnauthorized ? "You do not have the authorization to access this page"
                 : Message == ErrorMessages.ErrorLockedAccount ? "Your account has been locked."
-                : Message == ErrorMessages.ErrorIndirectAccess ? "You attempted to indirectly access a page."
+                : Message == ErrorMessages.ErrorIndirectAccess ? "You are forbidden to access this page through the url."
                 : Message == ErrorMessages.BookIdInvalid ? "The book you are attempting to find does not exist."
                 : Message == ErrorMessages.BookDeleted ? "The book is deleted / You do not have permission to view the book."
-                : Message == ErrorMessages.General ? "An error has occurred. Please contact the administrator with steps on how to reproduce the problem."
-                : "Error message does not exist.";
+                : Message == ErrorMessages.General ? "An error has occurred. Please contact the administrator with steps on how to reproduce the problem at anhvu.ho@mohawkcollege.ca"
+                : "Uh... you are here because you have probably have been tampering with the url";
 
             return View();
         }
 
         /// <summary>
-        /// Each error has its own controller allowing the developer to handle each error differently if needed
+        /// Each error has its own controller allowing the developer to handle each error differently if required
         /// </summary>
         #region ErrorHandlers
         public ActionResult PageNotFound()

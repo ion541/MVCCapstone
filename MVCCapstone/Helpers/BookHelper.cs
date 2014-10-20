@@ -48,6 +48,33 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
+        /// Check the database to see if the book exists
+        /// </summary>
+        /// <param name="bookid">the id of the book to be searched</param>
+        /// <returns>boolean indicating whether it exists or not</returns>
+        public static bool BookExists(int bookid)
+        {
+            UsersContext db = new UsersContext();
+            if (db.Book.Where(m => m.BookId == bookid).Count() == 1)
+                return true;
+            return false;
+
+        }
+
+
+        /// <summary>
+        /// Gets the title of the book
+        /// </summary>
+        /// <param name="bookid">the id of the book to be searched</param>
+        /// <returns>the title of the book</returns>
+        public static string GetTitle(int bookid)
+        {
+            UsersContext db = new UsersContext();
+            return db.Book.Where(m => m.BookId == bookid).Select(m => m.Title).FirstOrDefault();
+        }
+
+
+        /// <summary>
         /// Get the value for the specified language id
         /// </summary>
         /// <param name="languageID">the id of the language</param>
@@ -283,7 +310,7 @@ namespace MVCCapstone.Helpers
             Book.ISBN = model.ISBN;
             Book.Synopsis = model.Synopsis;
             Book.State = "Visible"; // default, should be visible to other users
-            Book.ForumId = model.ForumId;
+            Book.ForumId = Int32.Parse(model.ForumId);
 
             UsersContext db = new UsersContext();
             db.Book.Add(Book);

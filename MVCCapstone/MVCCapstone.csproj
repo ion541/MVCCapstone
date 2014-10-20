@@ -179,6 +179,7 @@
     <Compile Include="Controllers\BookController.cs" />
     <Compile Include="Controllers\BookmarkController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
+    <Compile Include="Controllers\ForumController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Controllers\TestingController.cs" />
@@ -189,6 +190,7 @@
     <Compile Include="Helpers\AccountHelper.cs" />
     <Compile Include="Helpers\AdminHelper.cs" />
     <Compile Include="Helpers\BookHelper.cs" />
+    <Compile Include="Helpers\ForumHelper.cs" />
     <Compile Include="Helpers\LanguageHelper.cs" />
     <Compile Include="Helpers\RoleHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
@@ -304,6 +306,9 @@
       <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Search\_SearchResult.cshtml" />
+    <Content Include="Views\Forum\Thread.cshtml" />
+    <Content Include="Views\Forum\Index.cshtml" />
+    <Content Include="Views\Forum\CreateThread.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

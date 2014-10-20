@@ -327,6 +327,7 @@ namespace MVCCapstone.Controllers
             }
             else
             {
+               
                 forum_id = Int32.Parse(model.ForumId);
                 bool ForumIdExist = BookHelper.CheckForForumIdExistence(forum_id);
 
