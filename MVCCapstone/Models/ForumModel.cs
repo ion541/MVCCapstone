@@ -6,10 +6,6 @@ using System.Web;
 
 namespace MVCCapstone.Models
 {
-    public class ForumModel
-    {
-
-    }
 
     public class ThreadModel
     {
@@ -17,8 +13,45 @@ namespace MVCCapstone.Models
         public int bookid { get; set; }
         public string bookTitle { get; set; }
         public bool series { get; set; }
-        public List<Thread> threadList { get; set; }
+        public List<ThreadViewModel> threadList { get; set; }
     }
+
+    public class ThreadViewModel
+    {
+        public int ThreadId { get; set; }
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public DateTime ThreadCreated { get; set; }
+        public string ThreadCreator { get; set; }
+        public DateTime LatestPost { get; set; }
+        public string LatestPoster { get; set; }
+        public string State { get; set; }
+        public int TotalPost { get; set; }
+        public int TotalView { get; set; }
+        public string DateString { get; set; }
+    }
+
+    public class PostModel
+    {
+        public int bookId { get; set; }
+        public int threadId { get; set; }
+        public string threadTitle { get; set; }
+        public List<PostViewModel> postList { get; set; }
+    }
+
+    public class PostViewModel
+    {
+        public int postId { get; set; }
+        public string userName { get; set; }
+        public int totalPost { get; set; }
+        public DateTime memberSince { get; set; }
+        public string postContent { get; set; }
+        public DateTime datePosted { get; set; }
+        public bool editPost { get; set; }
+        public DateTime? dateModified { get; set; }
+    }
+
+
 
     public class SharedWith
     {

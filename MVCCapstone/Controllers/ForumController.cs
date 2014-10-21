@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using MVCCapstone.Helpers;
 using MVCCapstone.Models;
+using System.Web.Security;
 
 namespace MVCCapstone.Controllers
 {
@@ -13,6 +14,7 @@ namespace MVCCapstone.Controllers
     {
 
         public UsersContext db = new UsersContext();
+
 
         //
         // GET: /Forum/
@@ -24,32 +26,28 @@ namespace MVCCapstone.Controllers
         
         public ActionResult Thread(int? bookid)
         {
-            if (!bookid.HasValue)
+            int forumid;
+            if (!ForumHelper.ValidateBookId(bookid, out forumid, User.IsInRole("admin")))
                 return RedirectToAction("pagenotfound", "error");
-
-
-            int forumid = ForumHelper.GetForumId(bookid.Value);
-            if (forumid == -1)
-                return RedirectToAction("notvalidbookid", "error");
-
+          
             ThreadModel model = new ThreadModel();
             model.bookid = bookid.Value;
             model.threadList = ForumHelper.GetThreadList(forumid);
             model.bookTitle = BookHelper.GetTitle(bookid.Value);
             model.series = ForumHelper.IsSeries(forumid);
             if (model.series)
-                model.sharedWith = ForumHelper.SharedWith(forumid);
+                model.sharedWith = ForumHelper.SharedWith(forumid, bookid.Value, User.IsInRole("admin"));
+            
 
             return View(model);
         }
 
+        [Authorize]
         public ActionResult CreateThread(int? bookid)
         {
-            if (!bookid.HasValue) 
-                return RedirectToAction("notvalidbookid", "error");
-           
-            if (!BookHelper.BookExists(bookid.Value)) 
-                return RedirectToAction("notvalidbookid", "error");
+            int forumid;
+            if (!ForumHelper.ValidateBookId(bookid, out forumid, User.IsInRole("admin")))
+                return RedirectToAction("pagenotfound", "error");
 
             CreateThreadModel model = new CreateThreadModel();
             model.bookid = bookid.Value;
@@ -59,10 +57,38 @@ namespace MVCCapstone.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult CreateThread(int? bookid, CreateThreadModel model)
+        [Authorize]
+        public ActionResult CreateThread(CreateThreadModel model)
         {
+            int threadId = -1;
+            if (ModelState.IsValid)
+            {
+                ForumHelper.CreateThread(AccHelper.GetUserId(User.Identity.Name), model.bookid, model.threadTitle, model.post.content);
+                threadId = db.Thread.OrderByDescending(m => m.ThreadCreated).Select(m => m.ThreadId).FirstOrDefault();
+            }
 
-            return View();
+            // the thread creation was not successful, redirect back to the thread list page
+            if (threadId == -1)
+                return RedirectToAction("thread", "forum", new { bookid = model.bookid });
+
+            // new thread was created, redirect to it
+            return RedirectToAction("viewthread", "forum", new { threadid = threadId });
+        }
+
+        public ActionResult ViewThread(int? threadid)
+        {
+            if (!ForumHelper.ValidateThreadId(threadid))
+                return RedirectToAction("pagenotfound", "error");
+
+            ForumHelper.IncrementThreadViewCount(threadid.Value);
+
+            PostModel model = new PostModel();
+            model.threadId = threadid.Value;
+            model.bookId = ForumHelper.GetBookId(threadid.Value);
+            model.threadTitle = ForumHelper.GetThreadTitle(threadid.Value);
+            model.postList = ForumHelper.GetPostList(threadid.Value);
+            
+            return View(model);
         }
 
     }

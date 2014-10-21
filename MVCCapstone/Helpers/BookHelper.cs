@@ -62,6 +62,7 @@ namespace MVCCapstone.Helpers
         }
 
 
+
         /// <summary>
         /// Gets the title of the book
         /// </summary>
@@ -90,6 +91,17 @@ namespace MVCCapstone.Helpers
             return language;
 
 
+        }
+
+        /// <summary>
+        /// Gets the state of the book
+        /// </summary>
+        /// <param name="bookid">the id of the book to be searched</param>
+        /// <returns>the state of the book</returns>
+        public static string GetState(int bookid)
+        {
+            UsersContext db = new UsersContext();
+            return db.Book.Where(m => m.BookId == bookid).Select(m => m.State).FirstOrDefault();
         }
 
 

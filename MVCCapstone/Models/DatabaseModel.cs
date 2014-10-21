@@ -11,8 +11,7 @@ namespace MVCCapstone.Models
 
     public class UsersContext : DbContext
     {
-        public UsersContext()
-            : base("DefaultConnection")
+        public UsersContext(): base("capstone")
         {
         }
 
@@ -165,6 +164,7 @@ namespace MVCCapstone.Models
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ThreadId { get; set; }
         public int BookId { get; set; }
+        public string Title { get; set; }
         public DateTime ThreadCreated { get; set; }
         public string ThreadCreator { get; set; }
         public DateTime LatestPost { get; set; }
@@ -184,7 +184,7 @@ namespace MVCCapstone.Models
         public int ThreadId { get; set; }
         public string PostContent { get; set; }
         public DateTime PostDate { get; set; }
-        public string ModifiedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
     }
     
 }

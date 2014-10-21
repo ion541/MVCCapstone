@@ -4,7 +4,7 @@
 }
 
 <div class="row">
-    <h2>@Model.bookTitle</h2>
+    <h2>@Html.RouteLink(@Model.bookTitle, new {controller = "book", action ="details", bookid = Model.bookid})</h2>
 
     @if (Model.series)
     {
@@ -34,6 +34,30 @@
                     <td colspan="3">There are no threads for this book / series</td>
                }
             </tr>
+        } else {
+            foreach (MVCCapstone.Models.ThreadViewModel thread in Model.threadList)
+            {
+                <tr>
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("admin")) 
+                    {
+                        <td>lock button here</td> 
+                    }
+                    <td>
+                        @Html.ActionLink(@thread.Title,"viewthread", new {threadid = @thread.ThreadId}) <br /> 
+                        Started By: @thread.ThreadCreator
+                    </td>
+                    <td>
+                        Total Posts: @thread.TotalPost <br /> 
+                        Total Views: @thread.TotalView
+                    </td>
+                    <td>
+                        Last Reply: @thread.LatestPoster <br />
+                        <time title="@thread.LatestPost">@thread.DateString</time>
+             
+                    </td>
+
+                </tr>
+            }   
         }
 
     </table>

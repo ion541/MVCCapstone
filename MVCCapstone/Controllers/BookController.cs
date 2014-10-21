@@ -25,13 +25,13 @@ namespace MVCCapstone.Controllers
         public ActionResult Details(string bookid)
         {
 
-            int ïdValidBook;
-            if (!Int32.TryParse(bookid, out ïdValidBook))
+            int idValidBook;
+            if (!Int32.TryParse(bookid, out idValidBook))
             {
                 return RedirectToAction("NotValidBookId", "Error");
             }
 
-            Book book = db.Book.Find(ïdValidBook);
+            Book book = db.Book.Find(idValidBook);
             // if the book id is invalid, redirect to the error page
             if (book == null)
                 return RedirectToAction("NotValidBookId", "Error");

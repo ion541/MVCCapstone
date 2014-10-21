@@ -29,7 +29,7 @@ namespace MVCCapstone
             AntiForgeryConfig.SuppressIdentityHeuristicChecks = true;
 
             WebSecurity.InitializeDatabaseConnection(
-                      connectionStringName: "defaultConnection",
+                      connectionStringName: "capstone",
                       userTableName: "UserProfile",
                       userIdColumn: "UserID",
                       userNameColumn: "UserName",
