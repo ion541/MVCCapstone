@@ -69,6 +69,24 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
+        /// Returns a boolean to indicate if the post id is valid
+        /// </summary>
+        /// <param name="postId">the id of the post to be validated</param>
+        /// <returns>a boolean</returns>
+        public static bool ValidatePostId(int? postId)
+        {
+            if (!postId.HasValue)
+                return false;
+
+            UsersContext db = new UsersContext();
+
+            if (db.Post.Find(postId) == null)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
         /// Get the title of the thread
         /// </summary>
         /// <param name="threadId">the id of the thread to be searched</param>
@@ -123,11 +141,16 @@ namespace MVCCapstone.Helpers
         }
 
 
-        public static List<PostViewModel> GetPostList(int threadId)
+        public static IPagedList<PostViewModel> GetPostList(int threadId, int page)
         {
             UsersContext db = new UsersContext();
 
-            List<PostViewModel> postList = ( from p in db.Post
+            int displayPerPage = 10;
+            // select the last page to display if the integer is negative
+            if (page <= 0)
+                page = (db.Post.Where(m => m.ThreadId == threadId).Count() + displayPerPage - 1) / displayPerPage;
+
+            IPagedList<PostViewModel> postList = (from p in db.Post
                             join t in db.Thread on p.ThreadId equals t.ThreadId
                             join u in db.UserProfiles on p.UserId equals u.UserId
                             join m in db.Membership on u.UserId equals m.UserId
@@ -143,7 +166,7 @@ namespace MVCCapstone.Helpers
                                 replyPostContent = p.ReplyPostContent,
                                 datePosted = p.PostDate,
                                 dateModified = p.ModifiedDate
-                            }).OrderBy(m => m.datePosted).ToList();
+                            }).OrderBy(m => m.datePosted).ToPagedList(page, displayPerPage) as IPagedList<PostViewModel>;
             
             return postList;
         }
@@ -152,8 +175,11 @@ namespace MVCCapstone.Helpers
         /// </summary>
         /// <param name="forumid">the forum id of the book to be searched</param>
         /// <returns>list of threads sharing the forum id</returns>
-        public static List<ThreadViewModel> GetThreadList(int forumId)
+        public static IPagedList<ThreadViewModel> GetThreadList(int forumId, int page)
         {
+            if (page <= 0)
+                page = 1;
+
             UsersContext db = new UsersContext();
             var threads = (from t in db.Thread
                             join f in db.Forum on t.ForumId equals f.ForumId
@@ -180,7 +206,7 @@ namespace MVCCapstone.Helpers
                     thread.LatestPost.ToShortDateString();
             }
 
-            return threads as List<ThreadViewModel>;
+            return threads.ToPagedList(page, 10) as IPagedList<ThreadViewModel>;
         }
 
 
@@ -224,15 +250,29 @@ namespace MVCCapstone.Helpers
             CreatePost(userId, threadId, post);
         }
 
+        public static void EditPost(int postId, string content, string replyTo = null, string replyContent = null)
+        {
+            UsersContext db = new UsersContext();
+            Post post = db.Post.Find(postId);
+            post.PostContent = content;
+            post.ReplyTo = replyTo;
+            post.ReplyPostContent = replyContent;
+            post.ModifiedDate = DateTime.Today.ToShortDateString() + " - " + DateTime.Now.ToLongTimeString();
+            db.SaveChanges();
+        }
+
        /// <summary>
        /// Creates a post
        /// </summary>
        /// <param name="userId">the user id who created the post</param>
        /// <param name="threadId">the thread id the user posted to</param>
        /// <param name="post">the content of the post</param>
-        public static void CreatePost(int userId, int threadId, string post, string replyContent = null, string replyTo = null)
+        public static void CreatePost(int userId, int threadId, string post, string replyContent = null, string replyTo = null, int replyPostId = 0)
         {
             UsersContext db = new UsersContext();
+
+            if (replyTo != null)
+                replyTo = replyTo + " post #" + replyPostId;
 
             Post userPost = new Post();
             userPost.UserId = userId;

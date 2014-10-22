@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using PagedList;
 
 namespace MVCCapstone.Models
 {
 
-    public class ThreadModel
+    public class ForumModel
     {
         public List<SharedWith> sharedWith { get; set; }
         public int ForumId { get; set; }
         public string bookTitle { get; set; }
         public bool series { get; set; }
-        public List<ThreadViewModel> threadList { get; set; }
+        public IPagedList<ThreadViewModel> threadList { get; set; }
     }
 
     public class ThreadViewModel
@@ -36,7 +37,7 @@ namespace MVCCapstone.Models
         public int forumId { get; set; }
         public int threadId { get; set; }
         public string threadTitle { get; set; }
-        public List<PostViewModel> postList { get; set; }
+        public IPagedList<PostViewModel> postList { get; set; }
     }
 
     public class PostViewModel
@@ -83,6 +84,23 @@ namespace MVCCapstone.Models
 
         public bool showPostSection { get; set; }
         public bool showReply { get; set; }
+        public int replyPostId { get; set; }
+        public string replyTo { get; set; }
+        public string replyContent { get; set; }
+        public int threadId { get; set; }
+    }
+
+    public class EditPostModel
+    {
+        [Required]
+        [StringLength(7000, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [Display(Name = "Original Post")]
+        public string content { get; set; }
+        public int postId { get; set; }
+        public int page { get; set; }
+
+        public bool showEditSection { get; set; }
+        public bool hasReply { get; set; }
         public string replyTo { get; set; }
         public string replyContent { get; set; }
         public int threadId { get; set; }

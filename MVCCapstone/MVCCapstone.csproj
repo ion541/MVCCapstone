@@ -310,6 +310,7 @@
     <Content Include="Views\Forum\CreateThread.cshtml" />
     <Content Include="Views\Forum\ViewThread.cshtml" />
     <Content Include="Views\Forum\_CreatePost.cshtml" />
+    <Content Include="Views\Forum\_EditPost.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

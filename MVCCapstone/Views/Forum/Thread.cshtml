@@ -1,4 +1,6 @@
-﻿@model MVCCapstone.Models.ThreadModel
+﻿@model MVCCapstone.Models.ForumModel
+@using PagedList
+@using PagedList.Mvc 
 @{
     ViewBag.Title = Model.bookTitle;
 }
@@ -43,8 +45,8 @@
                         <td>lock button here</td> 
                     }
                     <td>
-                        @Html.ActionLink(@thread.Title,"viewthread", new {threadid = @thread.ThreadId}) <br /> 
-                        Started By: @thread.ThreadCreator
+                        @Html.ActionLink(@thread.Title,"viewthread", new {threadid = @thread.ThreadId, page = 1}) <br /> 
+                        Created By: @thread.ThreadCreator
                     </td>
                     <td>
                         Total Posts: @thread.TotalPost <br /> 
@@ -63,8 +65,10 @@
 </div>
 
 <div class="row">
-    <br />
     <div class="pull-left">
         @Html.ActionLink("Create Thread","createthread", new {forumid = Model.ForumId}, new {@class = "btn btn-primary"})
     </div>
+    <span class="pull-right">
+        @Html.PagedListPager(Model.threadList, page => Url.Action("thread", new {forumid = Model.ForumId, page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+    </span>
 </div>

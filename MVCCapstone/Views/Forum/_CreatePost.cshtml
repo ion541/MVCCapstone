@@ -1,6 +1,5 @@
 ﻿@model MVCCapstone.Models.CreatePostModel
 
-@ViewBag.reply
 
 @if (Model.showPostSection){
     using (Html.BeginForm("createpost", "forum", new { threadid = Model.threadId}, FormMethod.Post, new { @class = "form-horizontal" }))
@@ -14,6 +13,7 @@
 
                     @Html.HiddenFor(m => m.replyContent)
                     @Html.HiddenFor(m => m.replyTo)
+                    @Html.HiddenFor(m => m.replyPostId)
 
                     <blockquote style="word-wrap: break-word; white-space: pre-line">
                         <strong> Replying To: @Model.replyTo</strong>
@@ -24,12 +24,13 @@
         }
 
         <div class="form-group">
+
             @Html.LabelFor(m => m.content, new { @class = "col-sm-2 control-label" })
-            <div class="col-sm-8">
-                @Html.TextAreaFor(m => m.content, new { style="resize: none", placeholder = "Post...", rows = 3, columns = 40, @class = "form-control" })
+            <div class="col-sm-10">
+                @Html.TextAreaFor(m => m.content, new { placeholder = "Post...", rows = 3, columns = 40, @class = "form-control" })
             </div>
-           <div class="col-sm-2">
-                  @Html.ValidationMessageFor(m => m.content)
+           <div class="col-sm-offset-2">
+                @Html.ValidationMessageFor(m => m.content)
            </div>
         </div>
     
@@ -44,9 +45,12 @@
 } else {
     <h3> The parameters for posting is invalid</h3>
 }
-
+<script src="/Scripts/bootstrap.min.js"></script>
 
 <script>
     // required for partial forms
     $.validator.unobtrusive.parse("form");
+
+
 </script>
+

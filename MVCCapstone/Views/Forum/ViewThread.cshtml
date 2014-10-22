@@ -1,4 +1,6 @@
 ﻿@model MVCCapstone.Models.PostModel
+@using PagedList
+@using PagedList.Mvc 
 @using System.Web.Security;
 @{
     ViewBag.Title = "View Thread";
@@ -26,6 +28,7 @@
 
                 <div class="col-sm-12 panel panel-primary">
                     Posted: @post.datePosted.ToShortDateString() - @post.datePosted.ToLongTimeString()
+                    <span id="@post.postId" class="pull-right">post #@post.postId</span>
                 </div>
 
                 <div class="col-sm-3 panel-primary">
@@ -39,21 +42,28 @@
                 </div>
                 <div class="col-sm-9">
                     @if (@post.replyPostContent != null) {
-                     <div class="text-container">
-                           <div class="text-content short-text">
-    	                <blockquote style="word-wrap: break-word; white-space: pre-line">
+                        if (post.replyPostContent.Length > 500) 
+                        {
+                            <div class="text-container">
+                                <div class="text-content short-text">
+    	                            <blockquote style="word-wrap: break-word; white-space: pre-line">
+                                        <strong> Replying To: @post.replyTo</strong>
+                                        @post.replyPostContent
+                                    </blockquote>
+                                </div> 
+                                <div class="show-more pull-right">
+                                    <a href="#">Show More [ + ]</a>
+                                </div>  
+                            </div>  
+                        
+                        } else {
+                            
+                         <blockquote style="word-wrap: break-word; white-space: pre-line">
                             <strong> Replying To: @post.replyTo</strong>
                             @post.replyPostContent
-                            
-                        </blockquote>
-                        </div>
-                        @if (post.replyPostContent.Length > 300) 
-                        {
-                        <div class="show-more pull-right">
-                            <a href="#">Show More [ + ]</a>
-                        </div>  
+                        </blockquote> 
+                          
                         }
-                    </div>  
                     <br />
                     }
                     
@@ -64,7 +74,7 @@
                     &nbsp;
                     <span class="pull-left">
                         @if (post.dateModified != null) {
-                            @post.dateModified
+                            @:Last Modified: @post.dateModified
                         }
                     </span>
                     <span class="pull-right">
@@ -83,7 +93,17 @@
                         }
                         @if (User.IsInRole("admin") || User.Identity.Name == post.userName)
                         {
-                            @: Edit
+                            @Ajax.ActionLink("Edit",
+                                "showedit",
+                                new { postid = post.postId, page = Request.QueryString["page"] },
+                                new AjaxOptions
+                                { 
+                                    HttpMethod = "POST",
+                                    InsertionMode = InsertionMode.Replace,
+                                    UpdateTargetId = "postSection",
+                                    OnSuccess = "moveToPost"
+                                }
+                            )
                         }
                     </span>
 
@@ -92,34 +112,33 @@
         
         }
     } else {
-        <br /> <h2>Wo-oh, there are no posts in this thread!</h2> <br />
+        <br /> <h2>Wo-oh, Cannot find any posts!</h2> <br />
     }
     </div>
 </div>
 
 <div class="row">
-    @Ajax.ActionLink("Create Post",
-                    "showpost",
-                    new { threadid = Model.threadId },
-                    new AjaxOptions
-                    { 
-                        HttpMethod = "POST",
-                        InsertionMode = InsertionMode.Replace,
-                        UpdateTargetId = "postSection",
-                        OnSuccess = "moveToPost"
-                    },
-                    new {@class="btn btn-primary" }
-                )
-    @*@Html.ActionLink("Create Post","post", new {threadid = Model.threadId}, new {@class = " btn btn-primary"})*@
-
-        <div class="pull-right">
-            PAGINATION
-        </div>
+    @if (User.Identity.IsAuthenticated) {
+        @Ajax.ActionLink("Create Post",
+            "showpost",
+            new { threadid = Model.threadId },
+            new AjaxOptions
+            { 
+                HttpMethod = "POST",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "postSection",
+                OnSuccess = "moveToPost"
+            },
+            new {@class="btn btn-primary" }
+        )
+    }
+        
+    <span class="pull-right">
+        @Html.PagedListPager(Model.postList, page => Url.Action("viewthread", new {threadid = Model.threadId, page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+    </span>
 </div>
 
 <div class="row">
     <div id="postSection"></div>
 </div>
-
-
 

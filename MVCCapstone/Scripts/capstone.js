@@ -9,11 +9,10 @@ function removeRow(id) {
 function moveToPost() {
     $('html, body').animate({
         scrollTop: $("#postSection").offset().top
-    }, 500);
+    }, 700);
 }
 
 $(function(){
-   
     $(".show-more a").on("click", function () {
         var $link = $(this);
         var $content = $link.parent().prev("div.text-content");

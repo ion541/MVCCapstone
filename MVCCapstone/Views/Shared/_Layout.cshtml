@@ -106,6 +106,8 @@
 
         <script type="text/javascript">
             $(document).ready(function () {
+
+                // auto complete jquery
                 $('#titleSearch').autocomplete({
                     source: '@Url.Action("autocomplete","book")',
                     minLength: 2,
@@ -113,14 +115,23 @@
                         $(location).attr('href', "/Search/Advanced/?title=" + encodeURIComponent(ui.item.value));
                     }
                 });
-     
+                
+                // bind the auto complete select to the search box
                 $("#titleSearch").bind("autocompleteselect", function (event, ui) {});
 
+                // hitting the enter key will do a search based on the current input
                 $('#titleSearch').bind('keypress', function (e) {
                     if (e.keyCode == 13) {
                         $(location).attr('href', "/Search/Advanced/?title=" + encodeURIComponent($('#titleSearch').val()));
                     }
                 });
+
+                // Scroll to the specific id
+                if ("@ViewBag.ScrollTo" != "") {
+                    $('html, body').animate({
+                        scrollTop: $("#@ViewBag.ScrollTo").offset().top
+                    }, 700);
+                }
             })
         </script>
 
