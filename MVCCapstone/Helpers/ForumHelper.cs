@@ -14,46 +14,37 @@ namespace MVCCapstone.Helpers
     public class ForumHelper
     {
         /// <summary>
-        /// Get the forum id associated with the book.
+        /// Get the forum id associated with the thread.
         /// Returns -1 if the forum id does not exist
         /// </summary>
-        /// <param name="bookid">the id of the book to be searched</param>
+        /// <param name="threadId">the id of the threadid to be searched</param>
         /// <returns>the forum id of the book</returns>
-        public static int GetForumId(int bookId)
+        public static int GetForumId(int threadId)
         {
             UsersContext db = new UsersContext();
 
-            if (db.Book.Where(m => m.BookId == bookId).Count() == 1)
-                return db.Book.Where(m => m.BookId == bookId).Select(m => m.ForumId).First();
+            if (db.Thread.Where(m => m.ThreadId == threadId).Count() == 1)
+                return db.Thread.Where(m => m.ThreadId == threadId).Select(m => m.ForumId).First();
 
             return -1;
         }
 
         /// <summary>
-        /// Checks to see if the book id exists, the book is not set to hidden, or if the forum id exists.
+        /// Checks to see if the forum id exists and is a valid value
         /// Returns a boolean to indicate if it passes the criteria
         /// </summary>
-        /// <param name="bookid">the id of the book to be searched</param>
-        /// <param name="forumid">the forum id to be returned</param>
+        /// <param name="forumid">the forum id to be checked</param>
         /// <returns>true if it passes the criterias</returns>
-        public static bool ValidateBookId(int? bookid, out int forumId, bool isAdmin)
+        public static bool ValidateForumId(int? forumId)
         {
-            forumId = -1;   // default value for now
-
+            UsersContext db = new UsersContext();
             // check to see if it has a value or is of a different data type
-            if (!bookid.HasValue)
+            if (!forumId.HasValue)
                 return false;
 
-            // only show threads where the book is set to hidden if the user is an admin
-            if (!isAdmin)
-            {
-                if (BookHelper.GetState(bookid.Value) == "Hidden")
-                    return false;
-            }
-
             // see if the forum id exist
-            forumId = ForumHelper.GetForumId(bookid.Value);
-            if (forumId == -1)
+            Forum forumid = db.Forum.Find(forumId);
+            if (forumId == null)
                 return false;
 
             return true;
@@ -90,17 +81,6 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="threadId"></param>
-        /// <returns></returns>
-        public static int GetBookId(int threadId)
-        {
-            UsersContext db = new UsersContext();
-            return db.Thread.Find(threadId).BookId;
-        }
-
-        /// <summary>
         /// Determines if the the book's forum id is being shared
         /// </summary>
         /// <param name="forumid">the forum id of the book to be searched</param>
@@ -120,7 +100,7 @@ namespace MVCCapstone.Helpers
         /// <param name="forumid">the forum id to be searched</param>
         /// <param name="bookId">the book id to be excluded</param>
         /// <returns>a list of objects containing the id of a book and its title</returns>
-        public static List<SharedWith> SharedWith(int forumId, int bookId, bool isAdmin)
+        public static List<SharedWith> SharedWith(int forumId, bool isAdmin)
         {
             UsersContext db = new UsersContext();
             List<SharedWith> bookList;
@@ -128,13 +108,13 @@ namespace MVCCapstone.Helpers
             // only admins can see hidden books
             if (isAdmin)
             {
-                bookList = db.Book.Where(m => m.ForumId == forumId && m.BookId != bookId)
+                bookList = db.Book.Where(m => m.ForumId == forumId)
                     .OrderBy(m => m.Title)
                     .Select(m => new SharedWith { bookid = m.BookId, title = m.Title }).ToList();
             }
             else
             {
-                bookList = db.Book.Where(m => m.ForumId == forumId && m.BookId != bookId && m.State == "Visible")
+                bookList = db.Book.Where(m => m.ForumId == forumId && m.State == "Visible")
                     .OrderBy(m => m.Title)
                     .Select(m => new SharedWith { bookid = m.BookId, title = m.Title }).ToList();
             }
@@ -159,6 +139,8 @@ namespace MVCCapstone.Helpers
                                 memberSince = m.CreateDate,
                                 totalPost = db.Post.Where(x => x.UserId == u.UserId).Count(),
                                 postContent = p.PostContent,
+                                replyTo = p.ReplyTo,
+                                replyPostContent = p.ReplyPostContent,
                                 datePosted = p.PostDate,
                                 dateModified = p.ModifiedDate
                             }).OrderBy(m => m.datePosted).ToList();
@@ -173,14 +155,13 @@ namespace MVCCapstone.Helpers
         public static List<ThreadViewModel> GetThreadList(int forumId)
         {
             UsersContext db = new UsersContext();
-            var threads = (from f in db.Forum
-                            join b in db.Book on f.ForumId equals b.ForumId
-                            join t in db.Thread on b.BookId equals t.BookId
-                            where b.ForumId == forumId
+            var threads = (from t in db.Thread
+                            join f in db.Forum on t.ForumId equals f.ForumId
+                            where t.ForumId == forumId
                             select new ThreadViewModel
                             {
                                 ThreadId = t.ThreadId,
-                                BookId = t.BookId,
+                                ForumId = f.ForumId,
                                 Title = t.Title,
                                 ThreadCreated = t.ThreadCreated,
                                 ThreadCreator = t.ThreadCreator,
@@ -221,16 +202,16 @@ namespace MVCCapstone.Helpers
         /// Create a thread based off of the user input.
         /// </summary>
         /// <param name="userId">the user id who created the thread</param>
-        /// <param name="bookId">the book id the thread will be associated with</param>
+        /// <param name="forumId">the forum id the thread will be associated with</param>
         /// <param name="threadTitle">the title of the thread the user inputted</param>
         /// <param name="post">the first post of the thread by the user</param>
-        public static void CreateThread(int userId, int bookId, string threadTitle, string post)
+        public static void CreateThread(int userId, int forumId, string threadTitle, string post)
         {
             UsersContext db = new UsersContext();
 
             Thread thread = new Thread();
             thread.Title = threadTitle;
-            thread.BookId = bookId;
+            thread.ForumId = forumId;
             thread.ThreadCreator = AccHelper.GetUserName(userId);
             thread.ThreadCreated = DateTime.Now;
             thread.State = "Active";    // default state, allows other user to post to it
@@ -249,15 +230,18 @@ namespace MVCCapstone.Helpers
        /// <param name="userId">the user id who created the post</param>
        /// <param name="threadId">the thread id the user posted to</param>
        /// <param name="post">the content of the post</param>
-        public static void CreatePost(int userId, int threadId, string post)
+        public static void CreatePost(int userId, int threadId, string post, string replyContent = null, string replyTo = null)
         {
             UsersContext db = new UsersContext();
 
             Post userPost = new Post();
             userPost.UserId = userId;
             userPost.ThreadId = threadId;
+            userPost.ReplyTo = replyTo;
+            userPost.ReplyPostContent = replyContent;
             userPost.PostContent = post;
             userPost.PostDate = DateTime.Now;
+            userPost.ModifiedDate = null;
             db.Post.Add(userPost);
             db.SaveChanges();
 
@@ -290,6 +274,45 @@ namespace MVCCapstone.Helpers
             Thread thread = db.Thread.Find(threadId);
             thread.TotalView += 1;
             db.SaveChanges();
+
+        }
+
+        /// <summary>
+        /// Checks to see if there exist a post with the post id
+        /// </summary>
+        /// <param name="postId">the id of the post to be searced</param>
+        /// <returns>boolean indicating whether the post exists or not</returns>
+        public static bool PostIdExist(int postId)
+        {
+            UsersContext db = new UsersContext();
+            if (db.Post.Find(postId) == null)
+                return false;
+
+            return true;
+        }
+        /// <summary>
+        /// Finds the post by its id and return the content of that post
+        /// </summary>
+        /// <param name="postId">the id of the post to be searched</param>
+        /// <returns>string containing the post content</returns>
+        public static string GetPostContent(int postId)
+        {
+            UsersContext db = new UsersContext();
+            Post post = db.Post.Find(postId);
+
+            if (post == null) return "Error, unable to find post";
+
+            return post.PostContent;
+
+        }
+
+        public static string GetPostUserName(int postId)
+        {
+            UsersContext db = new UsersContext();
+            Post post = db.Post.Find(postId);
+            if (post == null) return "Error, unable to find username";
+
+            return  AccHelper.GetUserName(post.UserId);
 
         }
     }

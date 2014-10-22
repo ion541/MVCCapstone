@@ -4,64 +4,121 @@
     ViewBag.Title = "View Thread";
 }
 <div class="row">
-    @Html.RouteLink("Back To Thread", new { controller = "forum", action = "thread", bookid = Model.bookId }, new { @class = "btn btn-default" })
+ 
+    @Html.RouteLink("Back To Thread", new { controller = "forum", action = "thread", forumid = Model.forumId }, new { @class = "btn btn-default" })
+
 </div>
 
 <div class="row">
-    <div class="col-sm-12">
-        <h2>@Model.threadTitle</h2>
-    </div>
+    
+    <h2>@Model.threadTitle</h2>
+   
 </div>
 
 <br />
 
 <div class="row">
     <div class="col-sm-12">
-    @foreach (MVCCapstone.Models.PostViewModel post in Model.postList)
-    {
-        <div class="row panel panel-default">
+    @if (Model.postList.Count() > 0) {
+        foreach (MVCCapstone.Models.PostViewModel post in Model.postList)
+        {
+            <div class="row panel panel-default">
 
-            <div class="col-sm-12 panel panel-primary">
-                Posted: @post.datePosted.ToShortDateString() &nbsp; @post.datePosted.ToLongTimeString()
-            </div>
+                <div class="col-sm-12 panel panel-primary">
+                    Posted: @post.datePosted.ToShortDateString() - @post.datePosted.ToLongTimeString()
+                </div>
 
-            <div class="col-sm-3 panel-primary">
-                <p>
-                    <strong>@post.userName</strong> 
-                    @if(Roles.IsUserInRole(@post.userName,"admin"))
-                    { 
-                        <span style="color:red">[ A ]</span>
-                    }
+                <div class="col-sm-3 panel-primary">
+                    <p>
+                        <strong>@post.userName</strong> 
+                        @if(Roles.IsUserInRole(@post.userName,"admin")){ <span style="color:red">[ A ]</span> } <br />
+                        Member Since: @post.memberSince.ToShortDateString() <br />
+                        Total Posts: @post.totalPost 
+                     
+                    </p>
+                </div>
+                <div class="col-sm-9">
+                    @if (@post.replyPostContent != null) {
+                     <div class="text-container">
+                           <div class="text-content short-text">
+    	                <blockquote style="word-wrap: break-word; white-space: pre-line">
+                            <strong> Replying To: @post.replyTo</strong>
+                            @post.replyPostContent
+                            
+                        </blockquote>
+                        </div>
+                        @if (post.replyPostContent.Length > 300) 
+                        {
+                        <div class="show-more pull-right">
+                            <a href="#">Show More [ + ]</a>
+                        </div>  
+                        }
+                    </div>  
                     <br />
-                    Member Since: @post.memberSince.ToShortDateString() <br />
-                    Total Posts: @post.totalPost 
-                </p>
-            </div>
-            <div class="col-sm-9">
-                <span style="white-space: pre-line">@post.postContent</span>
-            </div>
-         
-            <div style="border-radius: 4px; border :1px solid #428bca" class="col-sm-12">
-                <span class="pull-right">Reply
-                    @if (User.IsInRole("admin") || User.Identity.Name == post.userName)
-                    {
-                        @: Edit
                     }
-                </span>
+                    
+                    <p style="word-wrap: break-word; white-space: pre-line">@post.postContent</p>
+                </div>
+         
+                <div style="border-radius: 4px; border :1px solid #428bca" class="col-sm-12">
+                    &nbsp;
+                    <span class="pull-left">
+                        @if (post.dateModified != null) {
+                            @post.dateModified
+                        }
+                    </span>
+                    <span class="pull-right">
+                        @if (User.Identity.IsAuthenticated && User.Identity.Name != post.userName) {
+                             @Ajax.ActionLink("Reply",
+                                "showpost",
+                                new { threadid = Model.threadId, replyPostId = post.postId },
+                                new AjaxOptions
+                                { 
+                                    HttpMethod = "POST",
+                                    InsertionMode = InsertionMode.Replace,
+                                    UpdateTargetId = "postSection",
+                                    OnSuccess = "moveToPost"
+                                }
+                            )
+                        }
+                        @if (User.IsInRole("admin") || User.Identity.Name == post.userName)
+                        {
+                            @: Edit
+                        }
+                    </span>
+
+                </div>
             </div>
-        </div>
         
+        }
+    } else {
+        <br /> <h2>Wo-oh, there are no posts in this thread!</h2> <br />
     }
     </div>
 </div>
 
 <div class="row">
+    @Ajax.ActionLink("Create Post",
+                    "showpost",
+                    new { threadid = Model.threadId },
+                    new AjaxOptions
+                    { 
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "postSection",
+                        OnSuccess = "moveToPost"
+                    },
+                    new {@class="btn btn-primary" }
+                )
+    @*@Html.ActionLink("Create Post","post", new {threadid = Model.threadId}, new {@class = " btn btn-primary"})*@
 
-   @Html.ActionLink("Create Post","post", new {threadid = Model.threadId}, new {@class = " btn btn-primary"})
+        <div class="pull-right">
+            PAGINATION
+        </div>
+</div>
 
-    <div class="pull-right">
-        PAGINATION
-    </div>
+<div class="row">
+    <div id="postSection"></div>
 </div>
 
 

@@ -18,5 +18,6 @@ namespace MVCCapstone.Models
         public string ISBN { get; set; }
         public string Synopsis { get; set; }
         public string State { get; set; }
+        public int ForumId { get; set; }
     }
 }

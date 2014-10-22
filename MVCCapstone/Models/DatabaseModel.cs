@@ -163,7 +163,7 @@ namespace MVCCapstone.Models
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ThreadId { get; set; }
-        public int BookId { get; set; }
+        public int ForumId { get; set; }
         public string Title { get; set; }
         public DateTime ThreadCreated { get; set; }
         public string ThreadCreator { get; set; }
@@ -183,8 +183,10 @@ namespace MVCCapstone.Models
         public int UserId { get; set; }
         public int ThreadId { get; set; }
         public string PostContent { get; set; }
+        public string ReplyTo { get; set; }
+        public string ReplyPostContent { get; set; }
         public DateTime PostDate { get; set; }
-        public DateTime ModifiedDate { get; set; }
+        public string ModifiedDate { get; set; }
     }
     
 }

@@ -4,7 +4,7 @@
 }
 
 <div class="row">
-    <h2>@Html.RouteLink(@Model.bookTitle, new {controller = "book", action ="details", bookid = Model.bookid})</h2>
+    <h2>SERIES TITLE / BOOK TITLE HERE</h2>
 
     @if (Model.series)
     {
@@ -53,7 +53,6 @@
                     <td>
                         Last Reply: @thread.LatestPoster <br />
                         <time title="@thread.LatestPost">@thread.DateString</time>
-             
                     </td>
 
                 </tr>
@@ -65,10 +64,7 @@
 
 <div class="row">
     <br />
-    @if (User.Identity.IsAuthenticated)
-    {
     <div class="pull-left">
-        @Html.ActionLink("Create Thread","createthread", new {bookid = Model.bookid}, new {@class = "btn btn-primary"})
+        @Html.ActionLink("Create Thread","createthread", new {forumid = Model.ForumId}, new {@class = "btn btn-primary"})
     </div>
-    }
 </div>

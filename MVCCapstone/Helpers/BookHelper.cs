@@ -438,7 +438,7 @@ namespace MVCCapstone.Helpers
 
             int idBook;
             if (!Int32.TryParse(bookId, out idBook))
-                return "Book is is invalid.";
+                return "Book id is is invalid.";
 
 
             int idUser = AccHelper.GetUserId(username);
@@ -446,6 +446,9 @@ namespace MVCCapstone.Helpers
                 return "Unable to find user in database.";
 
             UsersContext db = new UsersContext();
+
+            if (db.Book.Find(idBook) == null)
+                return "This book does not exist";
 
             if (db.Bookmark.Where(m => m.BookId == idBook && m.UserId == idUser).Count() > 0)
                 return "Already bookmarked";

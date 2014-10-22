@@ -4,15 +4,14 @@
 }
 
 <div class="row">
-    @Html.RouteLink("Back To Thread", new { controller = "forum", action = "thread", bookid = Model.bookid }, new { @class = "btn btn-default" })
+    @Html.RouteLink("Back To Thread", new { controller = "forum", action = "thread", forumid = Model.forumid }, new { @class = "btn btn-default" })
 </div>
-
 
 <div class="row">
 
-    <h2>Create Thread - @Model.title</h2>
+    <h2>Create Thread - BOOK TITLE / SERIES TITLE HERE</h2>
 
-    @using (Html.BeginForm("createthread", "forum", new { bookid = Model.bookid }, FormMethod.Post, new { @class = "form-horizontal" }))
+    @using (Html.BeginForm("createthread", "forum", new { forumid = Model.forumid }, FormMethod.Post, new { @class = "form-horizontal" }))
     {
         @Html.AntiForgeryToken()
 
@@ -32,7 +31,7 @@
 
             @Html.LabelFor(m => m.post.content, new { @class = "col-sm-2 control-label" })
             <div class="col-sm-8">
-                 @Html.TextAreaFor(m => m.post.content, new { placeholder = "Post...", rows = 3, columns = 40, @class = "form-control" })
+                 @Html.TextAreaFor(m => m.post.content, new { style="resize: none", placeholder = "Post...", rows = 3, columns = 40, @class = "form-control" })
             </div>
            <div class="col-sm-2">
                   @Html.ValidationMessageFor(m => m.post.content)
