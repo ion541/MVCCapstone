@@ -9,6 +9,11 @@ using System.Web;
 namespace MVCCapstone.Models
 {
 
+    /// <summary>
+    /// Class that contains the database table definition and its accessible fields
+    /// 
+    /// The name of the connection string that the class is looking for is "capstone"
+    /// </summary>
     public class UsersContext : DbContext
     {
         public UsersContext(): base("capstone")
@@ -170,7 +175,6 @@ namespace MVCCapstone.Models
         public DateTime LatestPost { get; set; }
         public string LatestPoster { get; set; }
         public string State { get; set; }
-        public int TotalPost { get; set; }
         public int TotalView { get; set; }
     }
 

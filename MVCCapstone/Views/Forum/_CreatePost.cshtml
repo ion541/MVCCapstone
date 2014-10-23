@@ -43,7 +43,14 @@
 
     }
 } else {
-    <h3> The parameters for posting is invalid</h3>
+    <h3> You are not allowed to create a new post in this thread </h3>
+    <h3>Possible reasons include:</h3>
+    <ul>
+        <li>You are attempting to reply to your own post</li>
+        <li>You are attempting to post in a thread that does not exist</li>
+        <li>You are not an authenticated user</li>
+        <li>The thread is locked</li>
+    </ul>
 }
 <script src="/Scripts/bootstrap.min.js"></script>
 

@@ -23,6 +23,10 @@ namespace MVCCapstone.Helpers
         {
             UsersContext db = new UsersContext();
 
+            // page cannot be negative
+            if (page <= 0)
+                page = 1;
+
             if (roleSelected == null)
                 roleSelected = new List<int>();
 

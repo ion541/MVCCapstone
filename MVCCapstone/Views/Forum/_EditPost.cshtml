@@ -2,7 +2,7 @@
 
 
 @if (Model.showEditSection){
-    using (Html.BeginForm("editpost", "forum", new { threadid = Model.threadId, postid = Model.postId, page= Model.page}, FormMethod.Post, new { @class = "form-horizontal" }))
+    using (Html.BeginForm("editpost", "forum", new { threadid = Model.threadId, postid = Model.postId, page = Model.page}, FormMethod.Post, new { @class = "form-horizontal" }))
     {
         @Html.AntiForgeryToken()
 
@@ -61,7 +61,14 @@
 
     }
 } else {
-    <h3> The parameters for editing is invalid</h3>
+    <h3> The are not allowed to edit this post.</h3>
+    <h3>Possible reasons include:</h3>
+    <ul>
+        <li>You are not the creator of this post</li>
+        <li>You are attempting to edit a post that does not exist</li>
+        <li>You are not an authenticated user</li>
+        <li>The thread is locked</li>
+    </ul>
 }
 
 

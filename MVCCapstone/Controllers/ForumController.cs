@@ -76,19 +76,24 @@ namespace MVCCapstone.Controllers
         }
 
 
-        public ActionResult ViewThread(int? threadid, int? post, int page = 1)
+        public ActionResult ViewThread(int? threadid, int? post, bool fview = false, int page = 1)
         {
+            // check to see if the thread id exist
             if (!ForumHelper.ValidateThreadId(threadid))
                 return RedirectToAction("pagenotfound", "error");
 
-            ForumHelper.IncrementThreadViewCount(threadid.Value);
+            // if this is the first view, increment the threads view counter
+            if (fview)
+                ForumHelper.IncrementThreadViewCount(threadid.Value);
 
-            PostModel model = new PostModel();
+            // populate the model with data
+            ThreadViewModel model = new ThreadViewModel();
             model.threadId = threadid.Value;
             model.forumId = ForumHelper.GetForumId(threadid.Value);
             model.threadTitle = ForumHelper.GetThreadTitle(threadid.Value);
-            model.postList = ForumHelper.GetPostList(threadid.Value, page);
+            model.postList = ForumHelper.GetPostList(threadid.Value, page); // list of posts in the thread
 
+            // scroll to the post upon loading
             if (post.HasValue)
                 ViewBag.ScrollTo = post.Value;
 
@@ -103,22 +108,37 @@ namespace MVCCapstone.Controllers
             CreatePostModel model = new CreatePostModel();
             model.showPostSection = true;
 
+            // check to see if user is logged and the thread id is valid
             if (!User.Identity.IsAuthenticated || !ForumHelper.ValidateThreadId(threadId))
                 model.showPostSection = false;
 
+            // do this after the thread is is validated
+            if (ForumHelper.ThreadIsLocked(threadId.Value) && !User.IsInRole("admin"))
+                model.showPostSection = false;
 
             if (replyPostId.HasValue)
             {
-                if (ForumHelper.PostIdExist(replyPostId.Value))
-                {
-                    model.showReply = true;
-                    model.replyTo = ForumHelper.GetPostUserName(replyPostId.Value);
-                    model.replyContent = ForumHelper.GetPostContent(replyPostId.Value);
-                    model.replyPostId = replyPostId.Value;
-                }
-
+                // prevent user from replying to their own post
+                if (ForumHelper.UserIsOwner(replyPostId.Value, AccHelper.GetUserId(User.Identity.Name)))
+                    model.showPostSection = false;
             }
-            model.threadId = threadId.Value;
+
+            // populate the model with the data
+            if (model.showPostSection) 
+            {
+                if (replyPostId.HasValue)
+                {
+                    if (ForumHelper.PostIdExist(replyPostId.Value))
+                    {
+                        model.showReply = true;
+                        model.replyTo = ForumHelper.GetPostUserName(replyPostId.Value);
+                        model.replyContent = ForumHelper.GetPostContent(replyPostId.Value);
+                        model.replyPostId = replyPostId.Value;
+                    }
+
+                }
+                model.threadId = threadId.Value;
+            }
 
             return PartialView("_CreatePost", model);
         }
@@ -129,25 +149,41 @@ namespace MVCCapstone.Controllers
             EditPostModel model = new EditPostModel();
             model.showEditSection = true;
 
-            if (!User.Identity.IsAuthenticated || !ForumHelper.ValidatePostId(postId))
+ 
+            if (!User.Identity.IsAuthenticated // Prevent unauthenticated user from editting a post
+                || !ForumHelper.ValidatePostId(postId) // prevent user from editting a post that does not exist
+                || (!ForumHelper.UserIsOwner(postId.Value,AccHelper.GetUserId(User.Identity.Name)) && 
+                     !User.IsInRole("admin"))) // prevent user from editting a post they did not posted unless they are an admin
                 model.showEditSection = false;
 
-            Post post = db.Post.Find(postId.Value);
-            model.postId = post.PostId;
-            model.threadId = post.ThreadId;
-            model.content = post.PostContent;
-            model.page = page;
-            
-            if (post.ReplyPostContent != null && removeReply == false) 
+            // do this after the post id is validated
+            // prevent user from posting in a locked thread unless they are an admin
+            if (ForumHelper.PostThreadIsLocked(postId.Value) && !User.IsInRole("admin"))
+                model.showEditSection = false;
+
+            if (model.showEditSection)
             {
-                model.hasReply = true;
-                model.replyContent = post.ReplyPostContent;
-                model.replyTo = post.ReplyTo;
-               
+                // find the post by the id
+                Post post = db.Post.Find(postId.Value);
+                model.postId = post.PostId;
+                model.threadId = post.ThreadId;
+                model.content = post.PostContent;
+                model.page = page;
+
+                // determine if there is a reply associated with the post
+                if (post.ReplyPostContent != null && removeReply == false)
+                {
+                    model.hasReply = true;
+                    model.replyContent = post.ReplyPostContent;
+                    model.replyTo = post.ReplyTo;
+
+                }
             }
 
             return PartialView("_EditPost", model);
         }
+
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -159,9 +195,14 @@ namespace MVCCapstone.Controllers
             // select the latest post id which will be used to scroll the html page to
             int latestPost = db.Post.Where(m => m.ThreadId == model.threadId).OrderByDescending(m => m.PostDate).Select(m => m.PostId).First();
 
-            // page set to -1 which will bring the thread to the last page
-            return RedirectToAction("viewthread", "forum", new { threadid = model.threadId, page = -1, post = latestPost });
+            // number of posts displayed per thread
+            int displayPerPage = 10;
+            // calculate the last page the newest post created would be in
+            int pageToGo = (db.Post.Where(m => m.ThreadId == model.threadId).Count() + displayPerPage - 1) / displayPerPage;
+
+            return RedirectToAction("viewthread", "forum", new { threadid = model.threadId, page = pageToGo, post = latestPost });
         }
+
 
 
         [HttpPost]
@@ -169,9 +210,26 @@ namespace MVCCapstone.Controllers
         [Authorize]
         public ActionResult EditPost(EditPostModel model)
         {
+            // edit the post using the data posted
             ForumHelper.EditPost(model.postId, model.content, model.replyTo, model.replyContent);
-          
-            return RedirectToAction("viewthread", "forum", new { threadid = model.threadId, page = model.page, post = model.postId });
+
+            // reload the thread page
+            return RedirectToAction("viewthread", "forum", new { threadid = model.threadId, page = model.page, post = model.postId, });
+        }
+
+        /// <summary>
+        /// Flips the state of the thread to either locked or active
+        /// </summary>
+        /// <param name="threadId">the thread if to be searched</param>
+        /// <returns>a string indicating the result</returns>
+        public string LockThread(int? threadId)
+        {
+            // lock the thread if the user is an admin
+            if (User.Identity.IsAuthenticated && User.IsInRole("admin") && threadId.HasValue)
+                return ForumHelper.LockThread(threadId.Value);
+
+            return "The thread status was not changed due to invalid authentication or thread id.";
+            
         }
     }
 }

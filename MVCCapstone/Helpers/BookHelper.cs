@@ -314,6 +314,7 @@ namespace MVCCapstone.Helpers
             Book.ImageId = imageId;
             Book.Publisher = model.Publisher;
 
+            // split the date string and use it to create a datetime object
             string[] dateString = model.Published.Split('/');
             int[] date = Array.ConvertAll<string, int>(dateString, int.Parse);
             DateTime published = new DateTime(date[2], date[1], date[0]);
@@ -487,7 +488,9 @@ namespace MVCCapstone.Helpers
 
         public static IPagedList<BookmarkDisplayModel> GetBookMarkList(string username, int page, string sortby, bool ascend)
         {
-            
+            // page cannot be negative
+            if (page <= 0) page = 1;
+
             UsersContext db = new UsersContext();
 
             var bookmarkList = (from d in db.UserProfiles

@@ -80,10 +80,9 @@ namespace MVCCapstone.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Adds the book to the users bookmark list
         /// </summary>
-        /// <param name="bookid"></param>
-        /// <returns></returns>
+        /// <param name="bookid">the book id to be added</param>
         public ActionResult Bookmark(string bookid)
         {
             if (User.Identity.IsAuthenticated)
@@ -95,8 +94,7 @@ namespace MVCCapstone.Controllers
         /// <summary>
         /// Autocomplete for the search
         /// </summary>
-        /// <param name="term"></param>
-        /// <returns></returns>
+        /// <param name="term">the term to be searched</param>
         public ActionResult Autocomplete(string term)
         {
 

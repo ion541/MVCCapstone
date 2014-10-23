@@ -140,15 +140,21 @@ namespace MVCCapstone.Helpers
             return bookList;
         }
 
-
+        /// <summary>
+        /// Gets the list of posts that is associated with the thread id
+        /// </summary>
+        /// <param name="threadId">the id used to find post associated with it</param>
+        /// <param name="page">the page number to display</param>
+        /// <returns>a pagination object of posts</returns>
         public static IPagedList<PostViewModel> GetPostList(int threadId, int page)
         {
             UsersContext db = new UsersContext();
 
             int displayPerPage = 10;
-            // select the last page to display if the integer is negative
-            if (page <= 0)
-                page = (db.Post.Where(m => m.ThreadId == threadId).Count() + displayPerPage - 1) / displayPerPage;
+
+            //  page cannot be negative
+            if (page <= 0) page = 1;
+
 
             IPagedList<PostViewModel> postList = (from p in db.Post
                             join t in db.Thread on p.ThreadId equals t.ThreadId
@@ -170,21 +176,26 @@ namespace MVCCapstone.Helpers
             
             return postList;
         }
+
+
         /// <summary>
         /// Get every thread that is being shared with the forum id
         /// </summary>
         /// <param name="forumid">the forum id of the book to be searched</param>
+        /// <param name="page">The page of thread to be displayed</param>
         /// <returns>list of threads sharing the forum id</returns>
-        public static IPagedList<ThreadViewModel> GetThreadList(int forumId, int page)
+        public static IPagedList<ThreadModel> GetThreadList(int forumId, int page)
         {
-            if (page <= 0)
-                page = 1;
+            int threadToDisplay = 20; // display 20 threads per page
+
+            // page viewed cannot be negative
+            if (page <= 0) page = 1;
 
             UsersContext db = new UsersContext();
             var threads = (from t in db.Thread
                             join f in db.Forum on t.ForumId equals f.ForumId
                             where t.ForumId == forumId
-                            select new ThreadViewModel
+                            select new ThreadModel
                             {
                                 ThreadId = t.ThreadId,
                                 ForumId = f.ForumId,
@@ -194,19 +205,16 @@ namespace MVCCapstone.Helpers
                                 LatestPost = t.LatestPost,
                                 LatestPoster = t.LatestPoster,
                                 State = t.State,
-                                TotalPost = t.TotalPost,
+                                TotalPost = (db.Post.Where(m => m.ThreadId == t.ThreadId).Count()),
                                 TotalView = t.TotalView
                                 }).OrderByDescending(t => t.LatestPost).ToList();
 
-            // format the date of the string to make it more easily understandable to the user
-            foreach (ThreadViewModel thread in threads)
-            {
-                thread.DateString = (thread.LatestPost.DayOfYear == DateTime.Today.DayOfYear) ? "Today" :
-                    thread.LatestPost.DayOfYear == DateTime.Today.AddDays(-1).DayOfYear ? "Yesterday" :
-                    thread.LatestPost.ToShortDateString();
-            }
-
-            return threads.ToPagedList(page, 10) as IPagedList<ThreadViewModel>;
+            // format the date of the string to make it more easily understandable to viewers
+            foreach (ThreadModel thread in threads)
+                thread.DateString = FormatForumDate(thread.LatestPost);
+            
+ 
+            return threads.ToPagedList(page, threadToDisplay) as IPagedList<ThreadModel>;
         }
 
 
@@ -241,7 +249,6 @@ namespace MVCCapstone.Helpers
             thread.ThreadCreator = AccHelper.GetUserName(userId);
             thread.ThreadCreated = DateTime.Now;
             thread.State = "Active";    // default state, allows other user to post to it
-            thread.TotalPost = 0;
             thread.TotalView = 0;
             db.Thread.Add(thread);
             db.SaveChanges();
@@ -300,7 +307,6 @@ namespace MVCCapstone.Helpers
             Thread thread = db.Thread.Find(threadId);
             thread.LatestPost = DateTime.Now;
             thread.LatestPoster = AccHelper.GetUserName(userId);
-            thread.TotalPost += 1;  // increment the total post on the thread
             db.SaveChanges();
         }
 
@@ -346,6 +352,11 @@ namespace MVCCapstone.Helpers
 
         }
 
+        /// <summary>
+        /// Get the username of the associated with the post id
+        /// </summary>
+        /// <param name="postId">the post id to be searched</param>
+        /// <returns>a string containing the username associated with the post id</returns>
         public static string GetPostUserName(int postId)
         {
             UsersContext db = new UsersContext();
@@ -354,6 +365,71 @@ namespace MVCCapstone.Helpers
 
             return  AccHelper.GetUserName(post.UserId);
 
+        }
+
+        /// <summary>
+        /// Determine if there exists a post that is owned by the user id
+        /// </summary>
+        /// <param name="postId">the post id to be searched</param>
+        /// <param name="userId">the user id to be matched to the post</param>
+        /// <returns>a boolean</returns>
+        public static bool UserIsOwner(int postId, int userId)
+        {
+            UsersContext db = new UsersContext();
+            if (db.Post.Where(m => m.PostId == postId && m.UserId == userId).Count() == 1)
+                return true;
+            return false;
+        }
+
+
+        /// <summary>
+        /// Flips the current state of the thread to active or locked depending on what it is at the time
+        /// </summary>
+        /// <param name="threadId">the thread id to be searched</param>
+        /// <returns>a string caontaining the result of this method</returns>
+        public static string LockThread(int threadId)
+        {
+            UsersContext db = new UsersContext();
+            Thread thread = db.Thread.Find(threadId);
+
+            if (thread == null)
+                return "Invalid thread id";
+
+            thread.State = (thread.State == "Active") ? "Locked" : "Active";
+            db.SaveChanges();
+          
+            string message = "The status of the thread has been changed to " + thread.State;
+            return (thread.State == "Active") ? message += ". Users will be able to post in this thread." :
+                message += ". Only admins will be able to post in this thread.";
+
+        }
+
+        /// <summary>
+        /// Return a boolean indicating whether the thread is locked
+        /// </summary>
+        /// <param name="threadId">the thread id to be searched</param>
+        /// <returns>a boolean</returns>
+        public static bool ThreadIsLocked(int threadId)
+        {
+            UsersContext db = new UsersContext();
+            Thread thread = db.Thread.Find(threadId);
+
+            return (thread.State == "Locked") ? true : false;
+        }
+
+        /// <summary>
+        /// Finds the thread associated with the post id and return the a boolean
+        /// indicating if the thread is locked
+        /// </summary>
+        /// <param name="postId"></param>
+        /// <returns></returns>
+        public static bool PostThreadIsLocked(int postId)
+        {
+            UsersContext db = new UsersContext();
+            Post post = db.Post.Find(postId);
+            Thread thread = db.Thread.Find(post.ThreadId);
+
+            return (thread.State == "Locked") ? true : false;
         }
     }
 }

@@ -22,7 +22,7 @@
 <div class="row">
     <table class="table table-bordered">
         <tr>
-            @if (User.Identity.IsAuthenticated && User.IsInRole("admin")) { <th class="col-sm-1"></th> }
+            <th class="col-sm-1"></th>
             <th>Title / Thread Starter</th>
             <th class="col-sm-2">Replies / Views</th>
             <th class="col-sm-2">Latest Post</th>
@@ -30,22 +30,17 @@
         @if (Model.threadList.Count() == 0)
         {
             <tr>
-               @if (User.Identity.IsAuthenticated && User.IsInRole("admin")) { 
-                    <td colspan="4">There are no threads for this book / series</td>
-               } else {
-                    <td colspan="3">There are no threads for this book / series</td>
-               }
+                <td colspan="4">There are no threads for this book / series</td>
             </tr>
         } else {
-            foreach (MVCCapstone.Models.ThreadViewModel thread in Model.threadList)
+            foreach (MVCCapstone.Models.ThreadModel thread in Model.threadList)
             {
                 <tr>
-                    @if (User.Identity.IsAuthenticated && User.IsInRole("admin")) 
-                    {
-                        <td>lock button here</td> 
-                    }
                     <td>
-                        @Html.ActionLink(@thread.Title,"viewthread", new {threadid = @thread.ThreadId, page = 1}) <br /> 
+                        @thread.State
+                    </td> 
+                    <td>
+                        @Html.ActionLink(@thread.Title,"viewthread", new {fview = true, threadid = @thread.ThreadId, page = 1}) <br /> 
                         Created By: @thread.ThreadCreator
                     </td>
                     <td>

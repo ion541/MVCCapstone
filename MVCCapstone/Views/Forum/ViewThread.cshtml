@@ -1,23 +1,46 @@
-﻿@model MVCCapstone.Models.PostModel
+﻿@model MVCCapstone.Models.ThreadViewModel
 @using PagedList
 @using PagedList.Mvc 
 @using System.Web.Security;
 @{
-    ViewBag.Title = "View Thread";
+    ViewBag.Title = "View Thread - " + Model.threadTitle;
 }
 <div class="row">
  
     @Html.RouteLink("Back To Thread", new { controller = "forum", action = "thread", forumid = Model.forumId }, new { @class = "btn btn-default" })
 
+    @if(User.Identity.IsAuthenticated && User.IsInRole("admin")) {
+    <span class="pull-right">  
+               @Ajax.ActionLink("Lock Thread",
+            "lockthread",
+            new { threadid = Model.threadId },
+            new AjaxOptions
+            { 
+                HttpMethod = "POST",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "lockMessage",
+            },
+            new {@class="btn btn-primary" }
+        )
+    </span>
+    }
 </div>
 
 <div class="row">
-    
+        <span class="col-sm-12" style="color: red; text-align:center"id="lockMessage"></span>
+</div>
+
+<div class="row">
     <h2>@Model.threadTitle</h2>
-   
 </div>
 
 <br />
+
+<div class="row"> 
+    <span class="pull-right">
+        @Html.PagedListPager(Model.postList, page => Url.Action("viewthread", new {threadid = Model.threadId, page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+    </span>
+</div>
 
 <div class="row">
     <div class="col-sm-12">
@@ -78,7 +101,7 @@
                         }
                     </span>
                     <span class="pull-right">
-                        @if (User.Identity.IsAuthenticated && User.Identity.Name != post.userName) {
+                        @if (User.Identity.IsAuthenticated && User.Identity.Name.ToLower() != post.userName.ToLower()) {
                              @Ajax.ActionLink("Reply",
                                 "showpost",
                                 new { threadid = Model.threadId, replyPostId = post.postId },
@@ -91,7 +114,7 @@
                                 }
                             )
                         }
-                        @if (User.IsInRole("admin") || User.Identity.Name == post.userName)
+                        @if (User.IsInRole("admin") || User.Identity.Name.ToLower() == post.userName.ToLower())
                         {
                             @Ajax.ActionLink("Edit",
                                 "showedit",
