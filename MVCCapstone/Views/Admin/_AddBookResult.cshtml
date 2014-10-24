@@ -1,0 +1,16 @@
+﻿@model MVCCapstone.Models.AddBookResultModel
+
+<br />
+
+@if (Model.errors.Count() > 0)
+{
+    <h2>The book was not added due to the following: </h2>
+    <ul>
+    @foreach (string error in Model.errors)
+    {
+        <li>@error</li>
+    }
+    </ul>
+} else {
+    <h4>The book has been succesfully added into the database</h4>
+}

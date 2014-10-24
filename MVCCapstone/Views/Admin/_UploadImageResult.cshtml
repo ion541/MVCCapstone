@@ -1,0 +1,14 @@
+﻿
+@if (ViewBag.ErrorMessage != null)
+{
+    <div class="row">
+        @ViewBag.ErrorMessage
+    </div>
+}
+else if (ViewBag.ImageId != null)
+{
+    <div class="row">
+        The Image was successfully uploaded. <br />
+        @Html.RouteLink("Continue", new {controller = "admin", action = "book", imageid = ViewBag.ImageId}, new {@class ="btn btn-primary"})
+    </div>
+}

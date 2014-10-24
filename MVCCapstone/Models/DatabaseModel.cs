@@ -109,6 +109,7 @@ namespace MVCCapstone.Models
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int ForumId { get; set; }
+        public string SeriesTitle { get; set; }
     }
 
     [Table("Book")]

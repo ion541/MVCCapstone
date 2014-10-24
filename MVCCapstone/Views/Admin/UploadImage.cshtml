@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "Upload Images";
+}
+@Html.Partial("Index")
+<h2>Upload Image</h2>
+
+<div class="row">
+    <div class="progress progress-striped col-sm-8">
+         <div class="progress-bar progress-bar-success">0%</div>
+    </div>
+</div>
+<div class="row">
+    <div id="status"></div>
+</div>
+<div class="row">
+     @using (Ajax.BeginForm("uploadimage", "admin", new AjaxOptions() { HttpMethod = "POST" }, new { enctype = "multipart/form-data"}))
+    {
+        @Html.AntiForgeryToken()
+        <input id="fileInput" type="file" accept="image/*" name="files"> <br>
+        <input type="submit" value="Upload Image" disabled>
+    }
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
+<script src="https://malsup.github.com/jquery.form.js"></script>
+
+<script>
+(function () {
+    // prevent user from uploading until they selected an image
+    $('input:file').change(
+        function () {
+            if ($(this).val()) {
+                $('input:submit').attr('disabled', false);
+            }
+        }
+    );
+
+// The following solution below is provided at
+// http://stackoverflow.com/questions/19042116/ajax-beginform-in-mvc-to-upload-files
+var bar = $('.progress-bar');
+var percent = $('.progress-bar');
+var status = $('#status');
+
+$('form').ajaxForm({
+    beforeSend: function() {
+        status.empty();
+        var percentVal = '0%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    },
+    uploadProgress: function(event, position, total, percentComplete) {
+        var percentVal = percentComplete + '%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    },
+    success: function() {
+        var percentVal = '100%';
+        bar.width(percentVal)
+        percent.html(percentVal);
+    },
+    complete: function(xhr) {
+        status.html(xhr.responseText);
+    }
+}); 
+
+})();       
+</script>

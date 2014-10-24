@@ -2,15 +2,15 @@
 @using PagedList
 @using PagedList.Mvc 
 @{
-    ViewBag.Title = Model.bookTitle;
+    ViewBag.Title = Model.forumTitle;
 }
 
 <div class="row">
-    <h2>SERIES TITLE / BOOK TITLE HERE</h2>
+    <h2>@Model.forumTitle</h2>
 
     @if (Model.series)
     {
-        <p><strong>This thread is shared with </strong>
+        <p><strong>Other books in this series: </strong>
             @foreach (MVCCapstone.Models.SharedWith book in Model.sharedWith)
             {
                 @: | @Html.RouteLink(book.title, new { controller = "book", action="details", bookid = book.bookid }) 

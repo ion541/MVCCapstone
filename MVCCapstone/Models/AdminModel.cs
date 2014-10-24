@@ -115,8 +115,21 @@ namespace MVCCapstone.Models
         [Display(Name = "Language")]
         public List<SelectListItem> Language { get; set; }
 
+        [Display(Name = "Series")]
+        public string isSeries { get; set; }
+
+        [Display(Name = "Series")]
+        public string Series { get; set; }
+
+        [Required]
+        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [Display(Name = "Series Title")]
+        public string SeriesTitle { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
-        [Display(Name = "Forum Id")]
+        [Display(Name = "Series Id")]
         public string ForumId { get; set; }
 
         public string State { get; set; }
@@ -133,4 +146,20 @@ namespace MVCCapstone.Models
         public int GenreId { get; set; }
         public string Genre { get; set; }
     }
+
+    public class SeriesListModel
+    {
+        public List<Forum> seriesList { get; set; }
+    }
+
+    public class AddBookResultModel
+    {
+        public List<string> errors { get; set; }
+    }
+
+    public class DisplayImageModel
+    {
+        public List<Image> images { get; set; } 
+    }
+    
 }

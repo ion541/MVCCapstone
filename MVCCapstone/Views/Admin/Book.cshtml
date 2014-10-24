@@ -1,6 +1,6 @@
 ﻿@model MVCCapstone.Models.BookManagementModel
 @{
-    ViewBag.Title = "Book Management";
+    ViewBag.Title = "Book Information";
 
     var GenreSelected = new List<int>();
 
@@ -13,86 +13,171 @@
 
 @Html.Partial("Index")
 
- <h2>Book Management</h2>
+ <h2>Step 2: Add Book Information</h2>
 
+<div class="row">
+    <div style="font-weight:bold"="message"></div>
+</div>
 
-<div class="message-success">@ViewBag.Message</div>
+<div class="row">
 
-@using (Html.BeginForm("Book", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Ajax.BeginForm("book", "admin", new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "moveToMessage" }, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
 {
-    @Html.AntiForgeryToken()
+        @Html.AntiForgeryToken()
 
-    <fieldset>
-        <legend>Get User List Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.BookTitle)
-                @Html.TextBoxFor(m => m.BookTitle, new {placeholder = "Title of Book" })
-                @Html.ValidationMessageFor(m => m.BookTitle)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Author)
-                @Html.TextBoxFor(m => m.Author, new {placeholder = "First-Last Name" })
-                @Html.ValidationMessageFor(m => m.Author)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Synopsis)
-                @Html.TextAreaFor(m => m.Synopsis, new {placeholder ="Synopsis of Book", rows=3, columns=40})
-                @Html.ValidationMessageFor(m => m.Synopsis)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Image)
-                @Html.TextBoxFor(m => m.Image, new { type = "file", accept="jpg"})
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Publisher)
-                @Html.TextBoxFor(m => m.Publisher)
-                 @Html.ValidationMessageFor(m => m.Publisher) 
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Published)
-                @Html.TextBoxFor(m => m.Published, "{0:dd/MM/yyyy}", new {placeholder = "dd/mm/yyyy"})
-                 @Html.ValidationMessageFor(m => m.Published) 
-            </li>
+        @Html.HiddenFor(m => m.Image)
 
-            <li>
-                <div class="form-group">
-                <label class="col-sm-1 control-label">Genre</label>
-                    <div class="col-sm-11">
-                    @Html.CheckBoxListFor(m => m.PostedGenres.GenreId , 
-                            m => m.AvaialbleGenres,            
-                            m => m.GenreId,                   
-                            m => m.Genre,              
-                            m => GenreSelected.Contains(m.GenreId),
-                            new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.vertical_columns, 4, new {@class="col-md-3"} , MvcCheckBoxList.Model.TextLayout.RightToLeft))
+        <div class="form-group">
+            @Html.LabelFor(m => m.Series, new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-8">
+                @Html.RadioButtonFor(m => m.isSeries, "Standalone", new { @checked = "checked", @onClick = "hideSeriesOption()"}) Standalone
+                @Html.RadioButtonFor(m => m.isSeries, "Series", new { @onClick = "showSeriesOption()" }) Series
+            </div>
+        </div>
+    
+      
+        <div style="display:none" id="isSeriesOption" class="col-sm-offset-1">
+            <div class="form-group">
+                <div class="row">
+                    <label class="col-sm-2 control-label">Type</label>
+                    <div class="col-sm-10">
+                        @Html.RadioButtonFor(m => m.Series, "New", new {   @checked = "checked", @onClick = "showSeriesTitle()"}) New Series
+                        @Html.RadioButtonFor(m => m.Series, "Existing", new { @onClick = "hideSeriesTitle()" }) Existing Series
+                        
                     </div>
                 </div>
-            </li>
-            <li>
-                <div class="form-group">
-                    @Html.LabelFor(m => m.ISBN)
-                    @Html.TextBoxFor(m => m.ISBN, new {placeholder = "13 digits" })
-                    @Html.ValidationMessageFor(m => m.ISBN)
+            </div>
+
+         <div id="seriesTitle" class="row">
+            <div class="form-group">
+                    @Html.LabelFor(m => m.SeriesTitle, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-6">
+                           @Html.TextBoxFor(m => m.SeriesTitle, new { placeholder = "Title of New Series" })
+                    </div>
+                    <div class="col-sm-4">
+                            @Html.ValidationMessageFor(m => m.SeriesTitle)
+                    </div>
                 </div>
-            </li>
-            <li> 
-                @Html.LabelFor(m => m.Language)
-                <b> @Html.DropDownList("LanguageId", Model.Language)</b>
-            </li>
-        </ol>
+            </div>
+            <div style="display:none" class="row" id="seriesId">
+                <div class="form-group">
+              
+                    @Html.LabelFor(m => m.ForumId, new { @class = "col-sm-2 control-label" })
+                    <div class="col-sm-6">
+                        @Html.TextBoxFor(m => m.ForumId, new { placeholder = "Series Id" })
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.ValidationMessageFor(m => m.ForumId)
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-3">
+                        <input class="btn btn-primary" id="searchSeriesButton" type="button" value="Search For Series Id" onclick="scrollToSearch()"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+       
         <br />
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.ForumId  )
-                @Html.TextBoxFor(m => m.ForumId)
-                @Html.ValidationMessageFor(m => m.ForumId)
-            </li>
-        </ol>
+    
+        <div class="form-group">
+            @Html.LabelFor(m => m.BookTitle, new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+                   @Html.TextBoxFor(m => m.BookTitle, new { placeholder = "Title of Book" })
+            </div>
+            <div class="col-sm-4">
+                    @Html.ValidationMessageFor(m => m.BookTitle)
+            </div>
+        </div>
+    
+        <div class="form-group">
+              @Html.LabelFor(m => m.Author  , new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+                @Html.TextBoxFor(m => m.Author, new { placeholder = "First Last Name" })
+            </div>
+            <div class="col-sm-4">
+                @Html.ValidationMessageFor(m => m.Author)
+            </div>
+        </div>
+    
+        <div class="form-group">
+             @Html.LabelFor(m => m.Synopsis, new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+               @Html.TextAreaFor(m => m.Synopsis, new { placeholder = "Synopsis of Book", rows = 3, columns = 40 })
+            </div>
+        </div>
+    
+        <div class="form-group">
+              @Html.LabelFor(m => m.Publisher  , new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+                @Html.TextBoxFor(m => m.Publisher, new { placeholder = "Publisher of Book" })
+            </div>
+            <div class="col-sm-4">
+                @Html.ValidationMessageFor(m => m.Publisher)
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(m => m.Published  , new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+               @Html.TextBoxFor(m => m.Published, "{0:dd/MM/yyyy}", new { placeholder = "dd/mm/yyyy" })
+            </div>
+            <div class="col-sm-4">
+                @Html.ValidationMessageFor(m => m.Published) 
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.Label("Genre", new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-8">
+            @Html.CheckBoxListFor(m => m.PostedGenres.GenreId,
+                    m => m.AvaialbleGenres,
+                    m => m.GenreId,
+                    m => m.Genre,
+                    m => GenreSelected.Contains(m.GenreId),
+                    new MvcCheckBoxList.Model.HtmlListInfo(MvcCheckBoxList.Model.HtmlTag.vertical_columns, 4, new { @class = "col-md-3" }, MvcCheckBoxList.Model.TextLayout.RightToLeft))
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(m => m.ISBN  , new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+               @Html.TextBoxFor(m => m.ISBN, new { placeholder = "10 or 13 digits" })
+            </div>
+            <div class="col-sm-4">
+                @Html.ValidationMessageFor(m => m.ISBN) 
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(m => m.Language, new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                @Html.DropDownListFor(m => m.Language, Model.Language, new { @class = "col-sm-3" })  
+            </div>
+        </div>
+        
         <input type="submit" value="Submit Book" />
-    </fieldset>
 }
+</div>
 
+<br /><br /><br />
 
-@section Scripts {
-    @Scripts.Render("~/bundles/jqueryval")
-}
+<div style="display:none; margin-top: 200px; margin-bottom:200px;" class="row" id="seriesSearch">
+    <h2>Series Id Search</h2>
+    @using (Ajax.BeginForm("SeriesSearch", "Admin", new AjaxOptions { UpdateTargetId = "searchResult" }, new { @class = "form-horizontal", enctype = "multipart/form-data" }))
+    {
+        <div class="form-group">
+            @Html.Label("Series Title", new { @class = "col-sm-2 control-label" })
+            <div class="col-sm-6">
+               @Html.TextBox("seriesTitle",null)
+            </div>
+
+        </div>
+        <input type="submit" value="Search Series Id" />
+    }
+    <div id="searchResult">
+    </div>
+</div>
+
+</script>

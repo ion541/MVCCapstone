@@ -34,7 +34,7 @@ namespace MVCCapstone.Controllers
             ForumModel model = new ForumModel();
             model.ForumId = validForumId;
             model.threadList = ForumHelper.GetThreadList(validForumId, page);
-            model.bookTitle = BookHelper.GetTitle(validForumId);
+            model.forumTitle = ForumHelper.GetForumTitle(validForumId);
             model.series = ForumHelper.IsSeries(validForumId);
             if (model.series)
                 model.sharedWith = ForumHelper.SharedWith(validForumId, User.IsInRole("admin"));
@@ -51,7 +51,7 @@ namespace MVCCapstone.Controllers
 
             CreateThreadModel model = new CreateThreadModel();
             model.forumid = forumId.Value;
-            model.title = BookHelper.GetTitle(forumId.Value);
+            model.title = ForumHelper.GetForumTitle(forumId.Value);
             return View(model);
         }
 

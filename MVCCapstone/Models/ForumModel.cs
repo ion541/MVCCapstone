@@ -14,7 +14,7 @@ namespace MVCCapstone.Models
     {
         public List<SharedWith> sharedWith { get; set; }
         public int ForumId { get; set; }
-        public string bookTitle { get; set; }
+        public string forumTitle { get; set; }
         public bool series { get; set; }
         public IPagedList<ThreadModel> threadList { get; set; }
     }

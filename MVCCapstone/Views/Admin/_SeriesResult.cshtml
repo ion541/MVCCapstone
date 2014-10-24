@@ -1,0 +1,38 @@
+﻿@model MVCCapstone.Models.SeriesListModel
+
+@if (Model.seriesList.Count() > 0)
+{
+    <table class="table">
+        <tr>
+            <th class="col-sm-1"></th>
+            <th class="col-sm-2">Series Id</th>
+            <th class="col-sm-8">Series Title</th>
+        </tr>
+        @foreach(MVCCapstone.Models.Forum series in Model.seriesList)
+        {
+            <tr>
+                <td><input data-id="@series.ForumId" type="button" onclick="setSeriesId(this)" value="Set"/></td>
+                <td>@series.ForumId</td>
+                <td>@series.SeriesTitle</td>
+            </tr>
+        }
+
+    </table>
+}
+else
+{
+    <h3>There are no results that matches the title</h3>
+}
+
+<script>
+    function setSeriesId(target) {
+        var idSelected = target.dataset['id'];
+
+        $("#ForumId").val(idSelected);
+        $('html, body').animate({
+            scrollTop: $("#isSeries").offset().top
+        }, 400);
+        $("#ForumId").focus();
+    }
+
+</script>

@@ -65,6 +65,7 @@ namespace MVCCapstone.Controllers
         {
             return RedirectToAction("Index", "Error", new { Message = ErrorMessages.General });
         }
+
         #endregion
 
         /// <summary>
@@ -78,7 +79,8 @@ namespace MVCCapstone.Controllers
             ErrorIndirectAccess,
             BookIdInvalid,
             BookDeleted,
-            General
+            General,
+            UploadImage
         }
 
     }

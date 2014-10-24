@@ -311,6 +311,11 @@
     <Content Include="Views\Forum\ViewThread.cshtml" />
     <Content Include="Views\Forum\_CreatePost.cshtml" />
     <Content Include="Views\Forum\_EditPost.cshtml" />
+    <Content Include="Views\Admin\_SeriesResult.cshtml" />
+    <Content Include="Views\Admin\_AddBookResult.cshtml" />
+    <Content Include="Views\Admin\SelectImage.cshtml" />
+    <Content Include="Views\Admin\UploadImage.cshtml" />
+    <Content Include="Views\Admin\_UploadImageResult.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

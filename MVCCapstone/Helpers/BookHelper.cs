@@ -160,12 +160,14 @@ namespace MVCCapstone.Helpers
         /// Create a new Forum ID and return it
         /// </summary>
         /// <returns>the most recent id added to the forum table</returns>
-        public static int CreateNewForumId()
+        public static int CreateNewForumId(string title = null)
         {
             UsersContext db = new UsersContext();
 
             // create a new record in the forum table which will then create a new forum id
             Forum forum = new Forum();
+            if (title != null)
+                forum.SeriesTitle = title;
             db.Forum.Add(forum);
             db.SaveChanges();
 
@@ -302,16 +304,15 @@ namespace MVCCapstone.Helpers
         /// </summary>
         /// <param name="model">the model which contains the data for the book</param>
         /// <param name="language">the id of the language</param>
-        /// <param name="imageId">the id of the image</param>
         /// <returns>true if the record was inserted otherwise false</returns>
-        public static bool InsertBookRecord(BookManagementModel model, string language, string imageId)
+        public static bool InsertBookRecord(BookManagementModel model, string language)
         {
             // create a model of the Book and pass the data it over from the View Model
             var Book = new Book();
             Book.Title = model.BookTitle;
             Book.Author = model.Author;
             Book.LanguageId = language;
-            Book.ImageId = imageId;
+            Book.ImageId = model.Image;
             Book.Publisher = model.Publisher;
 
             // split the date string and use it to create a datetime object

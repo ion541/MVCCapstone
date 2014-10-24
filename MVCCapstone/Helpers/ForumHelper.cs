@@ -86,6 +86,30 @@ namespace MVCCapstone.Helpers
             return true;
         }
 
+
+        /// <summary>
+        /// Identify whether the forum id is a series or belongs to a standalone book and return
+        /// the appropriate title for the string
+        /// </summary>
+        /// <param name="forumId">the forum id to be searched</param>
+        /// <returns>a string containing the book's title / series title</returns>
+        public static string GetForumTitle(int forumId)
+        {
+            UsersContext db = new UsersContext();
+            Forum forum = db.Forum.Find(forumId);
+            if (forum == null)
+                return "ERROR - FORUM ID NOT FOUND";
+
+            if (forum.SeriesTitle != null)
+                return forum.SeriesTitle;
+
+            if (db.Book.Where(m => m.ForumId == forumId).Count() == 1)
+                return db.Book.Where(m => m.ForumId == forumId).Select(m => m.Title).First();
+
+            return "ERROR - MULTIPLE STANDALONE BOOK TITLES FOUND";
+             
+        }
+
         /// <summary>
         /// Get the title of the thread
         /// </summary>

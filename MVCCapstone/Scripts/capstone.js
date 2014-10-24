@@ -12,7 +12,46 @@ function moveToPost() {
     }, 700);
 }
 
-$(function(){
+function moveToMessage() {
+    $('html, body').animate({
+        scrollTop: $("#message").offset().top
+    }, 700);
+}
+
+function scrollToSearch() {
+    $('html, body').animate({
+        scrollTop: $("#seriesSearch").offset().top
+    }, 700);
+}
+
+function showSeriesOption() {
+    $("#isSeriesOption").show(500);
+}
+
+function hideSeriesOption() {
+    $("#isSeriesOption").hide(500);
+}
+
+function hideSeriesTitle() {
+    $("#seriesTitle").hide(500);
+
+    $("#seriesId").show(500);
+    $("#seriesSearch").show(500);
+}
+
+function showSeriesTitle() {
+    $("#seriesTitle").show(500);
+
+    $("#seriesId").hide(500);
+    $("#seriesSearch").hide(500);
+}
+
+function setSeriesId() {
+    alert('good job');
+}
+
+$(function () {
+
     $(".show-more a").on("click", function () {
         var $link = $(this);
         var $content = $link.parent().prev("div.text-content");

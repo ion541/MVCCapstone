@@ -242,27 +242,80 @@ namespace MVCCapstone.Controllers
 
 
 
+        //
+        // GET: /Admin/SelectImage
+        [RoleAuthorize(Roles = "admin")]
+        public ActionResult SelectImage()
+        {
+            DisplayImageModel model = new DisplayImageModel();
+            model.images = db.Image.OrderByDescending(m => m.ImageId).ToList();
+            return View(model);
+        }
+
+
+        public ActionResult UploadImage()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [RoleAuthorize(Roles = "admin")]
+        public ActionResult UploadImage(IEnumerable<HttpPostedFileBase> files)
+        {
+            if (files != null)
+            {
+                try
+                {
+                    foreach (var file in files)
+                    {
+                        // verify that the user selected a file
+                        if (file != null && file.ContentLength > 0)
+                        {
+                            // get the string to the path of the book images
+                            string bookPath = BookHelper.GetServerPath();
+
+                            // creates a unique name for the file
+                            string fileName = Guid.NewGuid().ToString() + System.IO.Path.GetExtension(file.FileName);
+
+                            // get the path to where the images are stored
+                            string basePath = Server.MapPath("~/" + bookPath);
+
+                            // create the directory if it does not exist
+                            if (System.IO.File.Exists(basePath))
+                                System.IO.Directory.CreateDirectory(bookPath);
+
+                            // Try and save the file directly to the server
+                            file.SaveAs(Path.Combine(basePath, fileName));
+
+                            // insert a record of the image path and return the id of the record
+                            ViewBag.ImageId = BookHelper.InsertImageRecord(bookPath + fileName);
+                        }
+                    }
+                }
+                catch
+                {
+                    ViewBag.ErrorMessage = "An error has occurred while uploading the image.";
+                }
+            }
+            else
+            {
+                ViewBag.ErrorMessage = "No Images were found";
+            }
+            return PartialView("_UploadImageResult");
+        }
+
+
 
 
         //
         // GET: /Admin/Book
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult Book(ManageMessageId? message)
+        public ActionResult Book(string imageId)
         {
-
             BookManagementModel model = new BookManagementModel();
-            if (TempData["model"] != null)
-                model = TempData["model"] as BookManagementModel;
 
-
-            ViewBag.Message =   message == ManageMessageId.ForumIdDoesNotExist ? "The Inputted Forum Id does not exist" :
-                                message == ManageMessageId.ForumIdNotValid ? "The Forum Id inputted was not valid." :
-                                message == ManageMessageId.InvalidDate ? "The date inputted is not valid." :
-                                message == ManageMessageId.UploadingImageError ? "An error has occurred while updating the image." :
-                                message == ManageMessageId.SuccessfulInsert ? "The book has been successfully added into the database." :
-                                message == ManageMessageId.ISBNInDatabase ? "The ISBN inputted is already in the database." :
-                                message == ManageMessageId.UnsuccessfulInsert ? "The book was not successfully inserted into the database." :
-                                "";
+            if (imageId != null)
+                model.Image = imageId;
 
             model.AvaialbleGenres = BookHelper.GetGenreList();
             model.Language = LanguageHelper.DisplayList();
@@ -271,113 +324,78 @@ namespace MVCCapstone.Controllers
 
 
 
-
+ 
 
         //
         // POST: /Admin/Book
         [HttpPost]
+        [ValidateAntiForgeryToken]
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult Book(BookManagementModel model, PostedGenres postedGenres, HttpPostedFileBase Image = null)
+        public ActionResult Book(BookManagementModel model)
         {
+            
+            AddBookResultModel resultModel = new AddBookResultModel();
+            resultModel.errors = new List<string>();
 
-            TempData["model"] = model;  // pass the model data back to the next action
-
-            // ISBN must be unique, see if it is
             if (!BookHelper.CheckISBN(model.ISBN))
+                resultModel.errors.Add("The ISBN is already in the database.");
+
+            if (model.PostedGenres.GenreId == null)
+                resultModel.errors.Add("At least one genre must be selected.");
+
+            if (model.isSeries == "Series" && model.Series == "Existing")
             {
-                return RedirectToAction("Book", "Admin", new { message = ManageMessageId.ISBNInDatabase });
-            }
-
-            string imageId = null;
-            if (Image != null)
-            {
-                try
-                {
-                    // get the string to the path of the book images
-                    string bookPath = BookHelper.GetServerPath();
-
-                    // creates a unique name for the file
-                    string fileName =   Guid.NewGuid().ToString() + System.IO.Path.GetExtension(Image.FileName);
-                    // get the path to where the images are stored
-                    string basePath = Server.MapPath("~/" + bookPath);
-
-                    // create the directory if it does not exist
-                    if (System.IO.File.Exists(basePath))
-                        System.IO.Directory.CreateDirectory(bookPath);
-
-                    // Try and save the file directly to the server
-                    Image.SaveAs(Path.Combine(basePath, fileName));
-                  
-                    // insert a record of the image path and return the id of the record
-                    imageId = BookHelper.InsertImageRecord(bookPath + fileName);
-                }
-                catch
-                {
-                    RedirectToAction("Book", "Admin", new { message = ManageMessageId.UploadingImageError });
-                }
-            }
-
-
-            int forum_id;
-
-            if (model.ForumId == null)
-            {
-               // no forum id provided, create a new forum id for this book
-                model.ForumId = BookHelper.CreateNewForumId().ToString();
-            }
-            else
-            {
-               
-                forum_id = Int32.Parse(model.ForumId);
-                bool ForumIdExist = BookHelper.CheckForForumIdExistence(forum_id);
-
-                // check to see if the inputted forum id exists
-                if (!ForumIdExist)
-                {
-                    return RedirectToAction("Book", "Admin", new { message = ManageMessageId.ForumIdDoesNotExist });
-                }
+                if (!BookHelper.CheckForForumIdExistence(Int32.Parse(model.ForumId)))
+                    resultModel.errors.Add("The forum id inputted is not valid.");
             }
 
             DateTime day;
-            if (!DateTime.TryParseExact(model.Published,"dd/MM/yyyy",CultureInfo.InvariantCulture, DateTimeStyles.None, out day)) {
-                return RedirectToAction("Book", "Admin", new {message = ManageMessageId.InvalidDate });
-            }
+            if (!DateTime.TryParseExact(model.Published,"dd/MM/yyyy",CultureInfo.InvariantCulture, DateTimeStyles.None, out day))
+                resultModel.errors.Add("The date published inputted is not valid.");
+
+            // no errors, proceed to upload image to database
+            if (resultModel.errors.Count() == 0)
+            {
+                if (model.isSeries == "Standalone")
+                    model.ForumId = BookHelper.CreateNewForumId().ToString();
+                else if (model.isSeries == "Series" && model.Series == "New")
+                    model.ForumId = BookHelper.CreateNewForumId(model.SeriesTitle).ToString();
+
   
-
-            string language = Request["LanguageId"].ToString();
-         
-            // at this point, the image was uploaded if it existed and the forum id has been valid / generated
-            bool BookInserted = BookHelper.InsertBookRecord(model, language, imageId);
-            int bookId = BookHelper.GetLastBookId();
-            
-            
-            if (postedGenres.GenreId != null)
-            {
-                for (int i = 0; i < postedGenres.GenreId.Count(); i++)
+                string language = (Request["Language"] == null) ? "1" : Request["Language"].ToString();
+  
+                // insert the record of the books data into the database
+                bool BookInserted = BookHelper.InsertBookRecord(model, language);
+               
+                
+                if (BookInserted)
                 {
-                    BookHelper.InsertBookGenre(bookId, Int32.Parse(postedGenres.GenreId[i]));
+                    int bookId = BookHelper.GetLastBookId();
+
+                    // add all the selected genres for the book into the database
+                    for (int i = 0; i < model.PostedGenres.GenreId.Count(); i++)
+                        BookHelper.InsertBookGenre(bookId, Int32.Parse(model.PostedGenres.GenreId[i]));
                 }
-            }
-            else
-            {
-                BookHelper.InsertBookGenreDefault(bookId);
+                else
+                {
+                    resultModel.errors.Add("An error has occurred while inserting the book into the database.");
+                }
+
             }
 
-
-            if (BookInserted)
-            {
-                // if we made it here, then nothing went wrong
-                return RedirectToAction("Book", "Admin", new { message = ManageMessageId.SuccessfulInsert });
-            }
-            else
-            {
-                return RedirectToAction("Book", "Admin", new { message = ManageMessageId.UnsuccessfulInsert });
-            }
-             
+            return PartialView("_AddBookResult", resultModel);
         }
 
 
+        public ActionResult SeriesSearch(string seriesTitle)
+        {
+            SeriesListModel model = new SeriesListModel();
+            model.seriesList = db.Forum.Where(m => m.SeriesTitle.Contains(seriesTitle)).OrderBy(m => m.ForumId).ToList();
+            return PartialView("_SeriesResult", model);
+        }
     }
+
+
 
 
     /// <summary>
