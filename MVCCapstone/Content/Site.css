@@ -15,7 +15,6 @@ body {
 }
 
 a {
-    color: #333;
     outline: none;
     padding-left: 3px;
     padding-right: 3px;
@@ -24,7 +23,6 @@ a {
 
     a:link, a:visited,
     a:active, a:hover {
-        color: #333;
         text-decoration: none;
     }
 

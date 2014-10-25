@@ -90,6 +90,7 @@ namespace MVCCapstone.Controllers
             ThreadViewModel model = new ThreadViewModel();
             model.threadId = threadid.Value;
             model.forumId = ForumHelper.GetForumId(threadid.Value);
+            model.lockAction = ForumHelper.GetLockActionString(threadid.Value);
             model.threadTitle = ForumHelper.GetThreadTitle(threadid.Value);
             model.postList = ForumHelper.GetPostList(threadid.Value, page); // list of posts in the thread
 
@@ -100,8 +101,9 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
-
+        
         [Authorize]
+        [AjaxAction]
         public PartialViewResult ShowPost(int? threadId, int? replyPostId)
         {
 
@@ -143,7 +145,9 @@ namespace MVCCapstone.Controllers
             return PartialView("_CreatePost", model);
         }
 
+        
         [Authorize]
+        [AjaxAction]
         public PartialViewResult ShowEdit(int? postId, int page = 1, bool removeReply = false)
         {
             EditPostModel model = new EditPostModel();
@@ -202,7 +206,6 @@ namespace MVCCapstone.Controllers
 
             return RedirectToAction("viewthread", "forum", new { threadid = model.threadId, page = pageToGo, post = latestPost });
         }
-
 
 
         [HttpPost]

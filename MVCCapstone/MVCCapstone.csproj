@@ -194,6 +194,7 @@
     <Compile Include="Helpers\RoleHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AdminModel.cs" />
+    <Compile Include="Models\CustomAttributes.cs" />
     <Compile Include="Models\BookmarkModel.cs" />
     <Compile Include="Models\BookModel.cs" />
     <Compile Include="Models\DatabaseModel.cs" />

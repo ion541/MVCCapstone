@@ -44,6 +44,7 @@ namespace MVCCapstone.Models
     {
         public int forumId { get; set; }
         public int threadId { get; set; }
+        public string lockAction { get; set; }
         public string threadTitle { get; set; }
         public IPagedList<PostViewModel> postList { get; set; }
     }

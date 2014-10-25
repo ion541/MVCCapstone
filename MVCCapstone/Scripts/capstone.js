@@ -1,16 +1,43 @@
 ﻿// Called when removing a bookmark
 function removeRow(id) {
     // display a message with a fade in / fade out animation
-    $("#message").fadeIn().text("Removing " + $("#" + id + " > td:nth-child(2)").text() + " from your bookmarks").fadeOut(2000);
+    $('<div>Removing ' + $("#" + id + " > td:nth-child(2)").text() + ' from your bookmarks' + '</div>')
+        .insertAfter('#message').fadeIn().delay(3000).fadeOut(1000);
+
     // remove the row from the table
     $("#" + id).animate({ 'line-height': 0 }, 100).hide(1000);
 }
 
+// scrolls to the postSection
 function moveToPost() {
     $('html, body').animate({
         scrollTop: $("#postSection").offset().top
     }, 700);
 }
+
+// sets the storePost value attribute to the current 'content' text
+// done since the ajax post will reload the page which will lose the current text in the textarea
+function storeEditPost() {
+    $("#storePost").attr("value", $("#content").val());
+}
+
+// sets the textarea text to the current storePost value attribute
+function setEditPost() {
+    $("#content").val($("#storePost").attr("value"));
+}
+
+function switchLockActionText() {
+    var currentText = $("#LockButton").text();
+    var newText;
+    if (currentText == "Lock Thread") {
+        newText = "Unlock Thread";
+    } else {
+        newText = "Lock Thread";
+    }
+    $("#LockButton").text(newText);
+
+}
+
 
 function moveToMessage() {
     $('html, body').animate({

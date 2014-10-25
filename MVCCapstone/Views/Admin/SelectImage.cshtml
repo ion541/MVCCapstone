@@ -11,7 +11,9 @@
 <div class="row-fluid">
     @foreach (MVCCapstone.Models.Image image in Model.images)
     {
-        <a href="/admin/book/?imageid=@image.ImageId" class="col-sm-3"><img style="max-height: 200px; max-width: 200px; margin:auto" class="img-responsive thumbnail" src="@image.Path" /> </a>
+        <div class="col-sm-3">
+        <a href="/admin/book/?imageid=@image.ImageId" style="display: block;"><img style="max-height: 200px; max-width: 200px; margin:auto;margin-top:10px;" class="img-responsive thumbnail" src="@image.Path" /></a>
+        </div>
     }
 </div>
 

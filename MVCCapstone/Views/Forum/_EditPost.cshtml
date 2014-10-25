@@ -32,7 +32,9 @@
                             HttpMethod = "POST",
                             InsertionMode = InsertionMode.Replace,
                             UpdateTargetId = "postSection",
-                            OnSuccess = "moveToPost"
+                            OnBegin = "storeEditPost", 
+                            OnSuccess = "moveToPost",
+                            OnComplete = "setEditPost"
                         },
                         new { @class = "btn btn-success" }
                     )
@@ -61,7 +63,7 @@
 
     }
 } else {
-    <h3> The are not allowed to edit this post.</h3>
+    <h3>The are not allowed to edit this post.</h3>
     <h3>Possible reasons include:</h3>
     <ul>
         <li>You are not the creator of this post</li>

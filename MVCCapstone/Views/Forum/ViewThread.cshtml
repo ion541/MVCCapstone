@@ -4,6 +4,7 @@
 @using System.Web.Security;
 @{
     ViewBag.Title = "View Thread - " + Model.threadTitle;
+   
 }
 <div class="row">
  
@@ -11,7 +12,7 @@
 
     @if(User.Identity.IsAuthenticated && User.IsInRole("admin")) {
     <span class="pull-right">  
-               @Ajax.ActionLink("Lock Thread",
+               @Ajax.ActionLink(Model.lockAction,
             "lockthread",
             new { threadid = Model.threadId },
             new AjaxOptions
@@ -19,15 +20,16 @@
                 HttpMethod = "POST",
                 InsertionMode = InsertionMode.Replace,
                 UpdateTargetId = "lockMessage",
+                OnSuccess = "switchLockActionText"
             },
-            new {@class="btn btn-primary" }
+            new {@id="LockButton", @class="btn btn-primary" }
         )
     </span>
     }
 </div>
 
 <div class="row">
-        <span class="col-sm-12" style="color: red; text-align:center"id="lockMessage"></span>
+        <span class="col-sm-12" style="color:red; text-align:center" id="lockMessage"></span>
 </div>
 
 <div class="row">
@@ -164,4 +166,6 @@
 <div class="row">
     <div id="postSection"></div>
 </div>
+
+<input type="hidden" id="storePost" value="temp"/>
 

@@ -71,7 +71,7 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
-
+        [AjaxAction]
         public PartialViewResult ChangeState(string bookid)
         {
             if (User.Identity.IsAuthenticated)
@@ -83,7 +83,8 @@ namespace MVCCapstone.Controllers
         /// Adds the book to the users bookmark list
         /// </summary>
         /// <param name="bookid">the book id to be added</param>
-        public ActionResult Bookmark(string bookid)
+        [AjaxAction]
+        public PartialViewResult Bookmark(string bookid)
         {
             if (User.Identity.IsAuthenticated)
                 ViewBag.Bookmark = BookHelper.Bookmark(User.Identity.Name, bookid);
@@ -95,6 +96,7 @@ namespace MVCCapstone.Controllers
         /// Autocomplete for the search
         /// </summary>
         /// <param name="term">the term to be searched</param>
+        [AjaxAction]
         public ActionResult Autocomplete(string term)
         {
 

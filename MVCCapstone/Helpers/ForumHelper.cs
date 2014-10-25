@@ -110,6 +110,15 @@ namespace MVCCapstone.Helpers
              
         }
 
+        public static string GetLockActionString(int threadId)
+        {
+            UsersContext db = new UsersContext();
+            Thread thread = db.Thread.Find(threadId);
+
+            return (thread.State == "Locked") ? "Unlock Thread" : "Lock Thread";
+
+        }
+
         /// <summary>
         /// Get the title of the thread
         /// </summary>

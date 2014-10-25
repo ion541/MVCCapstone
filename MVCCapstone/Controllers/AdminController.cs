@@ -387,7 +387,7 @@ namespace MVCCapstone.Controllers
         }
 
 
-        public ActionResult SeriesSearch(string seriesTitle)
+        public PartialViewResult SeriesSearch(string seriesTitle)
         {
             SeriesListModel model = new SeriesListModel();
             model.seriesList = db.Forum.Where(m => m.SeriesTitle.Contains(seriesTitle)).OrderBy(m => m.ForumId).ToList();
@@ -415,31 +415,5 @@ namespace MVCCapstone.Controllers
         ISBNInDatabase,
         TestingTrue,
         TestingFalse
-    }
-
-    /// <summary>
-    /// Attribute that inherits the Authorize attribute.
-    /// 
-    /// If the user is not logged in, it will redirect the user to the log in page.
-    /// 
-    /// If the user is logged in, it will redirect the user to the  error page instead of always redirecting to the Log in page in the event of unauthorization
-    /// The process above is repeated when the user logs in and doesn't have the authority to access it.
-    /// </summary>
-    public class RoleAuthorize : AuthorizeAttribute
-    {
-        protected override void HandleUnauthorizedRequest(AuthorizationContext filterContext)
-        {
-            // test to see if the user is logged in
-            if(filterContext.HttpContext.User.Identity.IsAuthenticated)
-            {
-                // redirect to error page
-                filterContext.Result = new RedirectToRouteResult(new RouteValueDictionary(new { controller = "Error", action = "UnauthorizedAccess" }));
-            }
-            else
-            {
-                // redirect to login page
-                base.HandleUnauthorizedRequest(filterContext);
-            }
-        }
     }
 }

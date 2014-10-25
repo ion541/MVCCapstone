@@ -6,11 +6,12 @@
 {
     <h2>The book was not added due to the following: </h2>
     <ul>
-    @foreach (string error in Model.errors)
+    @foreach (string errorMessage in Model.errors)
     {
-        <li>@error</li>
+        <li>@errorMessage</li>
     }
     </ul>
 } else {
     <h4>The book has been succesfully added into the database</h4>
 }
+<br />
