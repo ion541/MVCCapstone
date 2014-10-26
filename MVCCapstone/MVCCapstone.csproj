@@ -317,6 +317,9 @@
     <Content Include="Views\Admin\SelectImage.cshtml" />
     <Content Include="Views\Admin\UploadImage.cshtml" />
     <Content Include="Views\Admin\_UploadImageResult.cshtml" />
+    <Content Include="Views\Admin\DeleteBook.cshtml" />
+    <Content Include="Views\Admin\_TitleSearch.cshtml" />
+    <Content Include="Views\Admin\_DeleteDetails.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

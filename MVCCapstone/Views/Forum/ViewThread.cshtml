@@ -12,7 +12,7 @@
 
     @if(User.Identity.IsAuthenticated && User.IsInRole("admin")) {
     <span class="pull-right">  
-               @Ajax.ActionLink(Model.lockAction,
+        @Ajax.ActionLink(Model.lockAction,
             "lockthread",
             new { threadid = Model.threadId },
             new AjaxOptions

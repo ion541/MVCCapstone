@@ -161,5 +161,42 @@ namespace MVCCapstone.Models
     {
         public List<Image> images { get; set; } 
     }
+
+    public class DeleteBookModel
+    {
+        [Required]
+        [StringLength(10, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
+        [Display(Name = "Book Id")]
+        public int bookIdDelete { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [Display(Name = "Title of Book")]
+        public string bookSearch { get; set; }
+    }
+
+    /// <summary>
+    /// Model passed to the view of the search result
+    /// </summary>
+    public class DeleteBookSearchModel
+    {
+        public List<Book> bookResults { get; set; }
+    }
+
+    /// <summary>
+    /// Used to store information relevant to a user before deleting
+    /// </summary>
+    public class DeleteBookPromptModel
+    {
+        public bool display { get; set; }
+        public string title { get; set; }
+        public string author { get; set; }
+        public int bookid { get; set; }
+
+        public bool lastAssociated { get; set; }
+        public int postCount { get; set; }
+        public int threadCount { get; set; }
+    }
     
 }

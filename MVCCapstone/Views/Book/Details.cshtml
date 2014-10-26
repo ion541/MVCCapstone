@@ -13,6 +13,7 @@
     <div class="col-md-4">
         @if (User.IsInRole("admin"))
             {
+            <h3>This Bookid is: @Model.BookId</h3>
             <div class="col-md-12">
                 @Ajax.ActionLink("Change State",
                     "changestate",

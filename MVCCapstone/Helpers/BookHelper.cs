@@ -55,8 +55,9 @@ namespace MVCCapstone.Helpers
         public static bool BookExists(int bookid)
         {
             UsersContext db = new UsersContext();
-            if (db.Book.Where(m => m.BookId == bookid).Count() == 1)
+            if (db.Book.Find(bookid) != null)
                 return true;
+
             return false;
 
         }

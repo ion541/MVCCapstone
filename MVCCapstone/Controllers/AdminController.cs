@@ -323,9 +323,6 @@ namespace MVCCapstone.Controllers
         }
 
 
-
- 
-
         //
         // POST: /Admin/Book
         [HttpPost]
@@ -385,6 +382,61 @@ namespace MVCCapstone.Controllers
 
             return PartialView("_AddBookResult", resultModel);
         }
+
+        [RoleAuthorize(Roles = "admin")]
+        public ActionResult DeleteBook()
+        {
+            return View();
+        }
+
+
+        public PartialViewResult deletePrompt(int? bookIdDelete)
+        {
+            DeleteBookPromptModel model = new DeleteBookPromptModel();
+            model.display = false;
+
+            if (bookIdDelete.HasValue)
+            {
+                if (BookHelper.BookExists(bookIdDelete.Value))
+                {
+                    model.display = true;
+
+                    Book book = db.Book.Find(bookIdDelete);
+                    model.title = book.Title;
+                    model.author = book.Author;
+                    model.bookid = book.BookId;
+
+                    // see if the book is the last book associated with a forum id. 
+                    // if it is, inform the user that all posts and threads associated with this book will be deleted as well
+                    if (db.Book.Where(m => m.ForumId == book.ForumId).Count() == 1)
+                    {
+                        model.lastAssociated = true;
+                        List<int> threads = db.Thread.Where(m => m.ForumId == book.ForumId).Select(m => m.ThreadId).ToList();
+                        model.threadCount = threads.Count();
+
+                        model.postCount = db.Post.Where(m => threads.Contains(m.ThreadId)).Count();
+                    }
+                    else
+                    {
+                        model.lastAssociated = false;
+                    }
+                }
+            }
+
+            return PartialView("_DeleteDetails", model);
+        }
+
+        [HttpPost]
+        [AjaxAction]
+        [RoleAuthorize(Roles = "admin")]
+        public PartialViewResult TitleSearch(string bookSearch)
+        {
+            DeleteBookSearchModel resultModel = new DeleteBookSearchModel();
+            resultModel.bookResults = db.Book.Where(m => m.Title.Contains(bookSearch)).ToList();
+
+            return PartialView("_titleSearch", resultModel);
+        }
+
 
 
         public PartialViewResult SeriesSearch(string seriesTitle)

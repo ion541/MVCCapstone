@@ -1,0 +1,30 @@
+﻿@model MVCCapstone.Models.DeleteBookPromptModel
+<br />
+<div class="row">
+@if (@Model.display == true)
+{   
+    
+    <p>You are about to delete the book <strong>@Model.title</strong> by <strong>@Model.author</strong></p>
+
+    
+    if (@Model.lastAssociated == true)
+    {
+        <br />
+        <p>This book is the last book associated with a specific forum id. <br />
+        Deleting this book will also delete <strong>@Model.postCount</strong> posts and <strong>@Model.threadCount</strong> Threads. <br />
+        Users who have participated in these threads will have their total posts reduced</p>
+        <br />
+    }
+    
+    
+   <p> Are you sure you would like to delete this book?
+   @Ajax.ActionLink("Yes", "deleteBook", new { bookid = @Model.bookid }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "deleteResult" }) </p>
+    
+}
+else
+{
+    <h3>Invalid Book Id</h3>
+}
+</div>
+
+<br />
