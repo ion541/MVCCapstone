@@ -253,11 +253,18 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+        //
+        // GET: /Admin/UploadImage
         public ActionResult UploadImage()
         {
             return View();
         }
 
+
+
+        //
+        // POST: /Admin/UploadImage
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         public ActionResult UploadImage(IEnumerable<HttpPostedFileBase> files)
@@ -310,9 +317,9 @@ namespace MVCCapstone.Controllers
         //
         // GET: /Admin/Book
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult Book(string imageId)
+        public ActionResult BookDetails(string imageId)
         {
-            BookManagementModel model = new BookManagementModel();
+            BookDetailsModel model = new BookDetailsModel();
 
             if (imageId != null)
                 model.Image = imageId;
@@ -328,7 +335,7 @@ namespace MVCCapstone.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult Book(BookManagementModel model)
+        public ActionResult BookDetails(BookDetailsModel model)
         {
             
             AddBookResultModel resultModel = new AddBookResultModel();
@@ -384,33 +391,64 @@ namespace MVCCapstone.Controllers
         }
 
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult DeleteBook()
+        public ActionResult ManageBook()
         {
             return View();
         }
 
+        [HttpPost]
+        [RoleAuthorize(Roles = "admin")]
+        [AjaxAction]
+        public string DeleteBook(int bookId)
+        {
+     
+            if (BookHelper.BookExists(bookId)) 
+            {
+                Book book = db.Book.Find(bookId);
 
-        public PartialViewResult deletePrompt(int? bookIdDelete)
+                string deletedForumRecords = "";
+                if (db.Forum.Where(m => m.ForumId == book.ForumId).Select(m => m.SeriesTitle).First() == null)
+                {
+                    int forumId = book.ForumId;
+                    int postThreadDeleted = ForumHelper.DeleteForum(forumId);
+
+                    // reduce by one since the forum id record is also deleted
+                    if (postThreadDeleted > 0) postThreadDeleted--;
+ 
+                    deletedForumRecords = " A total of " + postThreadDeleted + " posts and threads were also deleted.";
+                }
+
+                // delete the book
+                int bookCounter = BookHelper.DeleteBook(bookId);
+
+                return bookCounter + " book were deleted. " + deletedForumRecords;
+
+            }
+            return "The book id does not exist. No records were deleted.";
+        }
+
+         [RoleAuthorize(Roles = "admin")]
+        public PartialViewResult DeletePrompt(int? bookId)
         {
             DeleteBookPromptModel model = new DeleteBookPromptModel();
             model.display = false;
 
-            if (bookIdDelete.HasValue)
+            if (bookId.HasValue)
             {
-                if (BookHelper.BookExists(bookIdDelete.Value))
+                if (BookHelper.BookExists(bookId.Value))
                 {
                     model.display = true;
 
-                    Book book = db.Book.Find(bookIdDelete);
+                    Book book = db.Book.Find(bookId);
                     model.title = book.Title;
                     model.author = book.Author;
                     model.bookid = book.BookId;
 
-                    // see if the book is the last book associated with a forum id. 
+                    // see if the book is not part of a series
                     // if it is, inform the user that all posts and threads associated with this book will be deleted as well
-                    if (db.Book.Where(m => m.ForumId == book.ForumId).Count() == 1)
+                    if (db.Forum.Where(m => m.ForumId == book.ForumId).Select(m => m.SeriesTitle).First() == null)
                     {
-                        model.lastAssociated = true;
+                        model.isStandalone = true;
                         List<int> threads = db.Thread.Where(m => m.ForumId == book.ForumId).Select(m => m.ThreadId).ToList();
                         model.threadCount = threads.Count();
 
@@ -418,7 +456,7 @@ namespace MVCCapstone.Controllers
                     }
                     else
                     {
-                        model.lastAssociated = false;
+                        model.isStandalone = false;
                     }
                 }
             }
@@ -426,19 +464,34 @@ namespace MVCCapstone.Controllers
             return PartialView("_DeleteDetails", model);
         }
 
+         public PartialViewResult Edit(int id)
+         {
+             Book book = db.Book.Find(id);
+             return PartialView("EditBook", book);
+         }
+
+         public ActionResult Details(int id)
+         {
+             return View(db.Book.Find(id));
+         }
+
         [HttpPost]
         [AjaxAction]
         [RoleAuthorize(Roles = "admin")]
-        public PartialViewResult TitleSearch(string bookSearch)
+        public PartialViewResult TitleSearch(ManageBookModel model)
         {
-            DeleteBookSearchModel resultModel = new DeleteBookSearchModel();
-            resultModel.bookResults = db.Book.Where(m => m.Title.Contains(bookSearch)).ToList();
+            ManageBookSearchModel resultModel = new ManageBookSearchModel();
+
+            if (model.titleSearch == null) model.titleSearch = "";
+            if (model.authorSearch == null) model.authorSearch = "";
+
+            resultModel.bookResults = db.Book.Where(m => m.Title.Contains(model.titleSearch) && m.Author.Contains(model.authorSearch)).ToList();
 
             return PartialView("_titleSearch", resultModel);
         }
 
 
-
+        [RoleAuthorize(Roles = "admin")]
         public PartialViewResult SeriesSearch(string seriesTitle)
         {
             SeriesListModel model = new SeriesListModel();

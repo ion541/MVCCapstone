@@ -7,10 +7,10 @@
     <p>You are about to delete the book <strong>@Model.title</strong> by <strong>@Model.author</strong></p>
 
     
-    if (@Model.lastAssociated == true)
+    if (@Model.isStandalone == true)
     {
         <br />
-        <p>This book is the last book associated with a specific forum id. <br />
+        <p>This book is not part of a series and all discussions related to this book will be deleted. <br />
         Deleting this book will also delete <strong>@Model.postCount</strong> posts and <strong>@Model.threadCount</strong> Threads. <br />
         Users who have participated in these threads will have their total posts reduced</p>
         <br />
@@ -18,7 +18,7 @@
     
     
    <p> Are you sure you would like to delete this book?
-   @Ajax.ActionLink("Yes", "deleteBook", new { bookid = @Model.bookid }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "deleteResult" }) </p>
+   @Ajax.ActionLink("Yes", "deletebook", new { bookid = @Model.bookid }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result", OnSuccess="removeRow(" + @Model.bookid +")" }) </p>
     
 }
 else

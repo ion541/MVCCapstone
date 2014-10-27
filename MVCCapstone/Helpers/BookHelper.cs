@@ -306,7 +306,7 @@ namespace MVCCapstone.Helpers
         /// <param name="model">the model which contains the data for the book</param>
         /// <param name="language">the id of the language</param>
         /// <returns>true if the record was inserted otherwise false</returns>
-        public static bool InsertBookRecord(BookManagementModel model, string language)
+        public static bool InsertBookRecord(BookDetailsModel model, string language)
         {
             // create a model of the Book and pass the data it over from the View Model
             var Book = new Book();
@@ -488,6 +488,14 @@ namespace MVCCapstone.Helpers
             return "The bookmark was successfully removed.";
         }
 
+        /// <summary>
+        /// Pagination for bookmark
+        /// </summary>
+        /// <param name="username">the user's bookmark to be searched for</param>
+        /// <param name="page">the page to be displayed</param>
+        /// <param name="sortby">column to be sorted</param>
+        /// <param name="ascend">direction to be sorted</param>
+        /// <returns>a IPagedList object</returns>
         public static IPagedList<BookmarkDisplayModel> GetBookMarkList(string username, int page, string sortby, bool ascend)
         {
             // page cannot be negative
@@ -537,10 +545,10 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
-        /// Compares both the query list and current list and return a new list of books that contains books in both list
+        /// Compares both the query list and current list and return a new list of books that contains the same books in both list
         /// 
         /// If this is the first time books are being added to the current list and therefore nothing to compare / match,
-        /// this method will call and return the list from the AddAllBooks method
+        /// this method will call and return the list from the AddAllBooks method which will add every book from the query list to the current list
         /// </summary>
         /// <param name="currentList">the list of books to be checked</param>
         /// <param name="queryList">the list of books to be matched</param>
@@ -549,9 +557,10 @@ namespace MVCCapstone.Helpers
         /// <returns>a list of books that only contains the books in both list or the query list of books if the current list is empty </returns>
         public static List<Book> ReturnSameBooks(List<Book> currentList, List<Book> queryList, bool currentListEmpty, out bool currentListBooksNotEmpty)
         {
-            currentListBooksNotEmpty = true;
+            currentListBooksNotEmpty = true; // will no longer add every book in the first query
 
-            if (currentListEmpty == false)
+            // check to see if this is the first query being checked
+            if (currentListEmpty == false) 
                 return AddAllNewBooks(currentList, queryList, out currentListEmpty);
 
             List<Book> newList = new List<Book>();
@@ -563,6 +572,21 @@ namespace MVCCapstone.Helpers
             }
 
             return newList;
+        }
+
+
+        /// <summary>
+        /// Deletes the book from the database
+        /// </summary>
+        /// <param name="book">the book object to delete</param>
+        /// <returns>integer containing records deleted</returns>
+        public static int DeleteBook(int bookId)
+        {
+            UsersContext db = new UsersContext();
+
+            Book book = db.Book.Find(bookId);
+            db.Book.Remove(book);
+            return db.SaveChanges();
         }
 
     }

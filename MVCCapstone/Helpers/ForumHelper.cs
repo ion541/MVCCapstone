@@ -13,6 +13,33 @@ namespace MVCCapstone.Helpers
     // helper class that contains methods / functions related to the forum
     public class ForumHelper
     {
+
+        public static int DeleteForum(int forumId)
+        {
+            UsersContext db = new UsersContext();
+
+            Forum forum = db.Forum.Find(forumId);
+
+            if (forum == null) return 0;
+
+            db.Forum.Remove(forum);
+
+            List<Thread> threadList = db.Thread.Where(m => m.ForumId == forumId).ToList();
+            foreach (Thread thread in threadList)
+                db.Thread.Remove(thread);
+
+            List<int> threadIds = threadList.Select(m => m.ThreadId).ToList();
+
+            List<Post> postList = db.Post.Where(m => threadIds.Contains(m.ThreadId)).ToList();
+            foreach (Post post in postList)
+                db.Post.Remove(post);
+
+            return db.SaveChanges();
+                
+            
+        }
+
+
         /// <summary>
         /// Get the forum id associated with the thread.
         /// Returns -1 if the forum id does not exist
@@ -28,6 +55,7 @@ namespace MVCCapstone.Helpers
 
             return -1;
         }
+
 
         /// <summary>
         /// Checks to see if the forum id exists and is a valid value

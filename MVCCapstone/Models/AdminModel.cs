@@ -73,7 +73,7 @@ namespace MVCCapstone.Models
     }
 
 
-    public class BookManagementModel
+    public class BookDetailsModel
     {
         [Required]
         [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
@@ -162,24 +162,23 @@ namespace MVCCapstone.Models
         public List<Image> images { get; set; } 
     }
 
-    public class DeleteBookModel
+    public class ManageBookModel
     {
-        [Required]
-        [StringLength(10, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
-        [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
-        [Display(Name = "Book Id")]
-        public int bookIdDelete { get; set; }
-
-        [Required]
         [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Title of Book")]
-        public string bookSearch { get; set; }
+        public string titleSearch { get; set; }
+
+        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [Display(Name = "Author of Book")]
+        public string authorSearch { get; set; }
+
+
     }
 
     /// <summary>
     /// Model passed to the view of the search result
     /// </summary>
-    public class DeleteBookSearchModel
+    public class ManageBookSearchModel
     {
         public List<Book> bookResults { get; set; }
     }
@@ -194,7 +193,7 @@ namespace MVCCapstone.Models
         public string author { get; set; }
         public int bookid { get; set; }
 
-        public bool lastAssociated { get; set; }
+        public bool isStandalone { get; set; }
         public int postCount { get; set; }
         public int threadCount { get; set; }
     }

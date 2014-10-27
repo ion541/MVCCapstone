@@ -1,4 +1,4 @@
-﻿@model MVCCapstone.Models.BookManagementModel
+﻿@model MVCCapstone.Models.BookDetailsModel
 @{
     ViewBag.Title = "Book Information";
 
@@ -21,7 +21,7 @@
 
 <div class="row">
 
-@using (Ajax.BeginForm("book", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "moveToMessage" }, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
+@using (Ajax.BeginForm("bookdetails", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "moveToMessage" }, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
 {
         @Html.AntiForgeryToken()
 

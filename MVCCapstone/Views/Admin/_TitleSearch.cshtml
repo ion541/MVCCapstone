@@ -1,4 +1,4 @@
-﻿@model MVCCapstone.Models.DeleteBookSearchModel
+﻿@model MVCCapstone.Models.ManageBookSearchModel
 
 @if (Model.bookResults.Count() == 0)
 {
@@ -8,33 +8,26 @@ else
 {
     <table class="table table-striped table-bordered">
         <tr>
-            <th></th>
-            <th>Book Id</th>
+            <th class="col-sm-2"></th>
+            <th class="col-sm-1">Id</th>
             <th>Title</th>
             <th>Author</th>
             <th>Publisher</th>
         </tr>
+
         @foreach (MVCCapstone.Models.Book book in Model.bookResults)
          {
-            <tr>
-                <td class="text-center"><input data-id="@book.BookId" type="button" onclick="setBookId(this)" value="Set"/></td>
-                <td id="@book.BookId">@book.BookId</td>
+            <tr id ="@book.BookId">
+                <td class="text-center">
+                     @Ajax.ActionLink("E", "editPrompt", new { bookid = book.BookId }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { @class = "btn btn-default", onclick = "scrollToTop()" })
+                     @Ajax.ActionLink("D", "deleteprompt", new { bookid = book.BookId }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { @class = "btn btn-default", onclick = "scrollToTop()" })
+                </td>
+                <td>@book.BookId</td>
                 <td>@book.Title</td>
                 <td>@book.Author</td>
                 <td>@book.Publisher</td>
             </tr>
          }
+
     </table>
 }
-
-<script>
-    function setBookId(target) {
-        var idSelected = target.dataset['id'];
-
-        $("#bookIdDelete").val(idSelected);
-        $('html, body').animate({
-            scrollTop: $("#capstone").offset().top
-        }, 400);
-        $("#bookIdDelete").focus();
-    }
-</script>

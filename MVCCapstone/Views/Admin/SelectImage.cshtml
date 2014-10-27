@@ -5,14 +5,14 @@
 @Html.Partial("Index")
 <h2>Step 1: Select An Image</h2>
 <br />
-@Html.RouteLink("No Image", new {controller = "admin", action = "book"}, new {@class ="btn btn-primary"})
+@Html.RouteLink("No Image", new {controller = "admin", action = "bookdetails"}, new {@class ="btn btn-primary"})
 @Html.RouteLink("Upload Image", new {controller = "admin", action = "uploadimage"}, new {@class ="btn btn-success"})
 <br /><br />
 <div class="row-fluid">
     @foreach (MVCCapstone.Models.Image image in Model.images)
     {
         <div class="col-sm-3">
-        <a href="/admin/book/?imageid=@image.ImageId" style="display: block;"><img style="max-height: 200px; max-width: 200px; margin:auto;margin-top:10px;" class="img-responsive thumbnail" src="@image.Path" /></a>
+        <a href="/admin/bookdetails/?imageid=@image.ImageId" style="display: block;"><img style="max-height: 200px; max-width: 200px; margin:auto;margin-top:10px;" class="img-responsive thumbnail" src="@image.Path" /></a>
         </div>
     }
 </div>

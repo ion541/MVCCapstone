@@ -317,9 +317,10 @@
     <Content Include="Views\Admin\SelectImage.cshtml" />
     <Content Include="Views\Admin\UploadImage.cshtml" />
     <Content Include="Views\Admin\_UploadImageResult.cshtml" />
-    <Content Include="Views\Admin\DeleteBook.cshtml" />
+    <Content Include="Views\Admin\ManageBook.cshtml" />
     <Content Include="Views\Admin\_TitleSearch.cshtml" />
     <Content Include="Views\Admin\_DeleteDetails.cshtml" />
+    <Content Include="Views\Admin\EditBook.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
@@ -359,7 +360,7 @@
     <Content Include="Views\Error\Index.cshtml" />
     <Content Include="Views\Admin\Index.cshtml" />
     <Content Include="Views\Admin\Account.cshtml" />
-    <Content Include="Views\Admin\Book.cshtml" />
+    <Content Include="Views\Admin\BookDetails.cshtml" />
     <Content Include="Views\Admin\_AccountIDPartial.cshtml" />
     <Content Include="Views\Admin\_AccountManagementModel.cshtml" />
     <Content Include="Views\Book\Index.cshtml" />

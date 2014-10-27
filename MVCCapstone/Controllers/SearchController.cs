@@ -166,8 +166,8 @@ namespace MVCCapstone.Controllers
             }
 
 
-            // filter down by language if the id is not 1 (which represents multiple languages)
-            if (model.query.language != "1" || !currentListBooksNotEmpty)
+            // filter down by language if the id is not 8 (which represents multiple languages)
+            if (model.query.language != "8" || !currentListBooksNotEmpty)
             {
                 queryList = db.Book.Where(m => m.LanguageId == model.query.language).ToList();
                 currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);

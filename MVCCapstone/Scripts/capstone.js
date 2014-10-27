@@ -15,6 +15,11 @@ function moveToPost() {
     }, 700);
 }
 
+function scrollToTop(){
+    $('html, body').animate({
+        scrollTop: $("#capstone").offset().top
+    }, 400);
+}
 // sets the storePost value attribute to the current 'content' text
 // done since the ajax post will reload the page which will lose the current text in the textarea
 function storeEditPost() {
@@ -71,10 +76,6 @@ function showSeriesTitle() {
 
     $("#seriesId").hide(500);
     $("#seriesSearch").hide(500);
-}
-
-function setSeriesId() {
-    alert('good job');
 }
 
 $(function () {
