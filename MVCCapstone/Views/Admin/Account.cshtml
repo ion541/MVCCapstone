@@ -59,7 +59,7 @@
             @Html.HiddenFor(m => m.UserRoles.hiddenPage, new { @Value = Model.UserRoles.hiddenPage })
             @Html.HiddenFor(m => m.UserRoles.hiddenRoleId, new { @Value = Model.UserRoles.hiddenRoleId })
 
-            <input type="submit" value="Apply Changes" />
+            <input class="btn btn-primary" type="submit" value="Apply Changes" />
         </fieldset>
     }
     
@@ -93,7 +93,7 @@
             </li>
         </ol>
           @Html.HiddenFor(m => m.hiddenId, new {@Value = Model.hiddenId })
-        <input type="submit" value="Generate List" />
+        <input class="btn btn-primary" type="submit" value="Generate List" />
     </fieldset>
 }
 
@@ -121,7 +121,7 @@
         foreach (var user in Model.PaginationUserInfoModel)
         {
         <tr>
-            <td>@Html.ActionLink("E","account", new {userId = user.UserId, roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}, new {@class = "btn btn-default"})</td>
+            <td>@Html.ActionLink("E","account", new {userId = user.UserId, roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}, new {@class = "btn btn-primary"})</td>
             <td>@user.UserId</td>
             <td>@user.UserName </td>
             <td>@user.RoleName</td>

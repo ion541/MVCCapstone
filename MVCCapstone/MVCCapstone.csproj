@@ -320,7 +320,9 @@
     <Content Include="Views\Admin\ManageBook.cshtml" />
     <Content Include="Views\Admin\_TitleSearch.cshtml" />
     <Content Include="Views\Admin\_DeleteDetails.cshtml" />
-    <Content Include="Views\Admin\EditBook.cshtml" />
+    <Content Include="Views\Admin\_EditBook.cshtml" />
+    <Content Include="Views\Admin\_EditBookResult.cshtml" />
+    <Content Include="Views\Admin\_ModalSeriesSearch.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

@@ -76,17 +76,17 @@ namespace MVCCapstone.Models
     public class BookDetailsModel
     {
         [Required]
-        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Book Title")]
         public string BookTitle { get; set; }
 
         [Required]
-        [StringLength(256, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "Author")]
         public string Author { get; set; }
 
         [Display(Name = "Synopsis")]
-        [StringLength(8000, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [StringLength(7500, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         public string Synopsis { get; set; }
 
         [RegularExpression("^(([0-9]{10})|([0-9]{13}))$", ErrorMessage = "Must be either 10 or 13 digits")]
@@ -115,7 +115,6 @@ namespace MVCCapstone.Models
         [Display(Name = "Language")]
         public List<SelectListItem> Language { get; set; }
 
-        [Display(Name = "Series")]
         public string isSeries { get; set; }
 
         [Display(Name = "Series")]
@@ -131,6 +130,12 @@ namespace MVCCapstone.Models
         [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
         [Display(Name = "Series Id")]
         public string ForumId { get; set; }
+
+        [Required]
+        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
+        [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
+        [Display(Name = "Series Id")]
+        public string NewForumId { get; set; }
 
         public string State { get; set; }
     }
@@ -152,7 +157,7 @@ namespace MVCCapstone.Models
         public List<Forum> seriesList { get; set; }
     }
 
-    public class AddBookResultModel
+    public class BookResultModel
     {
         public List<string> errors { get; set; }
     }
@@ -182,6 +187,29 @@ namespace MVCCapstone.Models
     {
         public List<Book> bookResults { get; set; }
     }
+
+
+    public class EditBookModel : BookDetailsModel
+    {
+        public bool displayEdit { get; set; }
+
+        public int BookId { get; set; }
+        public string LanguageId { get; set; }
+        public List<int> BookGenre { get; set; }
+
+        public bool isStandalone { get; set; }
+        public string SeriesTitleDisplay { get; set; }
+
+        [Display(Name = "Forum Action")]
+        public string ForumAction { get; set; }
+
+        /// <summary>
+        /// Known asp.net bug which prevents defaulted selected item
+        /// Solution is to use another list with another name (Language => LanguageDisplay)
+        /// </summary>
+        public List<SelectListItem> LanguageDisplay { get; set; }
+    }
+
 
     /// <summary>
     /// Used to store information relevant to a user before deleting

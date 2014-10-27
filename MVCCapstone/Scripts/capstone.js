@@ -64,6 +64,27 @@ function hideSeriesOption() {
     $("#isSeriesOption").hide(500);
 }
 
+
+function showForumSection() {
+    $("#ForumIdSection").show(500);
+    $("#TitleSection").hide(500);
+
+}
+function showTitleSection() {
+    $("#ForumIdSection").hide(500);
+    $("#TitleSection").show(500);
+}
+
+function hideForumTitleSection() {
+    $("#ForumIdSection").hide(500);
+    $("#TitleSection").hide(500);
+}
+
+
+function showSection(id) {
+    $("#" + id).show(500);
+}
+
 function hideSeriesTitle() {
     $("#seriesTitle").hide(500);
 

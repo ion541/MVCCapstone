@@ -242,6 +242,7 @@ namespace MVCCapstone.Controllers
 
 
 
+
         //
         // GET: /Admin/SelectImage
         [RoleAuthorize(Roles = "admin")]
@@ -254,12 +255,14 @@ namespace MVCCapstone.Controllers
 
 
 
+
         //
         // GET: /Admin/UploadImage
         public ActionResult UploadImage()
         {
             return View();
         }
+
 
 
 
@@ -330,6 +333,8 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+
         //
         // POST: /Admin/Book
         [HttpPost]
@@ -337,8 +342,7 @@ namespace MVCCapstone.Controllers
         [RoleAuthorize(Roles = "admin")]
         public ActionResult BookDetails(BookDetailsModel model)
         {
-            
-            AddBookResultModel resultModel = new AddBookResultModel();
+            BookResultModel resultModel = new BookResultModel();
             resultModel.errors = new List<string>();
 
             if (!BookHelper.CheckISBN(model.ISBN))
@@ -390,12 +394,22 @@ namespace MVCCapstone.Controllers
             return PartialView("_AddBookResult", resultModel);
         }
 
+
+
+
+        //
+        // Get: /Admin/ManageBook
         [RoleAuthorize(Roles = "admin")]
         public ActionResult ManageBook()
         {
             return View();
         }
 
+
+
+
+        //
+        // AJAX: /Admin/DeleteBook
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         [AjaxAction]
@@ -427,7 +441,13 @@ namespace MVCCapstone.Controllers
             return "The book id does not exist. No records were deleted.";
         }
 
-         [RoleAuthorize(Roles = "admin")]
+
+
+
+        //
+        // AJAX: /Admin/DeletePrompt
+        [AjaxAction]
+        [RoleAuthorize(Roles = "admin")]
         public PartialViewResult DeletePrompt(int? bookId)
         {
             DeleteBookPromptModel model = new DeleteBookPromptModel();
@@ -464,17 +484,93 @@ namespace MVCCapstone.Controllers
             return PartialView("_DeleteDetails", model);
         }
 
-         public PartialViewResult Edit(int id)
-         {
-             Book book = db.Book.Find(id);
-             return PartialView("EditBook", book);
-         }
 
-         public ActionResult Details(int id)
-         {
-             return View(db.Book.Find(id));
-         }
 
+
+        //
+        // AJAX: /Admin/EditPrompt
+        [AjaxAction]
+        [RoleAuthorize(Roles = "admin")]
+        public PartialViewResult EditPrompt(int bookId)
+        {
+           
+            EditBookModel model = new EditBookModel();
+            Book book = db.Book.Find(bookId);
+            if (book != null)
+            {
+                model.displayEdit = true;
+
+                model.BookId = book.BookId;
+                model.BookTitle = book.Title;
+                model.Author = book.Author;
+                model.Published = book.Published.ToShortDateString();
+                model.Publisher = book.Publisher;
+                model.Image = book.ImageId;
+                model.Synopsis = book.Synopsis;
+                model.LanguageId = book.LanguageId;
+                model.ISBN = book.ISBN;
+
+                model.BookGenre = db.BookGenre.Where(m => m.BookId == bookId).Select(m => m.GenreId).ToList();
+                model.AvaialbleGenres = BookHelper.GetGenreList();
+                model.Language = LanguageHelper.DisplayList(book.LanguageId);
+
+                if (db.Forum.Where(m => m.ForumId == book.ForumId).Select(m => m.SeriesTitle).First() == null)
+                {
+                    model.isStandalone = true;
+                    
+                }
+                else
+                {
+                    model.isStandalone = false;
+                    model.SeriesTitleDisplay = db.Forum.Where(m => m.ForumId == book.ForumId).Select(m => m.SeriesTitle).First();
+                }
+            }
+            else
+            {
+                model.displayEdit = false;
+            }
+
+            return PartialView("_EditBook", model);
+        }
+
+
+
+
+        //
+        // AJAX POST: /Admin/Edit
+        [HttpPost]
+        [RoleAuthorize(Roles = "admin")]
+        [AjaxAction]
+        public PartialViewResult Edit(EditBookModel model)
+        {
+            BookResultModel resultModel = new BookResultModel();
+            if (!BookHelper.CheckISBN(model.ISBN))
+                resultModel.errors.Add("The ISBN is already in the database.");
+
+            if (model.PostedGenres.GenreId == null)
+                resultModel.errors.Add("At least one genre must be selected.");
+
+            if (model.isSeries == "Series" && model.Series == "Existing")
+            {
+                if (!BookHelper.CheckForForumIdExistence(Int32.Parse(model.ForumId)))
+                    resultModel.errors.Add("The forum id inputted is not valid.");
+            }
+
+            DateTime day;
+            if (!DateTime.TryParseExact(model.Published, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out day))
+                resultModel.errors.Add("The date published inputted is not valid.");
+
+            
+
+            return PartialView("_EditBookResult");
+        }
+
+
+
+
+
+        //
+        // AJAX POST: /Admin/TitleSearch
         [HttpPost]
         [AjaxAction]
         [RoleAuthorize(Roles = "admin")]
@@ -491,6 +587,9 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+        //
+        // AJAX POST: /Admin/SeriesSearch
         [RoleAuthorize(Roles = "admin")]
         public PartialViewResult SeriesSearch(string seriesTitle)
         {

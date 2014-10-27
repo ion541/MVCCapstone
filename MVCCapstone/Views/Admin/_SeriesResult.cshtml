@@ -2,7 +2,7 @@
 
 @if (Model.seriesList.Count() > 0)
 {
-    <table class="table">
+    <table class="table"> 
         <tr>
             <th class="col-sm-1"></th>
             <th class="col-sm-2">Series Id</th>
@@ -11,7 +11,7 @@
         @foreach(MVCCapstone.Models.Forum series in Model.seriesList)
         {
             <tr>
-                <td><input data-id="@series.ForumId" type="button" onclick="setSeriesId(this)" value="Set"/></td>
+                <td><input data-id="@series.ForumId" class="btn btn-primary" type="button" data-dismiss="modal" onclick="setSeriesId(this)" value="Set"/></td>
                 <td>@series.ForumId</td>
                 <td>@series.SeriesTitle</td>
             </tr>
