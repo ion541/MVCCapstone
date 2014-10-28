@@ -242,12 +242,13 @@ namespace MVCCapstone.Helpers
         /// <summary>
         /// Get every thread that is being shared with the forum id
         /// </summary>
-        /// <param name="forumid">the forum id of the book to be searched</param>
+        /// <param name="forumId">the forum id of the book to be searched</param>
         /// <param name="page">The page of thread to be displayed</param>
+        /// <param name="display">The number of objects to display per page</param>
         /// <returns>list of threads sharing the forum id</returns>
-        public static IPagedList<ThreadModel> GetThreadList(int forumId, int page)
+        public static IPagedList<ThreadModel> GetThreadList(int forumId, int page, int display)
         {
-            int threadToDisplay = 20; // display 20 threads per page
+          
 
             // page viewed cannot be negative
             if (page <= 0) page = 1;
@@ -273,24 +274,42 @@ namespace MVCCapstone.Helpers
             // format the date of the string to make it more easily understandable to viewers
             foreach (ThreadModel thread in threads)
                 thread.DateString = FormatForumDate(thread.LatestPost);
-            
- 
-            return threads.ToPagedList(page, threadToDisplay) as IPagedList<ThreadModel>;
+
+
+            return threads.ToPagedList(page, display) as IPagedList<ThreadModel>;
         }
 
 
         /// <summary>
-        /// Returns a string indicating if the date was today, yesterday
+        /// Returns a more meaningful date string such as Today, Yesterday, Hours Ago, or Minutes ago.
         /// </summary>
         /// <param name="date">the date to be checked</param>
         /// <returns>a string representing the day</returns>
         public static string FormatForumDate(DateTime date)
         {
-            if (date.DayOfYear == DateTime.Today.DayOfYear)
-                return "Today";
-            if (date.DayOfYear == DateTime.Today.AddDays(-1).DayOfYear)
+            if (date.DayOfYear == DateTime.Today.DayOfYear && date.Year == DateTime.Today.Year)
+            {
+                if (date.Hour == DateTime.Today.Hour) 
+                {
+                    return (DateTime.Today.Minute - date.Minute).ToString() + " minutes ago.";
+                }
+                else if ((DateTime.Today.Hour - date.Hour) > 12)
+                {
+                    return (DateTime.Today.Hour - date.Hour).ToString() + " hours ago.";
+                }
+                else
+                {
+                    return "Today";
+                }
+            }
+            else if (date.DayOfYear == DateTime.Today.AddDays(-1).DayOfYear)
+            {
                 return "Yesterday";
-            return date.ToShortDateString();
+            }
+            else
+            {
+                return date.ToShortDateString();
+            }
         }
 
         /// <summary>

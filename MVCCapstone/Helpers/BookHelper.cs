@@ -25,26 +25,28 @@ namespace MVCCapstone.Helpers
         }
 
         /// <summary>
-        /// Checks to see if the inputted isbn matches an isbn in the database
+        /// Checks to see if the inputted isbn matches an isbn in the database.
+        /// Ignores the record with the specified book id if provided
         /// </summary>
         /// <param name="isbn">the isbn to be searched for</param>
+        /// <param name="bookid">ignore the isbn if it has the specified book id</param>
         /// <returns>true if a record exist with the inputted isbn otherwise false</returns>
-        public static bool CheckISBN(string isbn)
+        public static bool ISBNExist(string isbn, int bookId = -1)
         {
             UsersContext db = new UsersContext();
 
-            int count = (from b in db.Book
-                         where b.ISBN == isbn
-                         select b).Count();
-
-            if (count >= 1)
+            int count;
+            if (bookId != -1)
             {
-                return false;
+                count = db.Book.Where(m => m.ISBN == isbn && m.BookId != bookId).Count();
             }
             else
             {
-                return true;
+                count = db.Book.Where(m => m.ISBN == isbn).Count();
             }
+
+           return (count >= 1) ? true : false;
+ 
         }
 
         /// <summary>
@@ -368,6 +370,7 @@ namespace MVCCapstone.Helpers
                             && bg.GenreId == genreId
                          select bg).Count();
 
+            // no duplicate were found, insert the record
             if (count == 0)
             {
                 BookGenre bookGenre = new BookGenre();

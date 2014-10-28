@@ -55,6 +55,13 @@ namespace MVCCapstone.Controllers
             model.Genre = BookHelper.GetBookGenreList(book.BookId);  // find every genre the book is associated with
             model.Synopsis = (book.Synopsis == null) ? "N/A" : book.Synopsis;
             model.ForumId = book.ForumId;
+            model.ThreadList = ForumHelper.GetThreadList(book.ForumId, 1, 8);
+
+            model.DiscussionTitle = ForumHelper.GetForumTitle(book.ForumId);
+            model.IsSeries = ForumHelper.IsSeries(book.ForumId);
+
+            if (model.IsSeries)
+                model.SeriesTitle = ForumHelper.GetForumTitle(book.ForumId);
                 
 
             //image can be null, if it is, use a default image otherwise attempt to find the image 

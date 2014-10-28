@@ -18,8 +18,19 @@ function moveToPost() {
 function scrollToTop(){
     $('html, body').animate({
         scrollTop: $("#capstone").offset().top
+    }, 1000);
+}
+
+function scrollTo(id) {
+    $('html, body').animate({
+        scrollTop: $("#" + id).offset().top
     }, 400);
 }
+
+function hideEditForm() {
+    $("#editForm").hide();
+}
+
 // sets the storePost value attribute to the current 'content' text
 // done since the ajax post will reload the page which will lose the current text in the textarea
 function storeEditPost() {

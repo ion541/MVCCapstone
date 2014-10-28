@@ -12,11 +12,12 @@
 
 @if (Model.displayEdit == true)
 {
-    using (Ajax.BeginForm("edit", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "scrollToTop" }, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
+    <div class="row" id="editForm">
+    @using (Ajax.BeginForm("edit", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "scrollToTop" }, new {@class = "form-horizontal", @enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
             
-            
+        @Html.HiddenFor(m => m.BookId)
         @Html.HiddenFor(m => m.isStandalone)
 
         if (Model.isStandalone == true)
@@ -159,6 +160,7 @@
             </div>
         </div>
     }
+    </div>
 
 }
 else
@@ -172,5 +174,5 @@ else
 </script>
 
 
-@Html.Partial("_ModalSeriesSearch");
+@Html.Partial("_ModalSeriesSearch")
 

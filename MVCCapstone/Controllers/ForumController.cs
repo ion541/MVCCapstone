@@ -33,7 +33,7 @@ namespace MVCCapstone.Controllers
 
             ForumModel model = new ForumModel();
             model.ForumId = validForumId;
-            model.threadList = ForumHelper.GetThreadList(validForumId, page);
+            model.threadList = ForumHelper.GetThreadList(validForumId, page, 15);
             model.forumTitle = ForumHelper.GetForumTitle(validForumId);
             model.series = ForumHelper.IsSeries(validForumId);
             if (model.series)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using PagedList;
 
 namespace MVCCapstone.Models
 {
@@ -19,5 +20,10 @@ namespace MVCCapstone.Models
         public string Synopsis { get; set; }
         public string State { get; set; }
         public int ForumId { get; set; }
+        public IPagedList<ThreadModel> ThreadList { get; set; }
+        public string DiscussionTitle { get; set; }
+        public bool IsSeries { get; set; }
+        public string SeriesTitle { get; set; }
+
     }
 }

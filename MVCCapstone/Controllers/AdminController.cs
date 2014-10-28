@@ -345,10 +345,11 @@ namespace MVCCapstone.Controllers
             BookResultModel resultModel = new BookResultModel();
             resultModel.errors = new List<string>();
 
-            if (!BookHelper.CheckISBN(model.ISBN))
+
+            if (BookHelper.ISBNExist(model.ISBN))
                 resultModel.errors.Add("The ISBN is already in the database.");
 
-            if (model.PostedGenres.GenreId == null)
+            if (model.PostedGenres == null)
                 resultModel.errors.Add("At least one genre must be selected.");
 
             if (model.isSeries == "Series" && model.Series == "Existing")
@@ -421,6 +422,8 @@ namespace MVCCapstone.Controllers
                 Book book = db.Book.Find(bookId);
 
                 string deletedForumRecords = "";
+
+                // check to see if the book is a standalone, if so delete the post and threads associated with it
                 if (db.Forum.Where(m => m.ForumId == book.ForumId).Select(m => m.SeriesTitle).First() == null)
                 {
                     int forumId = book.ForumId;
@@ -428,13 +431,14 @@ namespace MVCCapstone.Controllers
 
                     // reduce by one since the forum id record is also deleted
                     if (postThreadDeleted > 0) postThreadDeleted--;
- 
+                    
                     deletedForumRecords = " A total of " + postThreadDeleted + " posts and threads were also deleted.";
                 }
 
-                // delete the book
+                // attempt to delete the book
                 int bookCounter = BookHelper.DeleteBook(bookId);
 
+                // return message of numbers of book, threads and posts deleted
                 return bookCounter + " book were deleted. " + deletedForumRecords;
 
             }
@@ -503,7 +507,7 @@ namespace MVCCapstone.Controllers
                 model.BookId = book.BookId;
                 model.BookTitle = book.Title;
                 model.Author = book.Author;
-                model.Published = book.Published.ToShortDateString();
+                model.Published = String.Format("{0:dd/MM/yyyy}", book.Published);
                 model.Publisher = book.Publisher;
                 model.Image = book.ImageId;
                 model.Synopsis = book.Synopsis;
@@ -544,25 +548,114 @@ namespace MVCCapstone.Controllers
         public PartialViewResult Edit(EditBookModel model)
         {
             BookResultModel resultModel = new BookResultModel();
-            if (!BookHelper.CheckISBN(model.ISBN))
+            resultModel.errors = new List<string>();
+
+            if (BookHelper.ISBNExist(model.ISBN, model.BookId))
                 resultModel.errors.Add("The ISBN is already in the database.");
 
-            if (model.PostedGenres.GenreId == null)
+            if (model.PostedGenres == null)
                 resultModel.errors.Add("At least one genre must be selected.");
-
-            if (model.isSeries == "Series" && model.Series == "Existing")
-            {
-                if (!BookHelper.CheckForForumIdExistence(Int32.Parse(model.ForumId)))
-                    resultModel.errors.Add("The forum id inputted is not valid.");
-            }
 
             DateTime day;
             if (!DateTime.TryParseExact(model.Published, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out day))
                 resultModel.errors.Add("The date published inputted is not valid.");
 
-            
+            // if there are no errors, proceed to edit the book
+            if (resultModel.errors.Count() == 0)
+            {
 
-            return PartialView("_EditBookResult");
+                Book book = db.Book.Find(model.BookId);
+                Forum forum = db.Forum.Find(book.ForumId);
+
+                int forumId = -1;
+
+                // Join can be set by both being a standalone and a series
+                if (model.ForumAction == "Join")
+                {
+                    forumId = Int32.Parse(model.ForumId); 
+                  
+                    if (db.Forum.Where(m => m.ForumId == forumId && m.SeriesTitle != null).Count() == 0)
+                    {
+                        resultModel.errors.Add("The specified series id does not exist.");
+                    }
+                    else
+                    {
+                        // no longer require its old forum id due to joining a series from a standalone 
+                        if (model.isStandalone)
+                            db.Forum.Remove(forum); // delete the forum id from the database
+                        
+                    }
+                } 
+                else if (model.isStandalone && model.ForumAction == "Convert")
+                {
+                    // use the current forum id and set it as a series by applying a series title
+                    forum.SeriesTitle = model.SeriesTitle;
+                    forumId = book.ForumId;
+                 
+                }
+                else if (!model.isStandalone && model.ForumAction != "Remain")
+                {
+                    // convert book to standalone
+
+                    // create a new forum id
+                    Forum newForum = new Forum();
+                  
+                    if (model.ForumAction == "Convert")
+                    {
+                        newForum.SeriesTitle = model.SeriesTitle; // is a series
+                    }
+                    else
+                    {
+                        newForum.SeriesTitle = null; // standalone
+                    }
+
+                    db.Forum.Add(newForum);
+                    db.SaveChanges();
+
+                    // set the forum id to the forum  that was just created
+                    forumId = db.Forum.OrderByDescending(m => m.ForumId).Select(m => m.ForumId).First();
+                }
+                else if (model.ForumAction == "Remain")
+                {
+                    forumId = book.ForumId; // leave it with its current forum id
+                }
+                
+
+
+                // clear every book genre record
+                List<BookGenre> bgList = db.BookGenre.Where(m => m.BookId == model.BookId).ToList();
+                foreach (BookGenre bg in bgList)
+                    db.BookGenre.Remove(bg);
+
+
+                // insert the book genre
+                for (int i = 0; i < model.PostedGenres.GenreId.Count(); i++)
+                {
+                    BookGenre bookGenre = new BookGenre();
+                    bookGenre.BookId = model.BookId;
+                    bookGenre.GenreId = Int32.Parse(model.PostedGenres.GenreId[i]);
+                    db.BookGenre.Add(bookGenre);
+                }
+
+                book.Title = model.BookTitle;
+                book.Author = model.Author;
+                book.Synopsis = model.Synopsis;
+                book.Published = day;
+                book.Publisher = model.Publisher;
+                book.ISBN = model.ISBN;
+                book.LanguageId = Request["LanguageDisplay"].ToString();
+                book.ForumId = forumId;
+
+                if (resultModel.errors.Count() == 0)
+                {
+                    int recordAffected = db.SaveChanges();
+
+                    if (recordAffected == 0)
+                        resultModel.errors.Add("No records were changed");
+                }
+            }
+       
+            return PartialView("_EditBookResult", resultModel);
         }
 
 
