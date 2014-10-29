@@ -19,6 +19,12 @@ namespace MVCCapstone
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
 
+            routes.MapRoute(
+                name: "Book",
+                url: "{controller}/{action}/{bookid}",
+                defaults: new { controller = "Home", action = "Index", bookid = UrlParameter.Optional }
+            );
+
             // anything urls that fall down to here will be treated as a 404
             routes.MapRoute(
                 name: "404",

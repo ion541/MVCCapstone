@@ -15,6 +15,7 @@
     </ul>
 } else {
     <h4>The book has been succesfully editted</h4>
+     @Html.ActionLink("To Book", "details", new { controller = "book", action = "details", bookid = @Model.bookId }, new {@class="btn btn-success", style="margin-top:5px; min-width:100px" })
     <script type="text/javascript">
         hideEditForm();
     </script>

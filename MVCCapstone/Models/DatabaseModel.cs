@@ -34,6 +34,7 @@ namespace MVCCapstone.Models
         public DbSet<Bookmark> Bookmark { get; set; }
         public DbSet<Thread> Thread { get; set; }
         public DbSet<Post> Post { get; set; }
+        public DbSet<Review> Review { get; set; }
     }
 
     [Table("Question")]
@@ -192,6 +193,20 @@ namespace MVCCapstone.Models
         public string ReplyPostContent { get; set; }
         public DateTime PostDate { get; set; }
         public string ModifiedDate { get; set; }
+    }
+
+    [Table("Review")]
+    public class Review
+    {
+        [Key]
+        [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
+        public int ReviewId { get; set; }
+        public int UserId { get; set; }
+        public int BookId { get; set; }
+        public string Title { get; set; }
+        public string Content { get; set; }
+        public DateTime DateCreated { get; set; }
+        public DateTime DateModified { get; set; }
     }
     
 }

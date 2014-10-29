@@ -18,7 +18,6 @@ namespace MVCCapstone.Controllers
 
         public ActionResult Index()
         {
-
             return RedirectToAction("Index", "Home");
         }
 
@@ -98,28 +97,6 @@ namespace MVCCapstone.Controllers
             return PartialView("_BookmarkAdded");
         }
 
-
-        /// <summary>
-        /// Autocomplete for the search
-        /// </summary>
-        /// <param name="term">the term to be searched</param>
-        [AjaxAction]
-        public ActionResult Autocomplete(string term)
-        {
-
-            string[] bookList;
-            // Get Tags from database
-            if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
-            {
-                bookList = db.Book.Where(m => m.Title.Contains(term)).Select(m => m.Title).ToArray();
-            }
-            else
-            {
-                bookList = db.Book.Where(m => m.Title.Contains(term) && m.State != "Hidden").Select(m => m.Title).ToArray();
-            }
-
-            return this.Json(bookList, JsonRequestBehavior.AllowGet);
-        }
 
 
     }

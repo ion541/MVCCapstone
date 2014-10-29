@@ -160,6 +160,7 @@ namespace MVCCapstone.Models
     public class BookResultModel
     {
         public List<string> errors { get; set; }
+        public int bookId { get; set; }
     }
 
     public class DisplayImageModel

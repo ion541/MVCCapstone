@@ -20,7 +20,7 @@ namespace MVCCapstone.Controllers
         // GET: /Forum/
         public ActionResult Index()
         {
-            return View();
+            return RedirectToAction("Index", "Home");
         }
 
         

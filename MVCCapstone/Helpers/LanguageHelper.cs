@@ -35,7 +35,7 @@ namespace MVCCapstone.Helpers
                 }
                 else
                 {
-                    DisplayList.Add(new SelectListItem { Text = language.Value, Value = language.Language_ID.ToString(), Selected = false });
+                    DisplayList.Add(new SelectListItem { Text = language.Value, Value = language.Language_ID.ToString()});
                 }
             }
 

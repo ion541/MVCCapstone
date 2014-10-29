@@ -11,17 +11,21 @@
     {
     <div class="row">
         <div>
-            @Ajax.ActionLink("Change State",
-                "changestate",
-                new { bookid = Model.BookId },
-                new AjaxOptions
-                { 
-                    HttpMethod = "POST",
-                    InsertionMode = InsertionMode.Replace,
-                    UpdateTargetId = "State",
-                },
-                new {@class="pull-right btn btn-primary" }
-            )
+                <div class="pull-right">
+                @Ajax.ActionLink("Change State",
+                    "changestate",
+                    new { bookid = Model.BookId },
+                    new AjaxOptions
+                    { 
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "State",
+                    },
+                    new {@class="btn btn-primary" }
+                )
+         
+                @Html.ActionLink("Edit",null, new {controller = "admin", action = "managebook", id = @Model.BookId}, new {style="min-width: 100px;", @class = "btn btn-primary"})
+            </div>
             <div id="State">
                 @if (Model.State == "Visible")
                 {
@@ -119,8 +123,7 @@
                     </div> 
                 </div>
                 <div class="row">
-                    <div class="col-sm-12">
-                        <small>@Model.Synopsis</small>
+                    <div class="col-sm-12" style="word-wrap: break-word; white-space: pre-line"><small>@Model.Synopsis</small>
                     </div>
                 </div>
             </div>
@@ -160,7 +163,7 @@
                                 <td>
                          
                                     @Html.ActionLink(@thread.Title, null, new {controller= "forum", action = "viewthread", fview = true, threadid = @thread.ThreadId, page = 1})
-                                    by @thread.LatestPoster
+                                    <small>by @thread.LatestPoster</small>
                                 </td>
                                 <td><small class="pull-right">@thread.DateString</small></td>
                             </tr>
@@ -175,13 +178,14 @@
             <div class="row">
                 <div class="row">
                     <strong>@Model.Title.ToUpper()</strong> Reviews
-                    @Html.RouteLink("See All Reviews", new { controller = "forum", action = "thread", forumid = Model.ForumId }, new { @class = "btn btn-primary pull-right" })
+                    @Html.RouteLink("See All Reviews", new { controller = "review", action = "book", id = Model.BookId }, new { @class = "btn btn-primary pull-right" })
                 </div>
 
                 <div class="row">
-                    <a href="#">Top 10 Highest Rated</a>
-                    <a href="#">Top 10 Newest</a>
-                    <a href="#">Top 10 Lowest Rated</a>
+                    <small>
+                        <a href="#">Top 8 Most Rated</a> |
+                        <a href="#">Top 8 Newest</a>
+                    </small>
                 </div>
                 <div class="row">
                     <table class="table table-striped table-condensed">

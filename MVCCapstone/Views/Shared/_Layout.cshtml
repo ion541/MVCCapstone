@@ -10,7 +10,13 @@
         @Styles.Render("~/Content/css")
         @Styles.Render("~/Content/themes/base/css")
         @Scripts.Render("~/bundles/modernizr")
-
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <script src="/Scripts/bootstrap.min.js"></script>
+        @Scripts.Render("~/bundles/jquery")
+        @Scripts.Render("~/bundles/jqueryui")
+        @Scripts.Render("~/bundles/jqueryval")
+        @Scripts.Render("~/Scripts/capstone.js")
+        @RenderSection("scripts", required: false)
         <style>
             .text-content{
                 line-height: 1.2em;
@@ -95,22 +101,13 @@
 
 
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-        <script src="/Scripts/bootstrap.min.js"></script>
-
-        @Scripts.Render("~/bundles/jquery")
-        @Scripts.Render("~/bundles/jqueryui")
-        @Scripts.Render("~/bundles/jqueryval")
-        @Scripts.Render("~/Scripts/capstone.js")
-        @RenderSection("scripts", required: false)
-
 
         <script type="text/javascript">
             $(document).ready(function () {
 
                 // auto complete jquery
                 $('#titleSearch').autocomplete({
-                    source: '@Url.Action("autocomplete","book")',
+                    source: '@Url.Action("autocomplete","search")',
                     minLength: 2,
                     select: function (event, ui) {  
                         $(location).attr('href', "/Search/Advanced/?title=" + encodeURIComponent(ui.item.value));

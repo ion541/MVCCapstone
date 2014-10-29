@@ -181,6 +181,7 @@
     <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\ForumController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\ReviewController.cs" />
     <Compile Include="Controllers\SearchController.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -199,6 +200,7 @@
     <Compile Include="Models\BookModel.cs" />
     <Compile Include="Models\DatabaseModel.cs" />
     <Compile Include="Models\ForumModel.cs" />
+    <Compile Include="Models\ReviewModel.cs" />
     <Compile Include="Models\RoleModel.cs" />
     <Compile Include="Models\SearchModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -323,6 +325,9 @@
     <Content Include="Views\Admin\_EditBook.cshtml" />
     <Content Include="Views\Admin\_EditBookResult.cshtml" />
     <Content Include="Views\Admin\_ModalSeriesSearch.cshtml" />
+    <Content Include="Views\Review\Book.cshtml" />
+    <Content Include="Views\Review\Review.cshtml" />
+    <Content Include="Views\Review\Create.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

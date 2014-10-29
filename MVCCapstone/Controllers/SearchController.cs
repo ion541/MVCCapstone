@@ -41,11 +41,18 @@ namespace MVCCapstone.Controllers
             }
 
             model.availableLanguage = LanguageHelper.DisplayList();
+            model.availableLanguage.Insert(0, new SelectListItem { Text = "Any", Value = "0" });
+
             model.availableGenres = BookHelper.GetGenreList();
             if (title != null)
             {
                 model.query.title = title;
-                model.books = db.Book.Where(m => m.Title.Contains(title)).OrderBy(m => m.Title).ToList();
+
+                // get the id of the series where the title matches th term
+                int[] seriesId = db.Forum.Where(m => m.SeriesTitle.Contains(model.query.title)).Select(m => m.ForumId).ToArray();
+
+                model.books = db.Book.Where(m => m.Title.Contains(model.query.title) || seriesId.Contains(m.ForumId)).OrderBy(m => m.Title).ToList();
+                //model.books = db.Book.Where(m => m.Title.Contains(title)).OrderBy(m => m.Title).ToList();
 
                 // only show hidden books to admins
                 if (!User.Identity.IsAuthenticated || !User.IsInRole("admin"))
@@ -78,7 +85,10 @@ namespace MVCCapstone.Controllers
             // filter the current list down by books that contains a title similar to the inputted title
             if (model.query.title != null)
             {
-                queryList = db.Book.Where(m => m.Title.Contains(model.query.title)).OrderBy(m => m.Title).ToList();
+                // get the id of the series where the title matches th term
+                int[] seriesId = db.Forum.Where(m => m.SeriesTitle.Contains(model.query.title)).Select(m => m.ForumId).ToArray();
+
+                queryList = db.Book.Where(m => m.Title.Contains(model.query.title) || seriesId.Contains(m.ForumId)).OrderBy(m => m.Title).ToList();
                 currentList = BookHelper.AddAllNewBooks(currentList, queryList, out currentListBooksNotEmpty);
             }
 
@@ -167,7 +177,7 @@ namespace MVCCapstone.Controllers
 
 
             // filter down by language if the id is not 8 (which represents multiple languages)
-            if (model.query.language != "8" || !currentListBooksNotEmpty)
+            if (model.query.language != "0" || !currentListBooksNotEmpty)
             {
                 queryList = db.Book.Where(m => m.LanguageId == model.query.language).ToList();
                 currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
@@ -223,6 +233,32 @@ namespace MVCCapstone.Controllers
 
             TempData["query"] = model;
             return PartialView("_SearchResult",model);
+        }
+
+        /// <summary>
+        /// Autocomplete for the search
+        /// </summary>
+        /// <param name="term">the term to be searched</param>
+        [AjaxAction]
+        public ActionResult Autocomplete(string term)
+        {
+
+            string[] bookList;
+
+            // get the id of the series where the title matches th term
+            int[] seriesId = db.Forum.Where(m => m.SeriesTitle.Contains(term)).Select(m => m.ForumId).ToArray();
+            // Get the title of the book where it matches the term
+            if (User.Identity.IsAuthenticated && User.IsInRole("admin"))
+            {
+
+                bookList = db.Book.Where(m => m.Title.Contains(term) || seriesId.Contains(m.ForumId)).Select(m => m.Title).ToArray();
+            }
+            else
+            {
+                bookList = db.Book.Where(m => (m.Title.Contains(term) || seriesId.Contains(m.ForumId)) && m.State != "Hidden").Select(m => m.Title).ToArray();
+            }
+
+            return this.Json(bookList, JsonRequestBehavior.AllowGet);
         }
 
     }

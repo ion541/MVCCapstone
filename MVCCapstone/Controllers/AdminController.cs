@@ -345,7 +345,6 @@ namespace MVCCapstone.Controllers
             BookResultModel resultModel = new BookResultModel();
             resultModel.errors = new List<string>();
 
-
             if (BookHelper.ISBNExist(model.ISBN))
                 resultModel.errors.Add("The ISBN is already in the database.");
 
@@ -401,8 +400,12 @@ namespace MVCCapstone.Controllers
         //
         // Get: /Admin/ManageBook
         [RoleAuthorize(Roles = "admin")]
-        public ActionResult ManageBook()
+        public ActionResult ManageBook(int? id)
         {
+            if (id.HasValue)
+            {
+                ViewBag.ShowEdit = id.Value;
+            }
             return View();
         }
 
@@ -497,7 +500,7 @@ namespace MVCCapstone.Controllers
         [RoleAuthorize(Roles = "admin")]
         public PartialViewResult EditPrompt(int bookId)
         {
-           
+
             EditBookModel model = new EditBookModel();
             Book book = db.Book.Find(bookId);
             if (book != null)
@@ -513,6 +516,7 @@ namespace MVCCapstone.Controllers
                 model.Synopsis = book.Synopsis;
                 model.LanguageId = book.LanguageId;
                 model.ISBN = book.ISBN;
+
 
                 model.BookGenre = db.BookGenre.Where(m => m.BookId == bookId).Select(m => m.GenreId).ToList();
                 model.AvaialbleGenres = BookHelper.GetGenreList();
@@ -545,10 +549,12 @@ namespace MVCCapstone.Controllers
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         [AjaxAction]
+        [ValidateAntiForgeryToken]
         public PartialViewResult Edit(EditBookModel model)
-        {
+        {     
             BookResultModel resultModel = new BookResultModel();
             resultModel.errors = new List<string>();
+            resultModel.bookId = model.BookId;
 
             if (BookHelper.ISBNExist(model.ISBN, model.BookId))
                 resultModel.errors.Add("The ISBN is already in the database.");
@@ -564,12 +570,15 @@ namespace MVCCapstone.Controllers
             if (resultModel.errors.Count() == 0)
             {
 
+                // select the current book
                 Book book = db.Book.Find(model.BookId);
+                // select the forum id with the if associated with the book
                 Forum forum = db.Forum.Find(book.ForumId);
 
-                int forumId = -1;
+                int forumId = -1; // default value for now
 
                 // Join can be set by both being a standalone and a series
+                // change the books current forum id to the joined forum id
                 if (model.ForumAction == "Join")
                 {
                     forumId = Int32.Parse(model.ForumId); 
@@ -587,7 +596,8 @@ namespace MVCCapstone.Controllers
                     }
                 } 
                 else if (model.isStandalone && model.ForumAction == "Convert")
-                {
+                { 
+                    // current the standalone book to a series
                     // use the current forum id and set it as a series by applying a series title
                     forum.SeriesTitle = model.SeriesTitle;
                     forumId = book.ForumId;
@@ -596,7 +606,6 @@ namespace MVCCapstone.Controllers
                 else if (!model.isStandalone && model.ForumAction != "Remain")
                 {
                     // convert book to standalone
-
                     // create a new forum id
                     Forum newForum = new Forum();
                   
@@ -636,7 +645,8 @@ namespace MVCCapstone.Controllers
                     bookGenre.GenreId = Int32.Parse(model.PostedGenres.GenreId[i]);
                     db.BookGenre.Add(bookGenre);
                 }
-
+                
+                
                 book.Title = model.BookTitle;
                 book.Author = model.Author;
                 book.Synopsis = model.Synopsis;
@@ -648,6 +658,7 @@ namespace MVCCapstone.Controllers
 
                 if (resultModel.errors.Count() == 0)
                 {
+                    // commit save to database if there are no errors
                     int recordAffected = db.SaveChanges();
 
                     if (recordAffected == 0)

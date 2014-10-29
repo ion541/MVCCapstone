@@ -2,17 +2,19 @@
 @{
     var GenreSelected = new List<int>();
 
-    GenreSelected = Model.BookGenre as List<int>;
+    if (Model.BookGenre != null) {
+        GenreSelected = Model.BookGenre as List<int>;
+    }
     
 }
 <div class="row">
     <p id="message"></p>
 </div>
 
-
 @if (Model.displayEdit == true)
-{
+{   
     <div class="row" id="editForm">
+ 
     @using (Ajax.BeginForm("edit", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "scrollToTop" }, new {@class = "form-horizontal", @enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
@@ -20,6 +22,14 @@
         @Html.HiddenFor(m => m.BookId)
         @Html.HiddenFor(m => m.isStandalone)
 
+        <div class="form-group">
+            @Html.Label(" ", new {@class="col-sm-2 control-label" })
+            <div class="col-sm-8">
+                @Html.ActionLink("To Book", "details", new { controller = "book", action = "details", bookid = @Model.BookId }, new {@class="btn btn-success", style="min-width:100px" })
+            </div>
+        </div>
+        
+        
         if (Model.isStandalone == true)
         { 
         
@@ -99,8 +109,8 @@
     
         <div class="form-group">
                 @Html.LabelFor(m => m.Synopsis, new { @class = "col-sm-2 control-label" })
-            <div class="col-sm-6">
-                @Html.TextAreaFor(m => m.Synopsis, new { placeholder = "Synopsis of Book", rows = 3, columns = 40 })
+            <div class="col-sm-10">
+                @Html.TextAreaFor(m => m.Synopsis, 4, 0, new { @class = "col-sm-10" })
             </div>
         </div>
     
@@ -156,23 +166,22 @@
         <div class="form-group">
             @Html.Label(" ", new {@class="col-sm-2 control-label" })
             <div class="col-sm-8">
-                <input type="submit" class="col-sm-2 btn btn-primary" value="Edit Book" />
+                <input type="submit" style="min-width:100px" class="btn btn-primary" value="Edit Book" />
             </div>
         </div>
     }
     </div>
-
+    <script>
+    // required for partial forms
+    $.validator.unobtrusive.parse("form");
+    </script>
+    
+    @Html.Partial("_ModalSeriesSearch")
+    
 }
-else
+else if (Model.displayEdit == false)
 {
    <h3>The book was not found in the database.</h3>
 }
 
-<script>
-    // required for partial forms
-    $.validator.unobtrusive.parse("form");
-</script>
-
-
-@Html.Partial("_ModalSeriesSearch")
 
