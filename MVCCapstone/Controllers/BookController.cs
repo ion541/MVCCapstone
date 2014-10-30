@@ -96,8 +96,5 @@ namespace MVCCapstone.Controllers
                 ViewBag.Bookmark = BookHelper.Bookmark(User.Identity.Name, bookid);
             return PartialView("_BookmarkAdded");
         }
-
-
-
     }
 }

@@ -19,8 +19,8 @@ else
          {
             <tr id ="@book.BookId">
                 <td class="text-center">
-                     @Ajax.ActionLink("E", "editprompt", new { bookid = book.BookId }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { @class = "btn btn-primary", onclick = "scrollToTop()" })
-                     @Ajax.ActionLink("D", "deleteprompt", new { bookid = book.BookId }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { @class = "btn btn-primary", onclick = "scrollToTop()" })
+                     @Ajax.ActionLink("E", "editprompt", new { bookid = book.BookId }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { @class = "btn btn-primary", onclick = "scrollTo('capstone')" })
+                     @Ajax.ActionLink("D", "deleteprompt", new { bookid = book.BookId }, new AjaxOptions { HttpMethod = "POST", UpdateTargetId = "result" }, new { @class = "btn btn-primary", onclick = "scrollTo('capstone')" })
                 </td>
                 <td>@book.BookId</td>
                 <td>@book.Title</td>

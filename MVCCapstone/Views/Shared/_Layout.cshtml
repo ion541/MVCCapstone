@@ -108,7 +108,7 @@
                 // auto complete jquery
                 $('#titleSearch').autocomplete({
                     source: '@Url.Action("autocomplete","search")',
-                    minLength: 2,
+                    minLength: 1,
                     select: function (event, ui) {  
                         $(location).attr('href', "/Search/Advanced/?title=" + encodeURIComponent(ui.item.value));
                     }

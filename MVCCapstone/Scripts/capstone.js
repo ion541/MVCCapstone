@@ -15,22 +15,6 @@ function moveToPost() {
     }, 700);
 }
 
-function scrollToTop(){
-    $('html, body').animate({
-        scrollTop: $("#capstone").offset().top
-    }, 1000);
-}
-
-function scrollTo(id) {
-    $('html, body').animate({
-        scrollTop: $("#" + id).offset().top
-    }, 400);
-}
-
-function hideEditForm() {
-    $("#editForm").hide();
-}
-
 // sets the storePost value attribute to the current 'content' text
 // done since the ajax post will reload the page which will lose the current text in the textarea
 function storeEditPost() {
@@ -55,17 +39,18 @@ function switchLockActionText() {
 }
 
 
+function scrollTo(id) {
+    $('html, body').animate({
+        scrollTop: $("#" + id).offset().top
+    }, 700);
+}
+
 function moveToMessage() {
     $('html, body').animate({
         scrollTop: $("#message").offset().top
     }, 700);
 }
 
-function scrollToSearch() {
-    $('html, body').animate({
-        scrollTop: $("#seriesSearch").offset().top
-    }, 700);
-}
 
 function showSeriesOption() {
     $("#isSeriesOption").show(500);
@@ -73,27 +58,6 @@ function showSeriesOption() {
 
 function hideSeriesOption() {
     $("#isSeriesOption").hide(500);
-}
-
-
-function showForumSection() {
-    $("#ForumIdSection").show(500);
-    $("#TitleSection").hide(500);
-
-}
-function showTitleSection() {
-    $("#ForumIdSection").hide(500);
-    $("#TitleSection").show(500);
-}
-
-function hideForumTitleSection() {
-    $("#ForumIdSection").hide(500);
-    $("#TitleSection").hide(500);
-}
-
-
-function showSection(id) {
-    $("#" + id).show(500);
 }
 
 function hideSeriesTitle() {
@@ -109,6 +73,7 @@ function showSeriesTitle() {
     $("#seriesId").hide(500);
     $("#seriesSearch").hide(500);
 }
+
 
 $(function () {
 

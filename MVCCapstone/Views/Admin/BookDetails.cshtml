@@ -21,7 +21,7 @@
 
 <div class="row">
 
-@using (Ajax.BeginForm("bookdetails", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "moveToMessage" }, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
+@using (Ajax.BeginForm("bookdetails", null, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "scrollTo('message')" }, new { @class = "form-horizontal", @enctype = "multipart/form-data" }))
 {
     @Html.AntiForgeryToken()
 
