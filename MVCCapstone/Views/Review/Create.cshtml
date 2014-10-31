@@ -1,5 +1,111 @@
-﻿@{
-    ViewBag.Title = "Create";
+﻿@model MVCCapstone.Models.ReviewModel
+@{
+    ViewBag.Title = "Writing Review - " + Model.bookTitle;
 }
 
-<h2>Create</h2>
+<h1>You are writing a review for: <strong>@Model.bookTitle</strong></h1>
+<div class="row">
+    <div id="preview"></div>
+</div>
+
+@using (Ajax.BeginForm("createreview", null, new { bookid = Model.bookId }, new AjaxOptions() { HttpMethod = "POST", UpdateTargetId = "message", OnSuccess = "scrollToTop"}, new { @class = "form form-horizontal" })) 
+{
+    @Html.AntiForgeryToken()
+
+        <div class="form-group">
+            @Html.LabelFor(m => m.reviewTitle, new { @class = "col-sm-3 control-label" })
+            <div class="col-sm-5">
+                 @Html.TextBoxFor(m => m.reviewTitle, new { placeholder = "Title of Review", @class = "form-control" })  
+            </div>
+           <div class="col-sm-offset-3 col-sm-12">
+                   @Html.ValidationMessageFor(m => m.reviewTitle)
+           </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(m => m.recommend, new { @class = "pull-left col-sm-3 control-label" })
+            <div class="col-sm-9" style="margin-top:10px">
+                @Html.RadioButtonFor(m => m.recommend, "yes", new {Checked = "checked" }) Yes
+                @Html.RadioButtonFor(m => m.recommend, "no") No
+            </div>
+            <div class="col-sm-offset-3 col-sm-12">
+                @Html.ValidationMessageFor(m => m.recommend)
+           </div>
+        </div>
+
+        <div class="form-group">
+             @Html.Label(" ", new { @class = "pull-left col-sm-3 control-label" })
+            <div class="col-sm-9">
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','b')" style="min-width:100px" class="text-center btn btn-default">Bold</button>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','i')" style="min-width:100px" class="text-center btn btn-default">Italic</button>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','u')" style="min-width:100px" class="text-center btn btn-default">Underline</button>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','s')" style="min-width:100px" class="text-center btn btn-default">Strike</button>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','h1')" style="min-width:100px" class="text-center btn btn-default">Header1</button>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','h2')" style="min-width:100px" class="text-center btn btn-default">Header2</button>
+                </div>
+
+                <p class="col-sm-12"></p>
+
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','sp')" style="min-width:100px" class="text-center btn btn-default">Spoiler</button>
+                </div>
+                <div class="col-sm-2 text-center">
+                    <button type="button" value="Script" onclick="insertAtCaret('reviewContent','blockquote')" style="min-width:100px" class="text-center btn btn-default">Block-Quote</button>
+                </div>
+
+            </div>
+        </div>
+    
+        <div class="form-group">
+            @Html.LabelFor(m => m.reviewContent, new { @class = "col-sm-3 control-label" })
+            <div class="col-sm-9">
+                @Html.TextAreaFor(m => m.reviewContent, new { placeholder = "Your Review...", rows = 10, columns = 40, @class = "form-control" })
+            </div>
+        
+           <div class="col-sm-offset-3 col-sm-12">
+                @Html.ValidationMessageFor(m => m.reviewContent) <br />
+                <div id="textCount"></div>
+           </div>
+            
+        </div>
+    
+        <div class="form-group">
+            <label class="col-sm-3 control-label"></label>
+            <div class="col-sm-9">
+                <input style="min-width: 100px" class="btn btn-primary" type="submit" value="Submit Review" />
+                <input id="previewbutton" style="min-width: 100px" class="btn btn-success" type="button" onClick="preview()" value="Preview" /> 
+            </div>
+        </div>
+}
+
+<script>
+    function preview() {
+        $.ajax({
+            type: 'POST',
+            data: {
+                reviewTitle: $("#reviewTitle").val(),
+                recommend: $("#recommend:checked").val(),
+                reviewContent: $("#reviewContent").val(),
+                isPreview: true
+            },
+            url: '/review/createpreview/'
+        }).done(function (data) {
+            $('#preview').html(data);
+            $("html, body").animate({ scrollTop: 0 }, "fast");
+            return false;
+        });
+    }
+</script>
+
+

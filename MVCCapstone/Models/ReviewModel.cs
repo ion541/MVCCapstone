@@ -6,19 +6,35 @@ using System.Web;
 
 namespace MVCCapstone.Models
 {
-    public class ReviewModel
+    public class ReviewListModel
     {
         public List<Review> reviewList { get; set; }
     }
 
-    public class CreateReviewModel
+    public class ReviewModel
     {
-        [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
-        public string title { get; set; }
+        public int bookId { get; set; }
+        public string bookTitle { get; set; }
 
-        [Required]
-        [StringLength(7500, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
-        public string content { get; set; }
+        [Required(ErrorMessage="You must set a title for your review")]
+        [StringLength(50, ErrorMessage = "Your Review Title must be at a maximum of {1} characters")]
+        [Display(Name = "Your Review Title")]
+        public string reviewTitle { get; set; }
+
+        [Required(ErrorMessage="Your review must not be empty")]
+        [StringLength(7500, ErrorMessage = "Your review must be at a maximum of {1} characters")]
+        [Display(Name = "Your Review")]
+        public string reviewContent { get; set; }
+
+        [Required(ErrorMessage="Your must select an option")]
+        [Display(Name = "Recommend This Book?")]
+        public string recommend { get; set; }
+
+        public bool isRecommended { get; set; }
+        public bool isPreview { get; set; }
+        public string author { get; set; }
+        public DateTime reviewCreated { get; set; }
+        public DateTime reviewLastModified { get; set; }
+
     }
 }

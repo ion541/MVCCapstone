@@ -8,6 +8,7 @@ using MVCCapstone.Helpers;
 
 namespace MVCCapstone.Controllers
 {
+    [ValidateInput(false)]
     public class ReviewController : Controller
     {
         public UsersContext db = new UsersContext();
@@ -32,7 +33,7 @@ namespace MVCCapstone.Controllers
                 return RedirectToAction("pagenotfound", "error");
             }
 
-            ReviewModel model = new ReviewModel();
+            ReviewListModel model = new ReviewListModel();
             model.reviewList = db.Review.Where(m => m.BookId == id).ToList();
 
 
@@ -52,7 +53,52 @@ namespace MVCCapstone.Controllers
         [Authorize]
         public ActionResult Create(int? id)
         {
-            return View();
+            if (id.HasValue)
+            {
+                if (BookHelper.BookExists(id.Value))
+                {
+                    ReviewModel model = new ReviewModel();
+                    model.bookId = id.Value;
+                    model.bookTitle = BookHelper.GetTitle(id.Value);
+
+                    return View(model);
+                }
+                else
+                {
+                    return RedirectToAction("pagenotfound", "error");
+                }
+            }
+            else
+            {
+                return RedirectToAction("notvalidbookid", "error");
+            }
+        }
+
+        [AjaxAction]
+        [HttpPost]
+        [Authorize]
+        public ActionResult CreatePreview(ReviewModel model)
+        {
+           
+            if (model.recommend == "yes")
+            {
+                model.isRecommended = true;
+            }
+            else
+            {
+                model.isRecommended = false;
+            }
+
+            model.author = User.Identity.Name;
+            model.reviewCreated = DateTime.Today;
+
+            if (model.reviewTitle == null) model.reviewTitle = "Empty Title";
+            if (model.reviewContent == null) model.reviewContent = "Empty review";
+            model.reviewContent = ReviewHelper.ReviewFilter(model.reviewContent);
+
+
+
+            return PartialView("_Review", model);
         }
 
     }

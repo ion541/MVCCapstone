@@ -192,6 +192,7 @@
     <Compile Include="Helpers\BookHelper.cs" />
     <Compile Include="Helpers\ForumHelper.cs" />
     <Compile Include="Helpers\LanguageHelper.cs" />
+    <Compile Include="Helpers\ReviewHelper.cs" />
     <Compile Include="Helpers\RoleHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AdminModel.cs" />
@@ -328,6 +329,7 @@
     <Content Include="Views\Review\Book.cshtml" />
     <Content Include="Views\Review\Review.cshtml" />
     <Content Include="Views\Review\Create.cshtml" />
+    <Content Include="Views\Review\_Review.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
