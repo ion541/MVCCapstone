@@ -39,6 +39,7 @@ namespace MVCCapstone.Models
         public bool isPreview { get; set; }
         public string author { get; set; }
         public DateTime reviewCreated { get; set; }
+        public DateTime reviewLastModified { get; set; }
 
         public string lastModified { get; set; }
         public int rateUp { get; set; }

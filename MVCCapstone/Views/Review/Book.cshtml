@@ -7,14 +7,16 @@
 
 
 <div class="row">
-    <h2><strong>@Model.bookTitle.ToUpper() </strong>Reviews</h2>
+
+    <h2><strong>@Html.ActionLink(@Model.bookTitle.ToUpper(),null, new {controller="book", action="details", bookid= Model.bookId}) </strong>Reviews</h2>
 </div>
 <div class="row">
 
-    <a href="#">Most Rated</a> |
-    <a href="#">Recommended</a> |
-    <a href="#">Not Recommended</a> |
-    <a href="#">Newest</a>
+     @Html.ActionLink("Most Rated", "Book", new {id = Model.bookId, sortby = "popular"}) |
+     @Html.ActionLink("Recommended", "Book", new {id = Model.bookId, sortby = "recommended"}) |
+     @Html.ActionLink("Not Recommended", "Book", new {id = Model.bookId, sortby = "notrecommended"}) |
+     @Html.ActionLink("Newest", "Book", new {id = Model.bookId, sortby = "new"})
+        
 
 </div>
 <div class="row">
@@ -27,34 +29,50 @@
 <div id="reviewResult" class="row">
     <table class="table table-bordered">
     <tr>
-        <th class="col-sm-5">Title / Author</th>
-         <th class="col-sm-2">Recommended</th>
-        <th class="col-sm-3">Posted</th>
+        <th class="col-sm-7">Title / Author</th>
+         <th class="col-sm-2">Recommendation</th>
+        <th class="col-sm-3">Last Modified</th>
        
     </tr>
-    @foreach (MVCCapstone.Models.ReviewModel review in Model.reviewList)
+    @if (Model.reviewList.Count > 0)
     {
-        <tr>
-            <td>
-                <strong>@Html.ActionLink(review.reviewTitle, "id", new { id = review.reviewId })</strong> by @review.author 
-            </td>
+        foreach (MVCCapstone.Models.ReviewModel review in Model.reviewList)
+        {
+            <tr>
+                <td>
+                    <strong>@Html.ActionLink(review.reviewTitle, "id", new { id = review.reviewId })</strong> <br />
+
+                    by @review.author  <br />
+
+                    @if (review.rateTotal > 0) 
+                    {
+                         <span><strong>@review.rateUp / @review.rateTotal</strong> found this review helpful</span>
+                    } else {
+                        <span>Not yet rated</span>   
+                    }
+                </td>
       
  
-            <td>
-                @if (review.recommend == "yes")
-                {
-                    <p class="message-success">Recommended</p>
-                }
-                else
-                {
-                   <p class="message-error">Not Recommended</p>
-                }
-            </td>
-            <td>
-                @review.reviewCreated.ToLongDateString()
-            </td>
-        </tr>
+                <td>
+                    @if (review.recommend == "yes")
+                    {
+                        <p class="text-center message-success">Yes</p>
+                    }
+                    else
+                    {
+                       <p class="text-center message-error">No</p>
+                    }
+                </td>
+                <td>
+                    @review.reviewLastModified.ToLongDateString()
+                </td>
+            </tr>
         
+        }
+    } else {
+        <tr>
+            <td colspan="3">No reviews were found</td>
+        </tr>   
     }
     </table>
 </div>

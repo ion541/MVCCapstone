@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Mvc;
 using MVCCapstone.Helpers;
 using MVCCapstone.Models;
+using PagedList;
 
 namespace MVCCapstone.Controllers
 {
@@ -55,6 +56,7 @@ namespace MVCCapstone.Controllers
             model.Synopsis = (book.Synopsis == null) ? "N/A" : book.Synopsis;
             model.ForumId = book.ForumId;
             model.ThreadList = ForumHelper.GetThreadList(book.ForumId, 1, 8);
+            model.ReviewList = ReviewHelper.GetReviews(book.BookId, "popular", 1, 8);
 
             model.DiscussionTitle = ForumHelper.GetForumTitle(book.ForumId);
             model.IsSeries = ForumHelper.IsSeries(book.ForumId);
@@ -84,6 +86,21 @@ namespace MVCCapstone.Controllers
                 ViewBag.State = BookHelper.ChangeState(bookid);
             return PartialView("_BookState");
         }
+
+        [AjaxAction]
+        public ActionResult Review(int bookid, string sortby)
+        {
+            if (BookHelper.BookExists(bookid))
+            {
+                ViewBag.ReviewList = ReviewHelper.GetReviews(bookid, sortby, 1, 8);
+                ViewBag.Sort = sortby;
+                return PartialView("_DetailBookReview");
+            }
+
+            return RedirectToAction("NotValidBookId", "Error");
+        }
+
+        
 
         /// <summary>
         /// Adds the book to the users bookmark list

@@ -25,7 +25,7 @@ namespace MVCCapstone.Controllers
 
 
 
-        public ActionResult Book(int? id, int page = 1)
+        public ActionResult Book(int? id, int page = 1, string sortby = "popular")
         {
             // bookid parameter must be valid and the book must also exist
             if (!id.HasValue)
@@ -40,7 +40,7 @@ namespace MVCCapstone.Controllers
             ReviewListModel model = new ReviewListModel();
             model.bookId = id.Value;
             model.bookTitle = BookHelper.GetTitle(id.Value);
-            model.reviewList = ReviewHelper.GetReviews(id.Value,"popular", page, 20);
+            model.reviewList = ReviewHelper.GetReviews(id.Value, sortby, page, 20);
             
 
             return View(model);
@@ -54,8 +54,27 @@ namespace MVCCapstone.Controllers
                 return RedirectToAction("pagenotfound", "error");
 
             Review review = db.Review.Find(id.Value);
-            ReviewModel model = ReviewHelper.SetReviewModel(review, false);
+            ReviewModel model = ReviewHelper.SetReviewModel(review, false, true);
 
+            // check to see if the user is logged in whether or not they have rated the review
+            if (User.Identity.IsAuthenticated){
+                int userId = AccHelper.GetUserId(User.Identity.Name);
+
+                ViewBag.Rated = false; //default
+                
+                // check to see if the user has rated this specific review
+                if (db.ReviewRate.Where(m => m.ReviewId == id.Value && m.UserId == userId).FirstOrDefault() != null)
+                {
+                    ViewBag.UserRated = db.ReviewRate.Where(m => m.ReviewId == id.Value && m.UserId == userId).Select(m => m.Rate).First();
+                    ViewBag.Rated = true; // default
+
+                    ViewBag.Message = "helpful";
+                    if (ViewBag.UserRated == "down")
+                        ViewBag.Message = "NOT helpful";
+
+                }
+            }
+            
             return View("Review",model);
         }
 
@@ -142,10 +161,10 @@ namespace MVCCapstone.Controllers
                 return RedirectToAction("pagenotfound", "error");
 
             Review review = db.Review.Find(id.Value);
-            ReviewModel model = ReviewHelper.SetReviewModel(review, false);
+            ReviewModel model = ReviewHelper.SetReviewModel(review, false, false);
 
             // only allow the user to edit the review if they are the owner of the review or is an admin
-            if (AccHelper.GetUserId(model.author) != AccHelper.GetUserId(User.Identity.Name) || !User.IsInRole("admin"))
+            if (AccHelper.GetUserId(model.author.ToLower()) != AccHelper.GetUserId(User.Identity.Name.ToLower()) && !User.IsInRole("admin"))
                 return RedirectToAction("unauthorizedaccess", "error");
 
 
@@ -178,7 +197,7 @@ namespace MVCCapstone.Controllers
 
             Review review = db.Review.Find(id.Value);
 
-            if (review.UserId != AccHelper.GetUserId(User.Identity.Name) || !User.IsInRole("admin"))
+            if (review.UserId != AccHelper.GetUserId(User.Identity.Name) && !User.IsInRole("admin"))
                 return RedirectToAction("unauthorizedaccess", "error");
 
             return PartialView("_Delete", review);
@@ -194,7 +213,7 @@ namespace MVCCapstone.Controllers
 
             Review review = db.Review.Find(id.Value);
 
-            if (review.UserId != AccHelper.GetUserId(User.Identity.Name) || !User.IsInRole("admin"))
+            if (review.UserId != AccHelper.GetUserId(User.Identity.Name) && !User.IsInRole("admin"))
                 return RedirectToAction("unauthorizedaccess", "error");
 
             db.Review.Remove(review);

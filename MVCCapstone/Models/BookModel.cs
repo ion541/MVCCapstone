@@ -24,6 +24,7 @@ namespace MVCCapstone.Models
         public string DiscussionTitle { get; set; }
         public bool IsSeries { get; set; }
         public string SeriesTitle { get; set; }
+        public IPagedList<ReviewModel> ReviewList { get; set; }
 
     }
 }

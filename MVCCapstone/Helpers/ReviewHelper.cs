@@ -11,43 +11,53 @@ namespace MVCCapstone.Helpers
     public class ReviewHelper
     {
 
-        public static IPagedList<ReviewModel> GetReviews(int bookid, string sort, int page, int display)
+        public static IPagedList<ReviewModel> GetReviews(int bookid, string sortby, int page, int display)
         {
             UsersContext db = new UsersContext();
             if (page <= 0)
                 page = 1;
 
             // query containing the data based off of the inputs
-            var reviewList = (from b in db.Book
-                            join r in db.Review on b.BookId equals r.BookId
-                            join u in db.UserProfiles on r.UserId equals u.UserId
-                            select new ReviewModel { 
-                                reviewId = r.ReviewId,
-                                bookId = b.BookId, 
-                                bookTitle = b.Title, 
-                                author = u.UserName,
-                                recommend = r.Recommended,
-                                reviewTitle = r.Title,
-                                reviewContent = r.Content,
-                                reviewCreated = r.DateCreated
-                            }).OrderBy(r => r.reviewCreated);
+            List<ReviewModel> reviewList = (from b in db.Book
+                              join r in db.Review on b.BookId equals r.BookId
+                              join u in db.UserProfiles on r.UserId equals u.UserId
+                              where b.BookId == bookid
+                              select new ReviewModel
+                              {
+                                  reviewId = r.ReviewId,
+                                  bookId = b.BookId,
+                                  bookTitle = b.Title,
+                                  author = u.UserName,
+                                  recommend = r.Recommended,
+                                  reviewTitle = r.Title,
+                                  reviewContent = r.Content,
+                                  reviewCreated = r.DateCreated,
+                                  reviewLastModified = r.DateModified,
+                              }).ToList();
 
-            // sort the query by the field and direction
-            //switch (sortby)
-            //{
-            //    case "role":
-            //        userList = ((ascend) ? userList.OrderBy(u => u.UserName) : userList.OrderByDescending(u => u.RoleName));
-            //        break;
+            foreach (ReviewModel review in reviewList)
+            {
+                review.rateTotal = db.ReviewRate.Where(m => m.ReviewId == review.reviewId).Count();
+                review.rateUp = db.ReviewRate.Where(m => m.ReviewId == review.reviewId && m.Rate == "up").Count();
+            }
 
-            //    case "account":
-            //        userList = ((ascend) ? userList.OrderBy(u => u.UserName) : userList.OrderByDescending(u => u.UserName));
-            //        break;
+            switch (sortby)
+            {
+                case "notrecommended":
+                    reviewList = reviewList.Where(m => m.recommend == "no").OrderByDescending(m => m.rateTotal).ToList();
+                    break;
 
-            //    case "id":
-            //    default:
-            //        userList = ((ascend) ? userList.OrderBy(u => u.UserId) : userList.OrderByDescending(u => u.UserId));
-            //        break;
-            //}
+                case "recommended":
+                    reviewList = reviewList.Where(m => m.recommend == "yes").OrderByDescending(m => m.rateTotal).ToList();
+                    break;
+                case "new":
+                    reviewList = reviewList.OrderByDescending(m => m.reviewLastModified).ToList();
+                    break;
+                case "popular":
+                default:
+                    reviewList = reviewList.OrderByDescending(m => m.rateTotal).ToList();
+                    break;
+            }
 
             IPagedList<ReviewModel> orderedReviewList = reviewList.ToPagedList(page, display) as IPagedList<ReviewModel>;
 
@@ -84,7 +94,11 @@ namespace MVCCapstone.Helpers
             if (String.IsNullOrEmpty(rawContent)) 
                 return "";
 
-            string content = Regex.Replace(rawContent, @"<[^>]+>|&nbsp;", "").Trim(); // remove all html tags
+            // keep a copy of the raw content stripped of html tags in case of an error
+            rawContent = Regex.Replace(rawContent, @"<[^>]+>|&nbsp;", "").Trim();
+
+            // attempt to replace all square bracket tags with html tags
+            string content = rawContent;
 
             List<AcceptedTags> listTags = new List<AcceptedTags>();
 
@@ -215,10 +229,11 @@ namespace MVCCapstone.Helpers
         /// <summary>
         /// Gets the data from the review and set and format it to the model's structure
         /// </summary>
-        /// <param name="review">The review which contains the data</param>
-        /// <param name="isPreview">F the review model is to be seen in a preview mode</param>
+        /// <param name="review">the review which contains the data</param>
+        /// <param name="isPreview"> the review model is to be seen in a preview mode</param>
+        /// <param name="filterContent">filter the reviews content</param>
         /// <returns>A ReviewModel</returns>
-        public static ReviewModel SetReviewModel(Review review, bool isPreview)
+        public static ReviewModel SetReviewModel(Review review, bool isPreview, bool filterContent)
         {
 
             UsersContext db = new UsersContext();
@@ -226,8 +241,15 @@ namespace MVCCapstone.Helpers
             ReviewModel model = new ReviewModel();
             model.reviewId = review.ReviewId;
 
-            // filter the review content to display as raw html
-            model.reviewContent = ReviewHelper.ReviewFilter(review.Content, isPreview);
+
+            if (filterContent)
+            {
+                model.reviewContent = ReviewHelper.ReviewFilter(review.Content);
+            }
+            else
+            {
+                model.reviewContent = review.Content;
+            }
             model.reviewTitle = review.Title;
             model.author = AccHelper.GetUserName(review.UserId);
             model.recommend = review.Recommended;

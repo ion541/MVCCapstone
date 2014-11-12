@@ -3,20 +3,24 @@
     ViewBag.Title = Model.author + "'s review";
 }
 <div class="row">
+    
     @Html.RouteLink("Back to Reviews", new { controller = "review", action = "book", id = Model.bookId }, new { @class = "btn btn-primary" })
 
-    @Ajax.ActionLink("Delete",
-                    "deleteprompt",
-                    new { id = Model.reviewId },
-                    new AjaxOptions
-                    { 
-                        HttpMethod = "POST",
-                        InsertionMode = InsertionMode.Replace,
-                        UpdateTargetId = "deleteMessage",
-                    },
-                    new {@class="btn btn-primary pull-right",  style= "min-width:110px"})
+    @if (User.Identity.Name.ToLower() == Model.author.ToLower() || User.IsInRole("admin"))
+    {
+        @Ajax.ActionLink("Delete",
+                        "deleteprompt",
+                        new { id = Model.reviewId },
+                        new AjaxOptions
+                        { 
+                            HttpMethod = "POST",
+                            InsertionMode = InsertionMode.Replace,
+                            UpdateTargetId = "deleteMessage",
+                        },
+                        new {@class="btn btn-primary pull-right",  style= "min-width:110px"})
   
-    @Html.RouteLink("Edit", new { controller = "review", action = "edit", id = Model.reviewId }, new { style= "min-width:110px; margin-right: 5px", @class = "btn btn-primary pull-right" }) 
+        @Html.RouteLink("Edit", new { controller = "review", action = "edit", id = Model.reviewId }, new { style= "min-width:110px; margin-right: 5px", @class = "btn btn-primary pull-right" }) 
+    }
 </div>
 
 <div id="deleteMessage" class="row text-center">

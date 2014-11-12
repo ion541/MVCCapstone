@@ -333,6 +333,7 @@
     <Content Include="Views\Review\EditReview.cshtml" />
     <Content Include="Views\Review\_Delete.cshtml" />
     <Content Include="Views\Review\_DeleteResult.cshtml" />
+    <Content Include="Views\Book\_DetailBookReview.cshtml" />
     <Resource Include="Content\Site.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>

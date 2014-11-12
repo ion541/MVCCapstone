@@ -39,11 +39,21 @@
        }
        else
        {
-            <span><strong>@Model.rateUp</strong> out of <strong>@Model.rateTotal</strong> found this review to be helpful</span>
+            <span><strong>@Model.rateUp</strong> out of <strong>@Model.rateTotal</strong> users found this review to be helpful</span>
        }
        <br />
 
-       <span>Please Rate this review</span>
+       @if (ViewBag.Rated == true)
+       {
+             <span>You have already rated this review and found it to be <strong>@ViewBag.Message</strong></span>
+       }
+       else
+       {
+            <span>Please rate this review</span>
+       }
+       <br />
+  
+     
 
        @Ajax.ActionLink(" ",
                     "rate",
@@ -58,14 +68,14 @@
 
         @Ajax.ActionLink(" ",
             "rate",
-            new { rate = "down", reviewId = Model.reviewId},
+            new { rate = "down", reviewId = Model.reviewId },
             new AjaxOptions
-            { 
+            {
                 HttpMethod = "POST",
                 InsertionMode = InsertionMode.Replace,
                 UpdateTargetId = "rate",
             },
-            new {style="min-width:50px", @class="btn btn-primary glyphicon glyphicon-arrow-down"})
+            new { style = "min-width:50px", @class = "btn btn-primary glyphicon glyphicon-arrow-down" })
 
        <br />
 
