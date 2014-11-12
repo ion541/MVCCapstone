@@ -13,6 +13,8 @@ namespace MVCCapstone.Controllers
     {
         public UsersContext db = new UsersContext();
 
+       
+
 
         //
         // GET: /Review/
@@ -21,7 +23,9 @@ namespace MVCCapstone.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public ActionResult Book(int? id)
+
+
+        public ActionResult Book(int? id, int page = 1)
         {
             // bookid parameter must be valid and the book must also exist
             if (!id.HasValue)
@@ -34,18 +38,25 @@ namespace MVCCapstone.Controllers
             }
 
             ReviewListModel model = new ReviewListModel();
-            model.reviewList = db.Review.Where(m => m.BookId == id).ToList();
-
+            model.bookId = id.Value;
+            model.bookTitle = BookHelper.GetTitle(id.Value);
+            model.reviewList = ReviewHelper.GetReviews(id.Value,"popular", page, 20);
+            
 
             return View(model);
         }
 
-
-
-        
+  
         public ActionResult Id(int? id)
         {
-            return View("Review");
+
+            if (!ReviewHelper.ReviewIdValid(id))
+                return RedirectToAction("pagenotfound", "error");
+
+            Review review = db.Review.Find(id.Value);
+            ReviewModel model = ReviewHelper.SetReviewModel(review, false);
+
+            return View("Review",model);
         }
 
 
@@ -65,14 +76,36 @@ namespace MVCCapstone.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("pagenotfound", "error");
+                    return RedirectToAction("notvalidbookid", "error");
                 }
             }
             else
             {
-                return RedirectToAction("notvalidbookid", "error");
+                return RedirectToAction("pagenotfound", "error");
             }
         }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult CreateReview(ReviewModel model)
+        {
+            Review review = new Review();
+
+            review.BookId = model.bookId;
+            review.UserId = AccHelper.GetUserId(User.Identity.Name);
+            review.Title = model.reviewTitle;
+            review.Recommended = model.recommend;
+            review.Content = model.reviewContent;
+            review.DateCreated = DateTime.Now;
+            review.DateModified = DateTime.Now;
+
+            db.Review.Add(review);
+            db.SaveChanges();
+
+            int latestReviewId = db.Review.OrderByDescending(m => m.ReviewId).Select(m => m.ReviewId).First();
+            return RedirectToAction("id", new { id = latestReviewId });
+        }
+
 
         [AjaxAction]
         [HttpPost]
@@ -90,15 +123,132 @@ namespace MVCCapstone.Controllers
             }
 
             model.author = User.Identity.Name;
-            model.reviewCreated = DateTime.Today;
 
             if (model.reviewTitle == null) model.reviewTitle = "Empty Title";
             if (model.reviewContent == null) model.reviewContent = "Empty review";
-            model.reviewContent = ReviewHelper.ReviewFilter(model.reviewContent);
 
-
+            // is a preview, display a stack of tags if the content's tags are not well formed
+            model.reviewContent = ReviewHelper.ReviewFilter(model.reviewContent, true);
 
             return PartialView("_Review", model);
+        }
+
+
+        [Authorize]
+        public ActionResult Edit(int? id)
+        {
+
+            if (!ReviewHelper.ReviewIdValid(id))
+                return RedirectToAction("pagenotfound", "error");
+
+            Review review = db.Review.Find(id.Value);
+            ReviewModel model = ReviewHelper.SetReviewModel(review, false);
+
+            // only allow the user to edit the review if they are the owner of the review or is an admin
+            if (AccHelper.GetUserId(model.author) != AccHelper.GetUserId(User.Identity.Name) || !User.IsInRole("admin"))
+                return RedirectToAction("unauthorizedaccess", "error");
+
+
+            return View("EditReview",model);
+        }
+
+        [HttpPost]
+        [Authorize]
+        public ActionResult EditReview(ReviewModel model)
+        {
+            Review review = db.Review.Find(model.reviewId);
+
+            review.Title = model.reviewTitle;
+            review.Recommended = model.recommend;
+            review.Content = model.reviewContent;
+            review.DateModified = DateTime.Now;
+
+            db.SaveChanges();
+
+            return RedirectToAction("id", new { id = model.reviewId });
+        }
+
+   
+        [Authorize]
+        [AjaxAction]
+        public ActionResult DeletePrompt(int? id)
+        {
+            if (!ReviewHelper.ReviewIdValid(id))
+                return RedirectToAction("pagenotfound", "error");
+
+            Review review = db.Review.Find(id.Value);
+
+            if (review.UserId != AccHelper.GetUserId(User.Identity.Name) || !User.IsInRole("admin"))
+                return RedirectToAction("unauthorizedaccess", "error");
+
+            return PartialView("_Delete", review);
+        }
+
+        [Authorize]
+        [AjaxAction]
+        [HttpPost]
+        public ActionResult DeleteReview(int? id)
+        {
+            if (!ReviewHelper.ReviewIdValid(id))
+                return RedirectToAction("pagenotfound", "error");
+
+            Review review = db.Review.Find(id.Value);
+
+            if (review.UserId != AccHelper.GetUserId(User.Identity.Name) || !User.IsInRole("admin"))
+                return RedirectToAction("unauthorizedaccess", "error");
+
+            db.Review.Remove(review);
+            int rowDeleted = db.SaveChanges();
+
+            ViewBag.Deleted = false;
+
+            if (rowDeleted == 1)
+            {
+                ViewBag.Deleted = true;
+
+                var ratings = db.ReviewRate.Where(m => m.ReviewId == id.Value).ToList();
+                foreach (ReviewRate rating in ratings)
+                    db.ReviewRate.Remove(rating);
+
+                ViewBag.RatingsDeleted = db.SaveChanges();
+            }
+  
+            return PartialView("_DeleteResult");
+        }
+
+
+
+        [HttpPost]
+        [Authorize]
+        [AjaxAction]
+        public string Rate(string rate, int reviewId)
+        {
+            bool alreadyRated = false;
+
+            int userId = AccHelper.GetUserId(User.Identity.Name);
+
+            if (db.ReviewRate.Where(m => m.ReviewId == reviewId && m.UserId == userId).Count() > 0)
+                alreadyRated = true;
+
+             ReviewRate rating;
+
+            if (alreadyRated)
+            {
+                rating = db.ReviewRate.Where(m => m.ReviewId == reviewId && m.UserId == userId).First();
+                rating.Rate = rate;
+            }
+            else
+            {
+                 rating = new ReviewRate();
+                 rating.UserId = userId;
+                 rating.ReviewId = reviewId;
+                 rating.Rate = rate;
+                 db.ReviewRate.Add(rating);
+            }
+
+            db.SaveChanges();
+
+            return "Thank you for rating this review";
         }
 
     }

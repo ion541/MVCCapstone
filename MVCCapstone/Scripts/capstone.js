@@ -79,6 +79,24 @@ function showSeriesTitle() {
     $("#seriesSearch").hide(500);
 }
 
+function showForumSection() {
+    $("#ForumIdSection").show(500);
+    $("#TitleSection").hide(500);
+}
+
+function hideForumTitleSection() {
+    $("#ForumIdSection").hide(500);
+    $("#TitleSection").hide(500);
+}
+
+function showTitleSection() {
+    $("#ForumIdSection").hide(500);
+    $("#TitleSection").show(500);
+}
+
+function hideEditForm() {
+    $("#editForm").hide(500);
+}
 
 
 // solution provided at
@@ -122,7 +140,7 @@ function insertAtCaret(areaId, tag) {
     }
     txtarea.scrollTop = scrollPos;
 
-    // update the amount of charactesr available
+    // update the amount of characters available
     var maximum = 7500;
     if ($("#" + areaId).val().length > 7500) {
         $("#textCount").text("Over by: " + ($("#" + areaId).val().length - maximum)).attr('style', 'color:red');

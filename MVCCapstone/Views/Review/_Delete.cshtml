@@ -1,0 +1,16 @@
+﻿@model MVCCapstone.Models.Review
+
+
+<div class="row">
+    Are you sure you would like to delete this review? 
+        @Ajax.ActionLink("Yes",
+                    "deletereview",
+                    new { id = Model.ReviewId },
+                    new AjaxOptions
+                    { 
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "deleteMessage",
+                    })
+
+</div>

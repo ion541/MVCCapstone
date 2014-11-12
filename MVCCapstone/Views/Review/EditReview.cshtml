@@ -1,14 +1,19 @@
 ﻿@model MVCCapstone.Models.ReviewModel
 @{
-    ViewBag.Title = "Writing Review - " + Model.bookTitle;
+    ViewBag.Title = "Edit Review - " + Model.reviewTitle;
 }
+<div class="row">
+    @Html.RouteLink("Back to Reviews", new { controller = "review", action = "book", id = Model.bookId }, new { @class = "btn btn-primary" })
+</div>
 
-<h1>You are writing a review for: <strong>@Model.bookTitle</strong></h1>
+<br />
 <div class="row">
     <div id="preview"></div>
 </div>
 
-@using (Html.BeginForm("createreview", "review", new { bookid = Model.bookId }, FormMethod.Post, new { @class = "form form-horizontal" }))
+
+
+@using (Html.BeginForm("editreview", "review", new { reviewId = Model.reviewId }, FormMethod.Post, new { @class = "form form-horizontal" }))
 {
     @Html.AntiForgeryToken()
 
@@ -83,7 +88,7 @@
         <div class="form-group">
             <label class="col-sm-3 control-label"></label>
             <div class="col-sm-9">
-                <input style="min-width: 100px" class="btn btn-primary" type="submit" value="Submit Review" />
+                <input style="min-width: 100px" class="btn btn-primary" type="submit" value="Save Changes" />
                 <input id="previewbutton" style="min-width: 100px" class="btn btn-success" type="button" onClick="preview()" value="Preview" /> 
             </div>
         </div>
@@ -107,5 +112,3 @@
         });
     }
 </script>
-
-

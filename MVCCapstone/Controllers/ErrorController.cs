@@ -11,18 +11,10 @@ namespace MVCCapstone.Controllers
     {
         //
         // GET: /Error/
-        public ActionResult Index(ErrorMessages? Message)
+        public ActionResult Index()
         {
             
-            ViewBag.Message =
-                Message == ErrorMessages.ErrorPageNotFound ? "The page you are looking for does not exist"
-                : Message == ErrorMessages.ErrorUnauthorized ? "You do not have the authorization to access this page"
-                : Message == ErrorMessages.ErrorLockedAccount ? "Your account has been locked."
-                : Message == ErrorMessages.ErrorIndirectAccess ? "You are forbidden to access this page through the url."
-                : Message == ErrorMessages.BookIdInvalid ? "The book you are attempting to find does not exist."
-                : Message == ErrorMessages.BookDeleted ? "The book is deleted / You do not have permission to view the book."
-                : Message == ErrorMessages.General ? "An error has occurred. Please contact the administrator with steps on how to reproduce the problem at anhvu.ho@mohawkcollege.ca"
-                : "Uh... you are here because you have probably have been tampering with the url";
+            ViewBag.Message = "Uh... you are here because you have probably have been tampering with the url";
 
             return View();
         }
@@ -33,55 +25,48 @@ namespace MVCCapstone.Controllers
         #region ErrorHandlers
         public ActionResult PageNotFound()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.ErrorPageNotFound });
+            ViewBag.Message = "The page you are looking for does not exist";
+            return View("Index");
         }
 
         public ActionResult UnauthorizedAccess()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.ErrorUnauthorized });
+            ViewBag.Message = "You do not have the authorization to access this page";
+            return View("Index");
         }
 
         public ActionResult LockedAccount()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.ErrorLockedAccount });
+            ViewBag.Message = "Your account has been locked";
+            return View("Index");
         }
 
         public ActionResult IndirectAccess()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.ErrorIndirectAccess });
+            ViewBag.Message = "You are forbidden to access this page through the url";
+            return View("Index");
         }
 
         public ActionResult NotValidBookId()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.BookIdInvalid });
+            ViewBag.Message = "The book you are attempting to find does not exist";
+            return View("Index");
         }
 
         public ActionResult BookDeleted()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.BookDeleted });
+            ViewBag.Message = "The page you are looking for does not exist";
+            return View("Index");
         }
 
         public ActionResult General()
         {
-            return RedirectToAction("Index", "Error", new { Message = ErrorMessages.General });
+            ViewBag.Message = "An error has occurred. Please contact the administrator with steps on how to reproduce the problem at anhvu.ho@mohawkcollege.ca";
+            return View("Index");
         }
 
         #endregion
 
-        /// <summary>
-        /// Enumeration for error messages
-        /// </summary>
-        public enum ErrorMessages
-        {
-            ErrorPageNotFound,
-            ErrorUnauthorized,
-            ErrorLockedAccount,
-            ErrorIndirectAccess,
-            BookIdInvalid,
-            BookDeleted,
-            General,
-            UploadImage
-        }
 
     }
 }

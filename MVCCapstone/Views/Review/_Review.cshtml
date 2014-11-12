@@ -1,7 +1,7 @@
 ﻿@model MVCCapstone.Models.ReviewModel
 
 
-<div class="row col-sm-offset-3" style="margin-bottom:50px">
+<div class="row" style="margin-bottom:50px">
 @if (Model.isPreview)
 {
     
@@ -11,7 +11,7 @@
 
     <div class="row col-sm-12">
         <h1><strong>@Model.reviewTitle.ToUpper()</strong> <small>by @Model.author.ToUpper()</small> </h1>
-        <h3>Written: @Model.reviewCreated.ToShortDateString()</h3>
+        <h3>@Model.lastModified</h3>
     </div>
     <div class="row col-sm-12">
        @if (Model.isRecommended)
@@ -25,6 +25,54 @@
     </div>
   
     <div class="row col-sm-12 review" style="word-wrap: break-word; white-space: pre-line"> @Html.Raw(@Model.reviewContent) </div>
+  
+@if (!Model.isPreview && User.Identity.IsAuthenticated)
+{
+   
+    
+   <div class="row col-sm-12" style="border-top:1px solid #0094ff; margin-top: 10px">
+
+
+       @if (Model.rateTotal == 0)
+       {
+             <span>This review has not yet been rated.</span>
+       }
+       else
+       {
+            <span><strong>@Model.rateUp</strong> out of <strong>@Model.rateTotal</strong> found this review to be helpful</span>
+       }
+       <br />
+
+       <span>Please Rate this review</span>
+
+       @Ajax.ActionLink(" ",
+                    "rate",
+                    new { rate = "up", reviewId = Model.reviewId },
+                    new AjaxOptions
+                    {
+                        HttpMethod = "POST",
+                        InsertionMode = InsertionMode.Replace,
+                        UpdateTargetId = "rate",
+                    },
+                    new { style = "min-width:50px", @class = "btn btn-primary glyphicon glyphicon-arrow-up" })
+
+        @Ajax.ActionLink(" ",
+            "rate",
+            new { rate = "down", reviewId = Model.reviewId},
+            new AjaxOptions
+            { 
+                HttpMethod = "POST",
+                InsertionMode = InsertionMode.Replace,
+                UpdateTargetId = "rate",
+            },
+            new {style="min-width:50px", @class="btn btn-primary glyphicon glyphicon-arrow-down"})
+
+       <br />
+
+       <strong id="rate"></strong>
+   </div>
+}
+
 </div>
 
 

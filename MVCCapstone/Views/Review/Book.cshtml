@@ -1,9 +1,67 @@
-﻿@model MVCCapstone.Models.ReviewModel
+﻿@model MVCCapstone.Models.ReviewListModel
+@using PagedList;
+@using PagedList.Mvc 
 @{
     ViewBag.Title = "Review";
 }
 
-<h2>Review</h2>
 
+<div class="row">
+    <h2><strong>@Model.bookTitle.ToUpper() </strong>Reviews</h2>
+</div>
+<div class="row">
+
+    <a href="#">Most Rated</a> |
+    <a href="#">Recommended</a> |
+    <a href="#">Not Recommended</a> |
+    <a href="#">Newest</a>
+
+</div>
+<div class="row">
+    @Html.ActionLink("Create Review", "create", new {id = Model.bookId }, new { @class = "btn btn-primary" })
+
+    <span class="pull-right">
+        @Html.PagedListPager(Model.reviewList, page => Url.Action("book", new {id = Model.bookId, page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+    </span>
+</div>
+<div id="reviewResult" class="row">
+    <table class="table table-bordered">
+    <tr>
+        <th class="col-sm-5">Title / Author</th>
+         <th class="col-sm-2">Recommended</th>
+        <th class="col-sm-3">Posted</th>
+       
+    </tr>
+    @foreach (MVCCapstone.Models.ReviewModel review in Model.reviewList)
+    {
+        <tr>
+            <td>
+                <strong>@Html.ActionLink(review.reviewTitle, "id", new { id = review.reviewId })</strong> by @review.author 
+            </td>
+      
+ 
+            <td>
+                @if (review.recommend == "yes")
+                {
+                    <p class="message-success">Recommended</p>
+                }
+                else
+                {
+                   <p class="message-error">Not Recommended</p>
+                }
+            </td>
+            <td>
+                @review.reviewCreated.ToLongDateString()
+            </td>
+        </tr>
+        
+    }
+    </table>
+</div>
+<div class="row">
+    <span class="pull-right">
+        @Html.PagedListPager(Model.reviewList, page => Url.Action("book", new {id = Model.bookId, page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+    </span>
+</div>
 
 

@@ -175,6 +175,23 @@ namespace MVCCapstone.Controllers
                 }
             }
 
+            // filter if at least a single genre was selected
+            if (model.postedGenres != null)
+            {
+                if (model.postedGenres.GenreId.Count() > 0)
+                {
+                    // convert the posted genre list id to a list of int
+                    List<int> postedGenreId = model.postedGenres.GenreId.Select(int.Parse).ToList();
+                    // get every book id that has any of the genre id
+                    List<int> bookWithPostedGenreId = db.BookGenre.Where(m => postedGenreId.Contains(m.GenreId)).Select(m => m.BookId).ToList();
+
+                    // get every book that has any of the genre id
+                    queryList = db.Book.Where(m => bookWithPostedGenreId.Contains(m.BookId)).ToList();
+                    currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
+                }
+            }
+
+
 
             // filter down by language if the id is not 8 (which represents multiple languages)
             if (model.query.language != "0" || !currentListBooksNotEmpty)
@@ -199,23 +216,6 @@ namespace MVCCapstone.Controllers
                 }
             }
             
-
-            // filter if at least a single genre was selected
-            if (model.postedGenres != null)
-            {
-                if (model.postedGenres.GenreId.Count() > 0)
-                {
-                    // convert the posted genre list id to a list of int
-                    List<int> postedGenreId = model.postedGenres.GenreId.Select(int.Parse).ToList();
-                    // get every book id that has any of the genre id
-                    List<int> bookWithPostedGenreId = db.BookGenre.Where(m => postedGenreId.Contains(m.GenreId)).Select(m => m.BookId).ToList();
-
-                    // get every book that has any of the genre id
-                    queryList = db.Book.Where(m => bookWithPostedGenreId.Contains(m.BookId)).ToList();
-                    currentList = BookHelper.ReturnSameBooks(currentList, queryList, currentListBooksNotEmpty, out currentListBooksNotEmpty);
-                }
-            }
-
 
             ViewBag.ErrorMessages = errorMessages; // error messages to be displayed
             model.books = currentList.OrderBy(m => m.Title).ToList(); // sort the book one last time by the title

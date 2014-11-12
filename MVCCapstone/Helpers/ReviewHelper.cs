@@ -3,49 +3,277 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
+using MVCCapstone.Models;
+using PagedList;
 
 namespace MVCCapstone.Helpers
 {
     public class ReviewHelper
     {
-        public static string ReviewFilter(string content)
+
+        public static IPagedList<ReviewModel> GetReviews(int bookid, string sort, int page, int display)
         {
-            if (String.IsNullOrEmpty(content)) 
+            UsersContext db = new UsersContext();
+            if (page <= 0)
+                page = 1;
+
+            // query containing the data based off of the inputs
+            var reviewList = (from b in db.Book
+                            join r in db.Review on b.BookId equals r.BookId
+                            join u in db.UserProfiles on r.UserId equals u.UserId
+                            select new ReviewModel { 
+                                reviewId = r.ReviewId,
+                                bookId = b.BookId, 
+                                bookTitle = b.Title, 
+                                author = u.UserName,
+                                recommend = r.Recommended,
+                                reviewTitle = r.Title,
+                                reviewContent = r.Content,
+                                reviewCreated = r.DateCreated
+                            }).OrderBy(r => r.reviewCreated);
+
+            // sort the query by the field and direction
+            //switch (sortby)
+            //{
+            //    case "role":
+            //        userList = ((ascend) ? userList.OrderBy(u => u.UserName) : userList.OrderByDescending(u => u.RoleName));
+            //        break;
+
+            //    case "account":
+            //        userList = ((ascend) ? userList.OrderBy(u => u.UserName) : userList.OrderByDescending(u => u.UserName));
+            //        break;
+
+            //    case "id":
+            //    default:
+            //        userList = ((ascend) ? userList.OrderBy(u => u.UserId) : userList.OrderByDescending(u => u.UserId));
+            //        break;
+            //}
+
+            IPagedList<ReviewModel> orderedReviewList = reviewList.ToPagedList(page, display) as IPagedList<ReviewModel>;
+
+             return orderedReviewList;
+            
+        }
+        // class used to find and replace tags
+        public class AcceptedTags
+        {
+            public string searchFor, replaceStart, replaceEnd;
+            public AcceptedTags(string search, string start, string end)
+            {
+                this.searchFor = search;
+                this.replaceStart = start;
+                this.replaceEnd = end;
+            }
+        }
+
+        
+        /// <summary>
+        /// Remove every occurence of html tags and replace squared bracket tags with html tags
+        /// 
+        /// Validate the string and make sure that the html tags are well formed
+        /// </summary>
+        /// <param name="content">the content to be filtered / validated</param>
+        /// <param name="isPreview">If set the true, the stack of tags will not be shown when filtering fails</param>
+        /// <returns>raw html string</returns>
+        public static string ReviewFilter(string rawContent, bool isPreview = false)
+        {
+
+            string errorString = "<strong>Error, the tags being used are not well-formed.</strong> <br />";
+
+
+            if (String.IsNullOrEmpty(rawContent)) 
                 return "";
 
-            content = Regex.Replace(content, @"<[^>]+>|&nbsp;", "").Trim(); // remove all html tags
-            content =  Regex.Replace(content, @"\s{2,}", " "); // replace double spaces with one space
+            string content = Regex.Replace(rawContent, @"<[^>]+>|&nbsp;", "").Trim(); // remove all html tags
 
-            // {look for,  replace with}
-            string[,] acceptedTags = {  
-                                        {"b", "b"},
-                                        {"i", "i"},
-                                        {"u", "u"},
-                                        {"s", "strike"},
-                                        {"h1", "h2"},
-                                        {"h2", "h3"},
-                                        {"blockquote", "blockquote"},
-                                        {"sp", "span class=\"spoiler\""},
-                                    };
+            List<AcceptedTags> listTags = new List<AcceptedTags>();
 
-            for (int i = 0; i < acceptedTags.GetLength(0); i++)
+            listTags.Add(new AcceptedTags("b", "<b>", "</b>"));
+            listTags.Add(new AcceptedTags("i", "<i>", "</i>"));
+            listTags.Add(new AcceptedTags("u", "<u>", "</u>"));
+            listTags.Add(new AcceptedTags("s", "<s>", "</s>"));
+            listTags.Add(new AcceptedTags("h1", "<h2>", "</h2>"));
+            listTags.Add(new AcceptedTags("h2", "<h3>", "</h3>"));
+            listTags.Add(new AcceptedTags("blockquote", "<blockquote>", "</blockquote>"));
+            listTags.Add(new AcceptedTags("sp", "<span class=\"spoiler\">", "</span>"));
+
+
+            foreach (AcceptedTags tags in listTags)
+            {
+                content = content.Replace("[" + tags.searchFor + "]", tags.replaceStart);
+                content = content.Replace("[/" + tags.searchFor + "]", tags.replaceEnd);
+            }
+
+            bool IsValidHTML = true;
+
+            string decoded = HttpUtility.HtmlDecode(content);
+            string process = "";
+            int tabTracker = 0;
+
+            // splits the html by the closing character of a tag
+            string[] splitHTML = decoded.Split('>');
+
+            // array that contains only tags
+            string[] tagClean = cleanTags(splitHTML);
+            try
             {
 
-                switch (acceptedTags[i, 0])
+                Stack<string> tagStack = new Stack<string>();
+                foreach (string tag in tagClean)
                 {
-                    case "spoiler":
-                        content = content.Replace("[" + acceptedTags[i, 0] + "]", "<" + acceptedTags[i, 1] + ">");
-                        content = content.Replace("[/" + acceptedTags[i, 0] + "]", "</span>");
-                        break;
 
-                    default:
-                        content = content.Replace("[" + acceptedTags[i, 0] + "]", "<" + acceptedTags[i, 1] + ">");
-                        content = content.Replace("[/" + acceptedTags[i, 0] + "]", "</" + acceptedTags[i, 1] + ">");
-                        break;
+                    // determine if the tag is a closing tag or open tag
+                    if (tag[0] == '/')
+                    {
+                        string tagStackPop = tagStack.Pop(); // open tag that was removed from the stack
+                        string closeTag = tag.Substring(1, tag.Length - 1); // close tag without the /
+                        tabTracker--;
+
+
+                        // compares the previous open tag with the current close tag
+                        if (tagStackPop != closeTag)
+                        {
+                            // the open tag does not match the closing tag
+                            IsValidHTML = false;
+                            break;
+                        }
+
+                        process += "<span style='margin-right:" + tabTracker * 35 + "px;'></span>[" + tag + "] <br />";
+                    }
+                    else
+                    {
+                        // a open tag was found
+                        tagStack.Push(tag);
+
+                        process += "<span style='margin-right:" + tabTracker * 35 + "px'></span>[" + tag + "] <br />";
+                        tabTracker++;
+
+                    }
+
+
                 }
-            }    
 
-            return content;
+                if (IsValidHTML && tagStack.Count == 0)
+                    return content;
+
+                // show the stack of tags if it is a preview
+                if (isPreview)
+                    return errorString + "<strong>At the end of this trace is where the problem tag is found.</strong> <br /> " + process
+                       + "<br />" + rawContent;
+
+                // if there is an error while filtering, and is in an actual review, only display the error and the html before filtering
+                return errorString + rawContent;
+            }
+            catch (InvalidOperationException)
+            {
+                // will occur when ended tags are discovered when the stack is empty
+                if (isPreview)
+                    return errorString + "<strong>At the end of this trace is where the problem tag is found.</strong> <br /> " + process
+                       + "<br />" + rawContent;
+
+                // if there is an error while filtering, and is in an actual review, only display the error and the html before filtering
+                return errorString + rawContent;
+            }
+            catch (Exception)
+            {
+                return "An error has occurred while converting the tags. Please contact the administrator. + <br />" + rawContent;
+            }
+
         }
+
+        /// <summary>
+        /// Takes an array that contains a row with strings and its tag
+        /// Splits the string and remove its attribute so that only the tag remains which is then added into a new array
+        /// </summary>
+        /// <param name="arrTagsAndStrings">Array that contains a tag and strings</param>
+        /// <returns>an array of only tags</returns>
+        private static string[] cleanTags(string[] arrTagsAndStrings)
+        {
+
+            int index = 0;
+
+            // last line will be empty
+            string[] arrCleanTagArray = new string[arrTagsAndStrings.Length - 1];
+
+            for (int i = 0; i < arrTagsAndStrings.Count() - 1; i++)
+            {
+                string tag = arrTagsAndStrings[i].Substring(arrTagsAndStrings[i].IndexOf('<') + 1);
+
+
+                int space = tag.IndexOf(' ');
+                if (space >= 0)
+                {
+                    tag = tag.Substring(0, space);
+                }
+
+                arrCleanTagArray[index++] = tag.ToLower();
+            }
+            return arrCleanTagArray;
+        }
+
+
+        /// <summary>
+        /// Gets the data from the review and set and format it to the model's structure
+        /// </summary>
+        /// <param name="review">The review which contains the data</param>
+        /// <param name="isPreview">F the review model is to be seen in a preview mode</param>
+        /// <returns>A ReviewModel</returns>
+        public static ReviewModel SetReviewModel(Review review, bool isPreview)
+        {
+
+            UsersContext db = new UsersContext();
+
+            ReviewModel model = new ReviewModel();
+            model.reviewId = review.ReviewId;
+
+            // filter the review content to display as raw html
+            model.reviewContent = ReviewHelper.ReviewFilter(review.Content, isPreview);
+            model.reviewTitle = review.Title;
+            model.author = AccHelper.GetUserName(review.UserId);
+            model.recommend = review.Recommended;
+
+            if (review.Recommended == "yes")
+            {
+                model.isRecommended = true;
+            }
+            else
+            {
+                model.isRecommended = false;
+            }
+
+            model.isPreview = isPreview;
+            model.bookId = review.BookId;
+            model.rateUp = db.ReviewRate.Where(m => m.ReviewId == review.ReviewId && m.Rate == "up").Count();
+            model.rateTotal = db.ReviewRate.Where(m => m.ReviewId == review.ReviewId && m.Rate == "down").Count() + model.rateUp;
+         
+
+            model.lastModified = "Written On: " + review.DateCreated.ToShortDateString();
+
+            // display date modified instead if the date created and last modified is different
+            if (review.DateCreated.Ticks != review.DateModified.Ticks)
+                model.lastModified = "Last Modified On: " + review.DateModified.ToShortDateString();
+
+            return model;
+        }
+
+        /// <summary>
+        /// Determines if a review with the id exists.
+        /// Returns a boolean indicating the existence of the review
+        /// </summary>
+        /// <param name="id">id to be searched</param>
+        /// <returns>boolean</returns>
+        public static bool ReviewIdValid(int? id)
+        {
+            if (id.HasValue)
+            {
+                UsersContext db = new UsersContext();
+                if (db.Review.Find(id.Value) != null)
+                    return true;
+            }
+
+            return false;
+            
+        }
+
     }
 }

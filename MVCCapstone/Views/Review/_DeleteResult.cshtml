@@ -1,0 +1,10 @@
+﻿<div class="row">
+    @if (ViewBag.Deleted == true)
+    {
+        <strong>The review and a total of @ViewBag.RatingsDeleted ratings has been successfully deleted </strong>
+    }
+    else
+    {
+        <strong>Error, the review was not deleted</strong>
+    }
+</div>
