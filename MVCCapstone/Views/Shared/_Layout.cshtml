@@ -39,16 +39,16 @@
 
         <!-- Start of Header -->
         <header>
-            <div class="col-md-offset-2">
+            <div class="col-sm-offset-2 col-sm-8">
                
-                    <div class="col-md-3">
+                    <div class="col-sm-4">
                         <!-- Capstone Title -->
                      
-                            <p id="capstone" class="site-title">@Html.ActionLink("Capstone Project", "index", "home")</p>          
+                        <p id="capstone" class="site-title">@Html.ActionLink("Capstone Project", "index", "home")</p>          
                     </div>
 
                     <!-- Search Bar -->
-                    <div class="col-md-4">
+                    <div class="col-sm-4">
                         <input id="titleSearch" type="search" name ="titleSearch" placeholder="Enter Book Title...."/>
                     
                        
@@ -56,7 +56,7 @@
                       
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-sm-4">
                         <!-- Partial Login -->
                          <div class="float-right">
                              @Html.Partial("_LoginPartial")
@@ -70,20 +70,11 @@
 
         <!-- Start of Body -->
         <div id="body">
-
-            <!-- Start of Feature - Disabled
-            <section class="featured">
-                <div class="content-wrapper">
-                     
-                   
-                </div>
-            </section>
-           End of Feature  -->
-
-            <section class="content-wrapper main-content clear-fix">
-                @RenderBody()
-            </section>
-     
+      
+                <section class="content-wrapper main-content clear-fix">
+                    @RenderBody()
+                </section>
+           
         </div>
         <!-- End of Body -->
 

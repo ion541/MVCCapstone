@@ -8,35 +8,71 @@
     <h2>Create a new account.</h2>
 </hgroup>
 
-@using (Html.BeginForm()) {
+@using (Html.BeginForm("register", "account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal" }))
+{
     @Html.AntiForgeryToken()
     @Html.ValidationSummary()
 
-    <fieldset>
-        <legend>Registration Form</legend>
-        <ol>
-            <li>
-                @Html.LabelFor(m => m.UserName)
-                @Html.TextBoxFor(m => m.UserName)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.Password)
-                @Html.PasswordFor(m => m.Password)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.ConfirmPassword)
-                @Html.PasswordFor(m => m.ConfirmPassword)
-            </li>
-            <li>
-                @Html.LabelFor(m => m.User_Question) @Html.DropDownList("qList")
-            </li>
-            <li>
-                @Html.LabelFor(m => m.User_Answer)
-                @Html.TextBoxFor(m => m.User_Answer)
-            </li>
-        </ol>
-        <input type="submit" value="Register" />
-    </fieldset>
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.UserName, new { @class = "col-sm-3 control-label" })
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.UserName, new {@class = "form-control" })  
+        </div>
+        <div class="col-sm-2">
+            @Html.ValidationMessageFor(m => m.UserName)
+        </div>
+    </div>
+    
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.Password, new { @class = "col-sm-3 control-label" })
+        <div class="col-sm-4">
+            @Html.TextBoxFor(m => m.Password, new {@class = "form-control" })  
+        </div>
+        <div class="col-sm-2">
+            @Html.ValidationMessageFor(m => m.Password)
+        </div>
+    </div>
+    
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "col-sm-3 control-label" })
+        <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.ConfirmPassword, new {@class = "form-control" })  
+        </div>
+        <div class="col-sm-2">
+                @Html.ValidationMessageFor(m => m.ConfirmPassword)
+        </div>
+    </div>
+    
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.User_Question, new { @class = "col-sm-3 control-label" })
+        <div class="col-sm-4">
+               @Html.DropDownList("qList")
+        </div>
+    </div>
+    
+    <div class="form-group">
+
+        @Html.LabelFor(m => m.User_Answer, new { @class = "col-sm-3 control-label" })
+        <div class="col-sm-4">
+                @Html.TextBoxFor(m => m.User_Answer, new {@class = "form-control" })  
+        </div>
+        <div class="col-sm-2">
+                @Html.ValidationMessageFor(m => m.User_Answer)
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label class="col-sm-3 control-label"></label>
+        <div class="col-sm-8">
+                <input class="btn btn-primary" type="submit" value="Register" style="min-width:100px;" />
+        </div>
+    </div>
+  
+
 }
 
 @section Scripts {

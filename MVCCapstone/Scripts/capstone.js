@@ -39,6 +39,19 @@ function switchLockActionText() {
 
 }
 
+// changes text messages
+function switchBookActionText() {
+    var currentText = $("#BookHideButton").text();
+    var newText;
+    if (currentText == "Hide Book") {
+        newText = "Show Book";
+    } else {
+        newText = "Hide Book";
+    }
+    $("#BookHideButton").text(newText);
+
+}
+
 // scrolls to the specified id
 function scrollTo(id) {
     $('html, body').animate({

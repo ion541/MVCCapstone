@@ -1,7 +1,9 @@
 ﻿@model MVCCapstone.Models.Review
 
-
+@if(Model != null)
+{
 <div class="row">
+
     Are you sure you would like to delete this review? 
         @Ajax.ActionLink("Yes",
                     "deletereview",
@@ -14,3 +16,4 @@
                     })
 
 </div>
+}

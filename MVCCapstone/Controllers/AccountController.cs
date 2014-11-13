@@ -33,12 +33,15 @@ namespace MVCCapstone.Controllers
             ViewBag.qList = new SelectList(questionList, "Question_ID", "Value");
         }
 
+
+
         //
         // GET: Account/
         public ActionResult Index()
         { 
             return RedirectToAction("Manage", "Account");
         }
+
 
 
         //
@@ -51,6 +54,8 @@ namespace MVCCapstone.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
+
+
 
 
         //
@@ -78,7 +83,6 @@ namespace MVCCapstone.Controllers
 
         //
         // POST: /Account/LogOff
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -89,9 +93,9 @@ namespace MVCCapstone.Controllers
         }
 
 
+
         //
         // GET: /Account/Reset
-
         [AllowAnonymous]
         public ActionResult Reset(ManageMessageId? message, bool DisplayFields = false)
         {
@@ -117,6 +121,8 @@ namespace MVCCapstone.Controllers
 
             return View();
         }
+
+
 
         //
         // POST: /Account/Reset

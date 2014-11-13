@@ -435,14 +435,30 @@ namespace MVCCapstone.Controllers
                     // reduce by one since the forum id record is also deleted
                     if (postThreadDeleted > 0) postThreadDeleted--;
                     
-                    deletedForumRecords = " A total of " + postThreadDeleted + " posts and threads were also deleted.";
+                    deletedForumRecords = " A total of " + postThreadDeleted + " posts and threads were  deleted.";
                 }
+
+                // delete every review and remove every rating for that book
+                List<Review> reviewList = db.Review.Where(m => m.BookId == bookId).ToList();
+
+                foreach (Review review in reviewList)
+                {
+                    List<ReviewRate> rateList = db.ReviewRate.Where(m => m.ReviewId == review.ReviewId).ToList();
+                    foreach (ReviewRate rating in rateList)
+                        db.ReviewRate.Remove(rating);
+
+                    db.Review.Remove(review);
+                }
+
+                int reviewDeleted = db.SaveChanges();
+                string deletedReviews = " A total of " + reviewDeleted + " reviews and ratings combined were deleted.";
+
 
                 // attempt to delete the book
                 int bookCounter = BookHelper.DeleteBook(bookId);
 
                 // return message of numbers of book, threads and posts deleted
-                return bookCounter + " book were deleted. " + deletedForumRecords;
+                return bookCounter + " book were deleted. " + deletedForumRecords + deletedReviews;
 
             }
             return "The book id does not exist. No records were deleted.";

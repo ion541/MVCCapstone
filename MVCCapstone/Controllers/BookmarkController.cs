@@ -26,7 +26,7 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
-    
+        
         public string Remove(string bookid)
         {
             return BookHelper.RemoveBookmark(User.Identity.Name, bookid);

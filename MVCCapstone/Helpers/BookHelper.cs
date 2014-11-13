@@ -469,6 +469,12 @@ namespace MVCCapstone.Helpers
             return "Successfully bookmarked";
         }
 
+        /// <summary>
+        /// Removes the bookmark from the database
+        /// </summary>
+        /// <param name="username">user's bookmark to be removed</param>
+        /// <param name="bookid">the id of the boomark to be removed</param>
+        /// <returns>result</returns>
         public static string RemoveBookmark(string username, string bookid)
         {
             int idBook;
@@ -506,10 +512,12 @@ namespace MVCCapstone.Helpers
 
             UsersContext db = new UsersContext();
 
+            int userId = AccHelper.GetUserId(username);
+
             var bookmarkList = (from d in db.UserProfiles
                                 join bm in db.Bookmark on d.UserId equals bm.UserId
                                 join b in db.Book on bm.BookId equals b.BookId
-                                where d.UserName.Contains(username)
+                                where d.UserId == userId
                                 select new BookmarkDisplayModel { BookId = b.BookId, Author = b.Author, Title = b.Title, DateAdded = bm.DateAdded });
 
             switch (sortby)

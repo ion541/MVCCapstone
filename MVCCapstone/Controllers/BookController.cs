@@ -40,8 +40,8 @@ namespace MVCCapstone.Controllers
             // books that are set to hidden can only be viewed by admins
             if (book.State == "Hidden" && !User.IsInRole("admin"))
                 return RedirectToAction("BookDeleted", "Error");
-  
-           
+
+
             BookDisplayModel model = new BookDisplayModel();
 
             model.BookId = book.BookId.ToString();

@@ -14,13 +14,13 @@ namespace MVCCapstone.Models
     public class LocalPasswordModel
     {
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be between {1} and {2} characters long.", MinimumLength = 6)]
+        [StringLength(20, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 5)]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
         public string OldPassword { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be between {1} and {2} characters long.", MinimumLength = 6)]
+        [StringLength(20, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 5)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
@@ -34,7 +34,7 @@ namespace MVCCapstone.Models
     public class NewPasswordModel
     {
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be between {1} and {2} characters long.", MinimumLength = 6)]
+        [StringLength(20, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 5)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; }
@@ -68,9 +68,9 @@ namespace MVCCapstone.Models
         [StringLength(20, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
         [Display(Name = "User name")]
         public string UserName { get; set; }
-
+        
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be between {1} and {2} characters long.", MinimumLength = 6)]
+        [StringLength(20, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 5)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -87,7 +87,7 @@ namespace MVCCapstone.Models
 
         [Required]
         [DataType(DataType.Password)]
-        [StringLength(100, ErrorMessage = "The {0} must be between {1} and {2} characters long.", MinimumLength = 3)]
+        [StringLength(20, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 3)]
         [Display(Name = "Secret Answer")]
         public string User_Answer { get; set; }
     }
@@ -101,7 +101,7 @@ namespace MVCCapstone.Models
         public string Question { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
+        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         [Display(Name = "Current Question Answer")]
         public string Answer { get; set; }
 
@@ -110,12 +110,12 @@ namespace MVCCapstone.Models
         public string NewQuestion { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
+        [StringLength(20, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 3)]
         [Display(Name = "New Secret Answer")]
         public string NewAnswer { get; set; }
 
         [Display(Name = "Confirm Secret Answer")]
-        [StringLength(100, ErrorMessage = "The {0} must be between {1} and {2} characters long.", MinimumLength = 3)]
+        [StringLength(20, ErrorMessage = "The {0} must be between {2} and {1} characters long.", MinimumLength = 3)]
         [Compare("NewAnswer", ErrorMessage = "The Secret Answer and Confirmation Answer do not match.")]
         public string NewAnswerConfirm { get; set; }
     }

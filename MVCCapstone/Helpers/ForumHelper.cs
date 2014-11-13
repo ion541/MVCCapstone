@@ -14,6 +14,12 @@ namespace MVCCapstone.Helpers
     public class ForumHelper
     {
 
+        /// <summary>
+        /// Deletes the forum from the database
+        /// If the book is a standalone, every thread, and post associated with the book will be deleted as well
+        /// </summary>
+        /// <param name="forumId">the id of the be forum to be dleeted</param>
+        /// <returns>number of forum, threads, and post deleted</returns>
         public static int DeleteForum(int forumId)
         {
             UsersContext db = new UsersContext();

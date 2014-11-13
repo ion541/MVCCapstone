@@ -193,12 +193,12 @@ namespace MVCCapstone.Controllers
         public ActionResult DeletePrompt(int? id)
         {
             if (!ReviewHelper.ReviewIdValid(id))
-                return RedirectToAction("pagenotfound", "error");
+                return PartialView("_Delete");
 
             Review review = db.Review.Find(id.Value);
 
             if (review.UserId != AccHelper.GetUserId(User.Identity.Name) && !User.IsInRole("admin"))
-                return RedirectToAction("unauthorizedaccess", "error");
+                return PartialView("_Delete");
 
             return PartialView("_Delete", review);
         }
@@ -242,6 +242,10 @@ namespace MVCCapstone.Controllers
         [AjaxAction]
         public string Rate(string rate, int reviewId)
         {
+
+            if (db.Review.Find(reviewId) == null)
+                return "This review does not exist...";
+
             bool alreadyRated = false;
 
             int userId = AccHelper.GetUserId(User.Identity.Name);

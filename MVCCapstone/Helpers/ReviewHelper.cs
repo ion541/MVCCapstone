@@ -242,6 +242,7 @@ namespace MVCCapstone.Helpers
             model.reviewId = review.ReviewId;
 
 
+            // filter the content  which will replace square tags with html tags
             if (filterContent)
             {
                 model.reviewContent = ReviewHelper.ReviewFilter(review.Content);

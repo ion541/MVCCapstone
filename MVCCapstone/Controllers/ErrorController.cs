@@ -14,13 +14,13 @@ namespace MVCCapstone.Controllers
         public ActionResult Index()
         {
             
-            ViewBag.Message = "Uh... you are here because you have probably have been tampering with the url";
+            ViewBag.Message = "Uh.. you are here because you have probably have been tampering with the url";
 
             return View();
         }
 
         /// <summary>
-        /// Each error has its own controller allowing the developer to handle each error differently if required
+        /// Each error has its own controller allowing the developer to handle each error if required
         /// </summary>
         #region ErrorHandlers
         public ActionResult PageNotFound()

@@ -1,12 +1,35 @@
 ﻿@{
     ViewBag.Title = "Admin Controls";
+    ViewBag.Action = ViewContext.Controller.ValueProvider.GetValue("action").RawValue.ToString().ToLower();
+    
 }
 
 <hgroup class="title">
     <h1>@ViewBag.Title</h1>
 </hgroup>
 
-   <p>@Html.ActionLink("Account Management", "account")</p>
-   <p>@Html.ActionLink("Book Management", "managebook")</p>
-   <p>@Html.ActionLink("Add Book", "selectimage")</p>
+<ul class="nav nav-pills">
+    <li role="presentation" 
+        @if (ViewBag.Action == "account")
+        {
+            @: class="active"
+        }>
+        @Html.ActionLink("Account Management", "account")
+    </li>
+    <li role="presentation" 
+        @if (ViewBag.Action == "managebook")
+        {
+            @: class="active"
+        }>
+        @Html.ActionLink("Book Management", "managebook")
+    </li>
+    <li role="presentation" 
+        @if (ViewBag.Action == "selectimage" || ViewBag.Action == "uploadimage" || ViewBag.Action == "bookdetails")
+        {
+            @: class="active"
+        }>
+        @Html.ActionLink("Add Book", "selectimage")
+    </li>
+</ul>
+
    

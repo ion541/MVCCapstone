@@ -121,7 +121,7 @@
         foreach (var user in Model.PaginationUserInfoModel)
         {
         <tr>
-            <td>@Html.ActionLink("E","account", new {userId = user.UserId, roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}, new {@class = "btn btn-primary"})</td>
+            <td class="text-center">@Html.ActionLink("E","account", new {userId = user.UserId, roles = Request.QueryString["roles"], account = Request.QueryString["account"], page =  Request.QueryString["page"], display = Request.QueryString["display"], sort = Request.QueryString["sort"], asc = Request.QueryString["asc"]}, new {@class = "btn btn-primary"})</td>
             <td>@user.UserId</td>
             <td>@user.UserName </td>
             <td>@user.RoleName</td>
