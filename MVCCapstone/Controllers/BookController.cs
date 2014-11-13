@@ -85,8 +85,8 @@ namespace MVCCapstone.Controllers
             }
             else
             {
-                string ImageBasePath = Server.MapPath("~/");
-                model.ImagePath = BookHelper.GetImagePath(book.ImageId.ToString(), ImageBasePath);
+                Server.MapPath("~");
+                model.ImagePath = BookHelper.GetImagePath(book.ImageId);
             }
 
             return View(model);

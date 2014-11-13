@@ -229,7 +229,7 @@
     
         <div class="col-sm-3">
             <div class="row col-sm-offset-1">
-                <img class="thumbnail img-responsive" src="@Model.ImagePath" />
+                <img class="thumbnail img-responsive" src="@Url.Content(@Model.ImagePath)" />
             </div>
             <div class="row">
                 @if (User.Identity.IsAuthenticated) {

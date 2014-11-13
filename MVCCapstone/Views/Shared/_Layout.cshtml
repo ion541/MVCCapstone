@@ -40,16 +40,16 @@
 
         <!-- Start of Header -->
         <header>
-            <div class="col-sm-offset-2 col-sm-8">
+            <div class="col-lg-offset-2 col-lg-8 col-md-12 col-sm-12 col-xs-12">
                
-                    <div class="col-sm-4">
+                    <div class="col-lg-4 col-md-3 col-xs-2">
                         <!-- Capstone Title -->
                      
-                        <p id="capstone" class="site-title">@Html.ActionLink("Capstone Project", "index", "home")</p>          
+                        <p id="capstone" class="site-title">@Html.ActionLink("Capstone", "index", "home")</p>          
                     </div>
 
                     <!-- Search Bar -->
-                    <div class="col-sm-4">
+                    <div class="col-lg-4 col-md-4 col-xs-4">
                         <input id="titleSearch" type="search" name ="titleSearch" placeholder="Enter Book Title...."/>
                     
                        
@@ -57,7 +57,7 @@
                       
                     </div>
 
-                    <div class="col-sm-4">
+                    <div class="col-lg-4 col-md-5 col-xs-6">
                         <!-- Partial Login -->
                          <div class="float-right">
                              @Html.Partial("_LoginPartial")

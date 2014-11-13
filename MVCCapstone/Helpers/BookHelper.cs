@@ -15,14 +15,6 @@ namespace MVCCapstone.Helpers
     /// </summary>
     public class BookHelper
     {
-        /// <summary>
-        /// returns a string that contains the path to where the uploaded book images are stored
-        /// </summary>
-        /// <returns>string of path to where book images are kept</returns>
-        public static string GetServerPath()
-        {
-            return "Images/Book/";
-        }
 
         /// <summary>
         /// Checks to see if the inputted isbn matches an isbn in the database.
@@ -212,6 +204,15 @@ namespace MVCCapstone.Helpers
         }
 
 
+        /// <summary>
+        /// returns a string that contains the path to where the uploaded book images are stored
+        /// </summary>
+        /// <returns>string of path to where book images are kept</returns>
+        public static string GetServerPath()
+        {
+
+            return "Images/Book/";
+        }
 
 
         /// <summary>
@@ -224,7 +225,7 @@ namespace MVCCapstone.Helpers
             UsersContext db = new UsersContext();
 
             Image image = new Image();
-            image.Path = "/" + filePath;
+            image.Path = "../" + filePath;
             image.DateAdded = DateTime.Now;
 
             db.Image.Add(image);
@@ -254,9 +255,8 @@ namespace MVCCapstone.Helpers
         /// Get the path an image based on the id
         /// </summary>
         /// <param name="bookImageId">the id of the image to be searched for</param>
-        /// <param name="imageBasePath">The base path of the server</param>
         /// <returns>the path to the image or the default image if it doesnt exist</returns>
-        public static string GetImagePath(string bookImageId, string imageBasePath)
+        public static string GetImagePath(string bookImageId)
         {
             UsersContext db = new UsersContext();
 
@@ -274,22 +274,17 @@ namespace MVCCapstone.Helpers
                              where i.ImageId == intImageId
                              select i.Path);
 
-            if (ImagePath.Count() == 0)
+            Image image = db.Image.Find(intImageId);
+
+            if (image == null)
             {
                 return defaultImage; // invalid id, use the default image
             }
             else
             {
-                if (File.Exists(imageBasePath + ImagePath.First()))
-                {
-                    return ImagePath.First(); // return the id of the selected image
-                }
-                else
-                {
-                    // since the image doesn't exist, remove the image Id's from the database
-                    CorrectImageTables(bookImageId);    
-                    return defaultImage;
-                }
+
+                return image.Path; // return the id of the selected image
+    
             }
         }
 

@@ -317,7 +317,7 @@ namespace MVCCapstone.Controllers
                         }
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     ViewBag.ErrorMessage = "An error has occurred while uploading the image.";
                 }

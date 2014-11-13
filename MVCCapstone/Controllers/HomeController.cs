@@ -49,17 +49,6 @@ namespace MVCCapstone.Controllers
                     bookModel.Language = BookHelper.GetLanguage(book.LanguageId);
                     bookModel.Genre = BookHelper.GetBookGenreList(book.BookId);  // find every genre the book is associated with
 
-
-
-                    // image can be null, if it is, use a default image otherwise attempt to find the image
-                    if (book.ImageId == null)
-                    {
-                        bookModel.ImagePath = BookHelper.GetDefaultImage();
-                    }
-                    else
-                    {
-                        bookModel.ImagePath = BookHelper.GetImagePath(book.ImageId.ToString(), ImageBasePath);
-                    }
                     model.Add(bookModel);
                 }
             }

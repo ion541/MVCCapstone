@@ -1,23 +1,23 @@
 ﻿@if (Request.IsAuthenticated) {
     <text>
-        @Html.ActionLink(User.Identity.Name, "manage", new { controller = "account", id = ""})
+        @Html.ActionLink(User.Identity.Name, "manage", new { controller = "account"})
 
         @if (User.IsInRole("admin")) 
         { 
          // Displays only for users with the admin role
-         @Html.ActionLink("Admin Controls", "index", "admin")    
+         @Html.ActionLink("Admin Controls", "index", "admin" )    
         }
 
-        @Html.ActionLink("Bookmark","index","bookmark")
-        @using (Html.BeginForm("logoff", "account", FormMethod.Post, new { id = "logoutForm" })) {
+        @Html.ActionLink("Bookmark","index","bookmark" )
+        @using (Html.BeginForm("logoff", "account", FormMethod.Post, new { id = "logoutForm"})) {
             @Html.AntiForgeryToken()
-            <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+            <a href="javascript:document.getElementById('logoutForm').submit()">Logout</a>
         }
 
     </text>
 } else {
   <text>
-        @Html.ActionLink("Register", "register", "account", routeValues: null, htmlAttributes: new { id = "registerLink"})
+        @Html.ActionLink("Register", "register", "account", routeValues: null, htmlAttributes: new { id = "registerLink", @class="btn btn-default"})
        @Html.ActionLink("Log in", "login", "account", routeValues: null, htmlAttributes: new { id = "loginLink" })
    </text>
 }
