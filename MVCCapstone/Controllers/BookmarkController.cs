@@ -18,8 +18,12 @@ namespace MVCCapstone.Controllers
     {
         public UsersContext db = new UsersContext();
 
-        //
-        // GET: /Bookmark/
+        /// <summary>
+        /// GET: get the users bookmark
+        /// </summary>
+        /// <param name="sort">the column to be sorted</param>
+        /// <param name="page">the page to be displayed</param>
+        /// <param name="asc">the direction of the osrt</param>
         public ActionResult Index(string sort, int page = 1, bool asc = false)
         {
             IPagedList<BookmarkDisplayModel> model = BookHelper.GetBookMarkList(User.Identity.Name, page, sort, asc);
@@ -27,6 +31,10 @@ namespace MVCCapstone.Controllers
         }
 
         
+        /// <summary>
+        /// Removes the selected bookmark
+        /// </summary>
+        /// <param name="bookid">The id of the book to be removed from the bookmark</param>
         public string Remove(string bookid)
         {
             return BookHelper.RemoveBookmark(User.Identity.Name, bookid);

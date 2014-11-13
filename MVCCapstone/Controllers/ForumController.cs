@@ -16,21 +16,29 @@ namespace MVCCapstone.Controllers
         public UsersContext db = new UsersContext();
 
 
-        //
-        // GET: /Forum/
+        /// <summary>
+        /// GET: Default index page, redirect to home page since no forum is to be displayed
+        /// </summary>
         public ActionResult Index()
         {
             return RedirectToAction("Index", "Home");
         }
 
         
+        /// <summary>
+        /// GET: Display a list of threads for the specified forum id
+        /// </summary>
+        /// <param name="forumid">the forum id used to get all threads associated with</param>
+        /// <param name="page">the page to be displayed</param>
         public ActionResult Thread(int? forumid, int page = 1)
         {
+            // make sure the forum id exists
             if (!ForumHelper.ValidateForumId(forumid.Value))
                 return RedirectToAction("pagenotfound", "error");
 
             int validForumId = forumid.Value;
 
+            // get the forum's threads
             ForumModel model = new ForumModel();
             model.ForumId = validForumId;
             model.threadList = ForumHelper.GetThreadList(validForumId, page, 15);
@@ -43,9 +51,14 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// GET: Display the page for creating a thread
+        /// </summary>
+        /// <param name="forumId">the forum id the new thread will be associated with</param>
         [Authorize]
         public ActionResult CreateThread(int? forumId)
         {
+            // make sure the forum id exists
             if (!ForumHelper.ValidateForumId(forumId))
                 return RedirectToAction("pagenotfound", "error");
 
@@ -55,6 +68,10 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// POST: Creates the thread using the users input
+        /// </summary>
+        /// <param name="model">the model used to create a thread</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -76,6 +93,13 @@ namespace MVCCapstone.Controllers
         }
 
 
+        /// <summary>
+        /// GET: Display the selected threads
+        /// </summary>
+        /// <param name="threadid">the id of the thread to be displayed</param>
+        /// <param name="post">post to be scrolled to</param>
+        /// <param name="fview">used to increment the total views</param>
+        /// <param name="page">page of the thread to be displayed</param>
         public ActionResult ViewThread(int? threadid, int? post, bool fview = false, int page = 1)
         {
             // check to see if the thread id exist
@@ -102,6 +126,11 @@ namespace MVCCapstone.Controllers
         }
 
         
+        /// <summary>
+        /// POST: Display the section under the thread which allows the user to create a post
+        /// </summary>
+        /// <param name="threadId">The thread id the new post will be associated with</param>
+        /// <param name="replyPostId">If provided, the post the user is replying to</param>
         [Authorize]
         [AjaxAction]
         public PartialViewResult ShowPost(int? threadId, int? replyPostId)
@@ -128,6 +157,7 @@ namespace MVCCapstone.Controllers
             // populate the model with the data
             if (model.showPostSection) 
             {
+                // see if the user is replying to another post
                 if (replyPostId.HasValue)
                 {
                     if (ForumHelper.PostIdExist(replyPostId.Value))
@@ -146,6 +176,12 @@ namespace MVCCapstone.Controllers
         }
 
         
+        /// <summary>
+        /// POST: Display the edit section under the thread view
+        /// </summary>
+        /// <param name="postId">The id of the post to be editted</param>
+        /// <param name="page">The page the post is located on</param>
+        /// <param name="removeReply">Allow the user to remove the reply post associated with the post</param>
         [Authorize]
         [AjaxAction]
         public PartialViewResult ShowEdit(int? postId, int page = 1, bool removeReply = false)
@@ -188,7 +224,10 @@ namespace MVCCapstone.Controllers
         }
 
 
-
+        /// <summary>
+        /// POST: Attempt to create the post and then redirect the user to the page with the post
+        /// </summary>
+        /// <param name="model">The data of the post</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -208,6 +247,10 @@ namespace MVCCapstone.Controllers
         }
 
 
+        /// <summary>
+        /// POST: Attempt to edit the user's post
+        /// </summary>
+        /// <param name="model">The editted data of the post</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]

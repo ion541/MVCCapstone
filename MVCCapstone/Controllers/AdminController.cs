@@ -65,9 +65,10 @@ namespace MVCCapstone.Controllers
 
 
 
-
-        //
-        // GET: /Admin/
+        /// <summary>
+        /// Display the options for the admin
+        /// </summary>
+        /// <returns></returns>
         [RoleAuthorize(Roles = "admin")]
         public ActionResult Index()
         {
@@ -77,8 +78,15 @@ namespace MVCCapstone.Controllers
 
 
 
-       
-        // GET: /Admin/Account
+        /// <summary>
+        /// Display the admin page that allows the user to modify a user's role
+        /// </summary>
+        /// <param name="message">message of the events</param>
+        /// <param name="account">the account to be modified</param>
+        /// <param name="page">the page to be displayed</param>
+        /// <param name="display">number of records to be displayed</param>
+        /// <param name="sort">the fields to sort by</param>
+        /// <param name="asc">diretion to sort</param>
         [RoleAuthorize(Roles = "admin")]
         public ActionResult Account(ManageMessageId? message, string account = "", int page = 1, int display = 10, string sort = "id", bool asc = true)
         {
@@ -168,8 +176,11 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // Post: /Admin/Account
+        /// <summary>
+        /// POST: Attempt to change the seleced users role
+        /// </summary>
+        /// <param name="model">the account model </param>
+        /// <param name="postedRoles">the selected role</param>
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         public ActionResult Account(AccountSearchViewModel model, PostedRoles postedRoles)
@@ -243,8 +254,9 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: /Admin/SelectImage
+        /// <summary>
+        /// GET: display the page to manage images
+        /// </summary>
         [RoleAuthorize(Roles = "admin")]
         public ActionResult SelectImage()
         {
@@ -256,8 +268,9 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: /Admin/UploadImage
+        /// <summary>
+        /// GET: Display the page to upload an image
+        /// </summary>
         public ActionResult UploadImage()
         {
             return View();
@@ -266,8 +279,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // POST: /Admin/UploadImage
+        /// <summary>
+        /// POST: Attempt to upload the image
+        /// </summary>
+        /// <param name="files">the file uploaded</param>
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         public ActionResult UploadImage(IEnumerable<HttpPostedFileBase> files)
@@ -317,13 +332,16 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: /Admin/Book
+        /// <summary>
+        /// GET: Display the page to add a book
+        /// </summary>
+        /// <param name="imageId">the image that will be associated with the book</param>
         [RoleAuthorize(Roles = "admin")]
         public ActionResult BookDetails(string imageId)
         {
             BookDetailsModel model = new BookDetailsModel();
 
+            // set the image of the book to the sepcified id
             if (imageId != null)
                 model.Image = imageId;
 
@@ -335,8 +353,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // POST: /Admin/Book
+        /// <summary>
+        /// POST: Attempt to add the book to the database
+        /// </summary>
+        /// <param name="model">The book's data</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         [RoleAuthorize(Roles = "admin")]
@@ -345,18 +365,22 @@ namespace MVCCapstone.Controllers
             BookResultModel resultModel = new BookResultModel();
             resultModel.errors = new List<string>();
 
+            // make sure the inputted isbn does not exist
             if (BookHelper.ISBNExist(model.ISBN))
                 resultModel.errors.Add("The ISBN is already in the database.");
-
+            
+            // make sure a genre was selected
             if (model.PostedGenres == null)
                 resultModel.errors.Add("At least one genre must be selected.");
 
+            // determine if the series exist
             if (model.isSeries == "Series" && model.Series == "Existing")
             {
                 if (!BookHelper.CheckForForumIdExistence(Int32.Parse(model.ForumId)))
                     resultModel.errors.Add("The forum id inputted is not valid.");
             }
 
+            // validate the date published
             DateTime day;
             if (!DateTime.TryParseExact(model.Published,"dd/MM/yyyy",CultureInfo.InvariantCulture, DateTimeStyles.None, out day))
                 resultModel.errors.Add("The date published inputted is not valid.");
@@ -397,8 +421,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // Get: /Admin/ManageBook
+        /// <summary>
+        /// GET: Display the page that allows the user to edit and delete a book
+        /// </summary>
+        /// <param name="id">the book to be editted on display</param>
         [RoleAuthorize(Roles = "admin")]
         public ActionResult ManageBook(int? id)
         {
@@ -412,8 +438,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // AJAX: /Admin/DeleteBook
+        /// <summary>
+        /// POST: Delete the book from the database
+        /// </summary>
+        /// <param name="bookId">the id of the book to be deleted</param>
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         [AjaxAction]
@@ -467,8 +495,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // AJAX: /Admin/DeletePrompt
+        /// <summary>
+        /// GET: Display a message prompting the user to confirm their decision in deleting the book
+        /// </summary>
+        /// <param name="bookId">The id of the book to be deleted</param>
         [AjaxAction]
         [RoleAuthorize(Roles = "admin")]
         public PartialViewResult DeletePrompt(int? bookId)
@@ -510,8 +540,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // AJAX: /Admin/EditPrompt
+        /// <summary>
+        /// GET: Get the book's information and display the edit form
+        /// </summary>
+        /// <param name="bookId">The id of the book to be editted</param>
         [AjaxAction]
         [RoleAuthorize(Roles = "admin")]
         public PartialViewResult EditPrompt(int bookId)
@@ -533,11 +565,14 @@ namespace MVCCapstone.Controllers
                 model.LanguageId = book.LanguageId;
                 model.ISBN = book.ISBN;
 
-
+                // get its selected genres
                 model.BookGenre = db.BookGenre.Where(m => m.BookId == bookId).Select(m => m.GenreId).ToList();
+                // get all languages available
                 model.AvaialbleGenres = BookHelper.GetGenreList();
+                // select its language
                 model.Language = LanguageHelper.DisplayList(book.LanguageId);
 
+                // determine if the book is a standalone or a series
                 if (db.Forum.Where(m => m.ForumId == book.ForumId).Select(m => m.SeriesTitle).First() == null)
                 {
                     model.isStandalone = true;
@@ -560,8 +595,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // AJAX POST: /Admin/Edit
+        /// <summary>
+        /// POST: Update the book in the database with the model's data
+        /// </summary>
+        /// <param name="model">The data of the book</param>
         [HttpPost]
         [RoleAuthorize(Roles = "admin")]
         [AjaxAction]
@@ -572,12 +609,15 @@ namespace MVCCapstone.Controllers
             resultModel.errors = new List<string>();
             resultModel.bookId = model.BookId;
 
+            // if the user changed the isbn, make sure it doesnt matches another book
             if (BookHelper.ISBNExist(model.ISBN, model.BookId))
                 resultModel.errors.Add("The ISBN is already in the database.");
 
+            // check to see if a genre is selected
             if (model.PostedGenres == null)
                 resultModel.errors.Add("At least one genre must be selected.");
 
+            // date published range must be valid
             DateTime day;
             if (!DateTime.TryParseExact(model.Published, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out day))
                 resultModel.errors.Add("The date published inputted is not valid.");
@@ -662,14 +702,14 @@ namespace MVCCapstone.Controllers
                     db.BookGenre.Add(bookGenre);
                 }
                 
-                
+                // creating the book object
                 book.Title = model.BookTitle;
                 book.Author = model.Author;
                 book.Synopsis = model.Synopsis;
                 book.Published = day;
                 book.Publisher = model.Publisher;
                 book.ISBN = model.ISBN;
-                book.LanguageId = Request["LanguageDisplay"].ToString();
+                book.LanguageId = Request["LanguageDisplay"].ToString(); // selected language in the dropdownlist
                 book.ForumId = forumId;
 
                 if (resultModel.errors.Count() == 0)
@@ -689,8 +729,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // AJAX POST: /Admin/TitleSearch
+        /// <summary>
+        /// POST: Get a list of books based on the user's query
+        /// </summary>
+        /// <param name="model">the data for the query</param>
         [HttpPost]
         [AjaxAction]
         [RoleAuthorize(Roles = "admin")]
@@ -701,6 +743,7 @@ namespace MVCCapstone.Controllers
             if (model.titleSearch == null) model.titleSearch = "";
             if (model.authorSearch == null) model.authorSearch = "";
 
+            // return a list of books from the search query
             resultModel.bookResults = db.Book.Where(m => m.Title.Contains(model.titleSearch) && m.Author.Contains(model.authorSearch)).ToList();
 
             return PartialView("_titleSearch", resultModel);
@@ -708,12 +751,17 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // AJAX POST: /Admin/SeriesSearch
+        /// <summary>
+        /// GET: Get a list of series based on the series title inputted
+        /// </summary>
+        /// <param name="seriesTitle">the string to be searched for</param>
+        /// <returns></returns>
         [RoleAuthorize(Roles = "admin")]
         public PartialViewResult SeriesSearch(string seriesTitle)
         {
             SeriesListModel model = new SeriesListModel();
+            
+            // return a list of series from the query
             model.seriesList = db.Forum.Where(m => m.SeriesTitle.Contains(seriesTitle)).OrderBy(m => m.ForumId).ToList();
             return PartialView("_SeriesResult", model);
         }

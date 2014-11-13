@@ -49,6 +49,9 @@ namespace MVCCapstone.Helpers
  
         }
 
+
+
+
         /// <summary>
         /// Check the database to see if the book exists
         /// </summary>
@@ -61,7 +64,6 @@ namespace MVCCapstone.Helpers
                 return true;
 
             return false;
-
         }
 
 
@@ -76,6 +78,8 @@ namespace MVCCapstone.Helpers
             UsersContext db = new UsersContext();
             return db.Book.Where(m => m.BookId == bookid).Select(m => m.Title).FirstOrDefault();
         }
+
+
 
 
         /// <summary>
@@ -96,6 +100,8 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
         /// <summary>
         /// Gets the state of the book
         /// </summary>
@@ -106,6 +112,7 @@ namespace MVCCapstone.Helpers
             UsersContext db = new UsersContext();
             return db.Book.Where(m => m.BookId == bookid).Select(m => m.State).FirstOrDefault();
         }
+
 
 
         /// <summary>
@@ -128,6 +135,8 @@ namespace MVCCapstone.Helpers
 
             return roleList;
         }
+
+
 
         /// <summary>
         /// Gets a list of genres related to the book id and return it in a formatted string
@@ -159,6 +168,9 @@ namespace MVCCapstone.Helpers
             return genreString;
         }
 
+
+
+
         /// <summary>
         /// Create a new Forum ID and return it
         /// </summary>
@@ -180,6 +192,9 @@ namespace MVCCapstone.Helpers
             return newForumID;
         }
 
+
+
+
         /// <summary>
         /// Checks to see if the inputted Forum ID is in the database
         /// </summary>
@@ -195,6 +210,8 @@ namespace MVCCapstone.Helpers
                          select f.ForumId).Count();
             return count == 1 ? true : false;
         }
+
+
 
 
         /// <summary>
@@ -218,6 +235,9 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
+
         /// <summary>
         /// Returns the path of a default image
         /// </summary>
@@ -226,6 +246,8 @@ namespace MVCCapstone.Helpers
         {
             return "/Images/default_image.jpg";
         }
+
+
 
 
         /// <summary>
@@ -240,9 +262,10 @@ namespace MVCCapstone.Helpers
 
             string defaultImage = GetDefaultImage();
 
+            
             if (bookImageId == null)
             {
-                return defaultImage;
+                return defaultImage; // no id provided, use the default image
             }
             
             int intImageId = Int32.Parse(bookImageId);
@@ -253,13 +276,13 @@ namespace MVCCapstone.Helpers
 
             if (ImagePath.Count() == 0)
             {
-                return defaultImage;
+                return defaultImage; // invalid id, use the default image
             }
             else
             {
                 if (File.Exists(imageBasePath + ImagePath.First()))
                 {
-                    return ImagePath.First();
+                    return ImagePath.First(); // return the id of the selected image
                 }
                 else
                 {
@@ -269,6 +292,8 @@ namespace MVCCapstone.Helpers
                 }
             }
         }
+
+
 
         /// <summary>
         /// Method is called when the imageId points to a file that does not exist
@@ -289,6 +314,7 @@ namespace MVCCapstone.Helpers
                                     where b.ImageId == imageId
                                     select b.BookId).ToList();
 
+            // set every book's image with the image id to null
             if (bookIdList.Count > 0)
             {
                 for (int i = 0; i < bookIdList.Count; i++)
@@ -301,6 +327,9 @@ namespace MVCCapstone.Helpers
             db.SaveChanges();
             
         }
+
+
+
 
         /// <summary>
         /// Insert a record of the book into the database
@@ -336,11 +365,13 @@ namespace MVCCapstone.Helpers
             if (recordInserted == 1)
             {
                 return true;
-            } else 
-            { 
+            } else { 
                 return false; 
             }
         }
+
+
+
 
         /// <summary>
         /// Gets the most recent book id added to the table
@@ -354,6 +385,9 @@ namespace MVCCapstone.Helpers
             return latestBookId;
 
         }
+
+
+
 
         /// <summary>
         /// Insert a record that contains the book id and genre id
@@ -382,6 +416,9 @@ namespace MVCCapstone.Helpers
             }
         }
 
+
+
+
         /// <summary>
         /// Insert the default genre value for books that wernt assigned genres
         /// </summary>
@@ -400,6 +437,8 @@ namespace MVCCapstone.Helpers
             db.BookGenre.Add(bookGenre);
             db.SaveChanges();
         }
+
+
 
 
         /// <summary>
@@ -432,6 +471,9 @@ namespace MVCCapstone.Helpers
 
             return book.State;
         }
+
+
+
 
         /// <summary>
         /// Adds a record into the bookmark table that contains the userid, bookid, and time added
@@ -469,6 +511,9 @@ namespace MVCCapstone.Helpers
             return "Successfully bookmarked";
         }
 
+
+
+
         /// <summary>
         /// Removes the bookmark from the database
         /// </summary>
@@ -496,6 +541,9 @@ namespace MVCCapstone.Helpers
 
             return "The bookmark was successfully removed.";
         }
+
+
+
 
         /// <summary>
         /// Pagination for bookmark
@@ -535,6 +583,9 @@ namespace MVCCapstone.Helpers
             return bookmarkList.ToPagedList(page, 20) as IPagedList<BookmarkDisplayModel>;
         }
 
+
+
+
         /// <summary>
         /// Returns a list of books where any new books discovered in the query list will be aded to the current list
         /// </summary>
@@ -554,6 +605,9 @@ namespace MVCCapstone.Helpers
 
             return currentList;
         }
+
+
+
 
         /// <summary>
         /// Compares both the query list and current list and return a new list of books that contains the same books in both list
@@ -584,6 +638,8 @@ namespace MVCCapstone.Helpers
 
             return newList;
         }
+
+
 
 
         /// <summary>

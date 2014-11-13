@@ -35,8 +35,9 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: Account/
+        /// <summary>
+        /// GET: Index page of account management, display the options available
+        /// </summary>
         public ActionResult Index()
         { 
             return RedirectToAction("Manage", "Account");
@@ -44,29 +45,37 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: /Account/Login
+
+        /// <summary>
+        /// GET: Login page 
+        /// </summary>
+        /// <param name="returnUrl">page to be redirected to</param>
         [AllowAnonymous]
         [OutputCache(NoStore = true, Duration = 0, VaryByParam = "None")] 
         public ActionResult Login(string returnUrl)
         {
- 
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
 
 
-
-        //
-        // POST: /Account/Login
+        /// <summary>
+        /// POST: Attempt to log the user in
+        /// Accounts that are locked will be logged off and redirected to an error page
+        /// </summary>
+        /// <param name="model">the login model</param>
+        /// <param name="returnUrl">url to be redirected to upon succesffuly logging on</param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Login(LoginModel model, string returnUrl)
         {
+         
             if (ModelState.IsValid && WebSecurity.Login(model.UserName, model.Password, persistCookie: model.RememberMe))
             {
+                // if the user account is locked, logout and redirect the user to an error page
                 if (Roles.IsUserInRole(model.UserName, "locked")) {
                     WebSecurity.Logout();
                     return RedirectToAction("LockedAccount", "Error");
@@ -81,8 +90,9 @@ namespace MVCCapstone.Controllers
         }
 
 
-        //
-        // POST: /Account/LogOff
+        /// <summary>
+        /// POST: Logs the user off
+        /// </summary>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -94,14 +104,17 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: /Account/Reset
+        /// <summary>
+        /// GET: Show the page to reset the user's password
+        /// </summary>
+        /// <param name="message">the message to be displayed along the process</param>
+        /// <param name="DisplayFields">display the next set of fields required to reset passwords</param>
         [AllowAnonymous]
         public ActionResult Reset(ManageMessageId? message, bool DisplayFields = false)
         {
             ModelState.Clear();
 
-
+            // show the next set of fields required to reset their password
             if (DisplayFields)
                 ViewBag.DisplayHiddenFields = true;
 
@@ -124,21 +137,28 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // POST: /Account/Reset
+        /// <summary>
+        /// POST: Determine if the user's answer matches their questions
+        /// Prevent admins and locked accounts from resetting their passwords
+        /// </summary>
+        /// <param name="model">The reset password model</param>
+        /// <param name="message">message to be displayed along the way</param>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult Reset(ResetPasswordModel model, ManageMessageId? message)
         {
+            // prevent user from accessing this link directly
             if (model == null)
                 return RedirectToAction("IndirectAccess", "Error");
             
             if (model.Account == null)
                 return RedirectToAction("Reset", new {Message = ManageMessageId.EmptyInput });
 
+
             bool UserExist = AccHelper.CheckUserExist(model.Account);
-      
+            
+            // check to see if the user exist and make sure they are not an admin or are locked
             if (UserExist)
             {
                 if (Roles.IsUserInRole(model.Account,"admin"))
@@ -152,7 +172,7 @@ namespace MVCCapstone.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-
+                // get their secret question
                 model.Question = AccHelper.GetUserQuestion(model.Account);
                 ViewBag.UserQuestion = model.Question; // fill the question textbox
                 ViewBag.DisplayHiddenFields = true; // show the question / answer field
@@ -189,7 +209,9 @@ namespace MVCCapstone.Controllers
 
 
 
-
+        /// <summary>
+        /// GET: Prompt the user for a new password
+        /// </summary>
         [AllowAnonymous]
         public ActionResult SetNewPassword()
         {
@@ -212,6 +234,13 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+        
+        /// <summary>
+        /// POST: Reset the users password
+        /// redirect them to the main page afterwards
+        /// </summary>
+        /// <param name="model">data model</param>
         [HttpPost]
         [AllowAnonymous]
         public ActionResult SetNewPassword(NewPasswordModel model)
@@ -239,9 +268,9 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // GET: /Account/Register
-
+        /// <summary>
+        /// Display page to register an account
+        /// </summary>
         [AllowAnonymous]
         public ActionResult Register()
         {
@@ -251,8 +280,10 @@ namespace MVCCapstone.Controllers
 
 
 
-        //
-        // POST: /Account/Register
+        /// <summary>
+        /// POST: Register an account
+        /// </summary>
+        /// <param name="model">register data model</param>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -292,9 +323,14 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
 
+
+
     
-        //
-        // GET: /Account/Manage
+        /// <summary>
+        /// Display the options to edit their account
+        /// </summary>
+        /// <param name="message">message to be displayed</param>
+        /// <param name="id">determine which options the user chose</param>
         public ActionResult Manage(ManageMessageId? message, string id)
         {
 
@@ -345,8 +381,12 @@ namespace MVCCapstone.Controllers
         }
 
 
-        //
-        // POST: /Account/Manage/Password
+
+
+        /// <summary>
+        /// POST: Attempt to change the users password based on the users input
+        /// </summary>
+        /// <param name="model">reset password model</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ManagePasswordPost(LocalPasswordModel model)
@@ -387,8 +427,13 @@ namespace MVCCapstone.Controllers
             return RedirectToAction("Manage/Password", new { Message = ManageMessageId.ChangeError }); ;
         }
 
-        //
-        // POST: /Account/Manage/Question
+
+
+
+        /// <summary>
+        /// POST: Attempt to change the users secret question
+        /// </summary>
+        /// <param name="model">secret question model</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ManageQuestionPost(ChangeQuestionModel model)
@@ -422,6 +467,7 @@ namespace MVCCapstone.Controllers
 
 
         #region Helpers
+        // used to redirect user to another page after logging on
         private ActionResult RedirectToLocal(string returnUrl)
         {
             if (Url.IsLocalUrl(returnUrl))

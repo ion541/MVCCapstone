@@ -9,8 +9,11 @@ namespace MVCCapstone.Controllers
     [ValidateInput(false)]
     public class ErrorController : Controller
     {
-        //
-        // GET: /Error/
+        
+        /// <summary>
+        /// GET: Default index page with no error
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             

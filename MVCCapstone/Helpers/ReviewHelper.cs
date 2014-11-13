@@ -11,9 +11,19 @@ namespace MVCCapstone.Helpers
     public class ReviewHelper
     {
 
+
+        /// <summary>
+        /// Get a pagination object of the reviews based on the input
+        /// </summary>
+        /// <param name="bookid">The id of the book used to retrieve associated reviews</param>
+        /// <param name="sortby">The sort</param>
+        /// <param name="page">The page to be displayed</param>
+        /// <param name="display">Number of reviews displayed per page</param>
+        /// <returns>pagination object</returns>
         public static IPagedList<ReviewModel> GetReviews(int bookid, string sortby, int page, int display)
         {
             UsersContext db = new UsersContext();
+
             if (page <= 0)
                 page = 1;
 
@@ -41,6 +51,7 @@ namespace MVCCapstone.Helpers
                 review.rateUp = db.ReviewRate.Where(m => m.ReviewId == review.reviewId && m.Rate == "up").Count();
             }
 
+            // sort / filter the reviews based on the input
             switch (sortby)
             {
                 case "notrecommended":
@@ -61,10 +72,16 @@ namespace MVCCapstone.Helpers
 
             IPagedList<ReviewModel> orderedReviewList = reviewList.ToPagedList(page, display) as IPagedList<ReviewModel>;
 
-             return orderedReviewList;
+            return orderedReviewList;
             
         }
-        // class used to find and replace tags
+
+
+
+
+        /// <summary>
+        /// class used to find and replace tags
+        /// </summary>
         public class AcceptedTags
         {
             public string searchFor, replaceStart, replaceEnd;
@@ -76,7 +93,6 @@ namespace MVCCapstone.Helpers
             }
         }
 
-        
         /// <summary>
         /// Remove every occurence of html tags and replace squared bracket tags with html tags
         /// 
@@ -195,6 +211,9 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
+
         /// <summary>
         /// Takes an array that contains a row with strings and its tag
         /// Splits the string and remove its attribute so that only the tag remains which is then added into a new array
@@ -224,6 +243,8 @@ namespace MVCCapstone.Helpers
             }
             return arrCleanTagArray;
         }
+
+
 
 
         /// <summary>
@@ -279,12 +300,15 @@ namespace MVCCapstone.Helpers
             return model;
         }
 
+
+
+
         /// <summary>
         /// Determines if a review with the id exists.
         /// Returns a boolean indicating the existence of the review
         /// </summary>
         /// <param name="id">id to be searched</param>
-        /// <returns>boolean</returns>
+        /// <returns>boolean indicating if the id is valid</returns>
         public static bool ReviewIdValid(int? id)
         {
             if (id.HasValue)
@@ -297,6 +321,5 @@ namespace MVCCapstone.Helpers
             return false;
             
         }
-
     }
 }

@@ -24,8 +24,10 @@ namespace MVCCapstone.Controllers
         }
 
 
-        //
-        // GET: /Search/Advanced
+        /// <summary>
+        /// GET: Display the search page for books
+        /// </summary>
+        /// <param name="title">default title if provided</param>
         public ActionResult Advanced(string title)
         {
             SearchModel model = new SearchModel();
@@ -71,6 +73,10 @@ namespace MVCCapstone.Controllers
             return View(model);
         }
         
+        /// <summary>
+        /// POST: Perform a search in the database for books based on the user's input
+        /// </summary>
+        /// <param name="model">The data of the search</param>
         [HttpPost]
         public ActionResult Advanced(SearchModel model)
         {

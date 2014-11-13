@@ -13,11 +13,12 @@ namespace MVCCapstone.Controllers
     {
         public UsersContext db = new UsersContext();
 
-       
 
 
-        //
-        // GET: /Review/
+
+        /// <summary>
+        /// GET: Default index page, redirect to home page since no review is to be displayed
+        /// </summary>
         public ActionResult Index()
         {
             return RedirectToAction("Index", "Home");
@@ -25,6 +26,13 @@ namespace MVCCapstone.Controllers
 
 
 
+        /// <summary>
+        /// GET: Display the reviews for the selected book
+        /// </summary>
+        /// <param name="id">The id of the book</param>
+        /// <param name="page">The page to be displayed</param>
+        /// <param name="sortby">The sort</param>
+        /// <returns></returns>
         public ActionResult Book(int? id, int page = 1, string sortby = "popular")
         {
             // bookid parameter must be valid and the book must also exist
@@ -47,6 +55,11 @@ namespace MVCCapstone.Controllers
         }
 
   
+
+        /// <summary>
+        /// GET: Display the review
+        /// </summary>
+        /// <param name="id">The id of the review</param>
         public ActionResult Id(int? id)
         {
 
@@ -79,7 +92,10 @@ namespace MVCCapstone.Controllers
         }
 
 
-
+        /// <summary>
+        /// GET: Display the page to create a review
+        /// </summary>
+        /// <param name="id">The id of the book the review will be associated with</param>
         [Authorize]
         public ActionResult Create(int? id)
         {
@@ -104,6 +120,10 @@ namespace MVCCapstone.Controllers
             }
         }
 
+        /// <summary>
+        /// POST: Attempt to create a new review
+        /// </summary>
+        /// <param name="model">the data of the new review</param>
         [HttpPost]
         [Authorize]
         public ActionResult CreateReview(ReviewModel model)
@@ -126,6 +146,11 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+        /// <summary>
+        /// POST: Display a preview based on the users input
+        /// </summary>
+        /// <param name="model">The data of the review</param>
         [AjaxAction]
         [HttpPost]
         [Authorize]
@@ -143,6 +168,7 @@ namespace MVCCapstone.Controllers
 
             model.author = User.Identity.Name;
 
+            // could be empty during a preview
             if (model.reviewTitle == null) model.reviewTitle = "Empty Title";
             if (model.reviewContent == null) model.reviewContent = "Empty review";
 
@@ -153,6 +179,12 @@ namespace MVCCapstone.Controllers
         }
 
 
+
+
+        /// <summary>
+        /// GET: Display the edit page for the review
+        /// </summary>
+        /// <param name="id">The id of the review to be editted</param>
         [Authorize]
         public ActionResult Edit(int? id)
         {
@@ -171,10 +203,19 @@ namespace MVCCapstone.Controllers
             return View("EditReview",model);
         }
 
+
+
+
+        /// <summary>
+        /// POST: Edit the review
+        /// </summary>
+        /// <param name="model">The data of the editted review</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         public ActionResult EditReview(ReviewModel model)
         {
+            // find the review and change it to the model's data
             Review review = db.Review.Find(model.reviewId);
 
             review.Title = model.reviewTitle;
@@ -184,10 +225,17 @@ namespace MVCCapstone.Controllers
 
             db.SaveChanges();
 
+            // redirect user to the review page
             return RedirectToAction("id", new { id = model.reviewId });
         }
 
-   
+
+
+
+        /// <summary>
+        /// POST: Prompt the user to confirm their decision before deleting the review
+        /// </summary>
+        /// <param name="id">The id of the review to be deleted</param>
         [Authorize]
         [AjaxAction]
         public ActionResult DeletePrompt(int? id)
@@ -197,12 +245,19 @@ namespace MVCCapstone.Controllers
 
             Review review = db.Review.Find(id.Value);
 
+            // only allow the owner / admin to delete the review
             if (review.UserId != AccHelper.GetUserId(User.Identity.Name) && !User.IsInRole("admin"))
                 return PartialView("_Delete");
 
             return PartialView("_Delete", review);
         }
 
+
+
+        /// <summary>
+        /// POST: Attempt to the delete the review
+        /// </summary>
+        /// <param name="id">the id of the review  to be deleted</param>
         [Authorize]
         [AjaxAction]
         [HttpPost]
@@ -213,6 +268,7 @@ namespace MVCCapstone.Controllers
 
             Review review = db.Review.Find(id.Value);
 
+            // only allow the owner / admin to delete the review
             if (review.UserId != AccHelper.GetUserId(User.Identity.Name) && !User.IsInRole("admin"))
                 return RedirectToAction("unauthorizedaccess", "error");
 
@@ -221,10 +277,12 @@ namespace MVCCapstone.Controllers
 
             ViewBag.Deleted = false;
 
+            // determine if the review was successfully deleted
             if (rowDeleted == 1)
             {
                 ViewBag.Deleted = true;
 
+                // delete every rating from the database associated with the review
                 var ratings = db.ReviewRate.Where(m => m.ReviewId == id.Value).ToList();
                 foreach (ReviewRate rating in ratings)
                     db.ReviewRate.Remove(rating);
@@ -236,7 +294,14 @@ namespace MVCCapstone.Controllers
         }
 
 
+        
 
+        /// <summary>
+        /// POST: Insert a record of a rating for the review
+        /// </summary>
+        /// <param name="rate">The rating the user provided</param>
+        /// <param name="reviewId">The id of the review being rated</param>
+        /// <returns></returns>
         [HttpPost]
         [Authorize]
         [AjaxAction]
@@ -250,6 +315,7 @@ namespace MVCCapstone.Controllers
 
             int userId = AccHelper.GetUserId(User.Identity.Name);
 
+            // determine if the user has already rated the review
             if (db.ReviewRate.Where(m => m.ReviewId == reviewId && m.UserId == userId).Count() > 0)
                 alreadyRated = true;
 
@@ -257,11 +323,13 @@ namespace MVCCapstone.Controllers
 
             if (alreadyRated)
             {
+                // find the record and change it
                 rating = db.ReviewRate.Where(m => m.ReviewId == reviewId && m.UserId == userId).First();
                 rating.Rate = rate;
             }
             else
             {
+                // insert a new record for the rating
                  rating = new ReviewRate();
                  rating.UserId = userId;
                  rating.ReviewId = reviewId;

@@ -14,6 +14,9 @@ namespace MVCCapstone.Controllers
     {
         public UsersContext db = new UsersContext();
 
+        /// <summary>
+        /// GET: Main home page
+        /// </summary>
         public ActionResult Index()
         {
             // user is locked, log them out and redirect them to the error page

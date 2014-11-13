@@ -15,7 +15,7 @@ namespace MVCCapstone.Helpers
         /// <summary>
         /// Get a list of roles available to be filtered
         /// </summary>
-        /// <returns></returns>
+        /// <returns>List of roles</returns>
         public static List<RoleList> GetRoleList()
         {
             UsersContext db = new UsersContext();
@@ -32,6 +32,8 @@ namespace MVCCapstone.Helpers
 
             return roleList;
         }
+
+
 
 
         /// <summary>
@@ -52,6 +54,9 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
+
         /// <summary>
         /// Get the roles the user is currently in
         /// </summary>
@@ -71,6 +76,8 @@ namespace MVCCapstone.Helpers
         }
 
 
+
+
         /// <summary>
         /// Get all the role name in the role table
         /// </summary>
@@ -81,6 +88,9 @@ namespace MVCCapstone.Helpers
 
             return db.UserRoles.OrderBy(u => u.RoleId).Select(u => u.RoleName).ToList();
         }
+
+
+
 
 
         /// <summary>

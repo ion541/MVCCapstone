@@ -46,6 +46,8 @@ namespace MVCCapstone.Helpers
         }
 
 
+
+
         /// <summary>
         /// Get the forum id associated with the thread.
         /// Returns -1 if the forum id does not exist
@@ -61,6 +63,8 @@ namespace MVCCapstone.Helpers
 
             return -1;
         }
+
+
 
 
         /// <summary>
@@ -84,6 +88,9 @@ namespace MVCCapstone.Helpers
             return true;
         }
 
+
+
+
         /// <summary>
         /// Returns a boolean to indicate if the thread is is valid
         /// </summary>
@@ -102,6 +109,9 @@ namespace MVCCapstone.Helpers
             return true;
         }
 
+
+
+
         /// <summary>
         /// Returns a boolean to indicate if the post id is valid
         /// </summary>
@@ -119,6 +129,8 @@ namespace MVCCapstone.Helpers
 
             return true;
         }
+
+
 
 
         /// <summary>
@@ -144,6 +156,13 @@ namespace MVCCapstone.Helpers
              
         }
 
+
+
+        /// <summary>
+        /// Get the string which will be displayed on the button
+        /// </summary>
+        /// <param name="threadId"></param>
+        /// <returns></returns>
         public static string GetLockActionString(int threadId)
         {
             UsersContext db = new UsersContext();
@@ -152,6 +171,9 @@ namespace MVCCapstone.Helpers
             return (thread.State == "Locked") ? "Unlock Thread" : "Lock Thread";
 
         }
+
+
+
 
         /// <summary>
         /// Get the title of the thread
@@ -164,6 +186,9 @@ namespace MVCCapstone.Helpers
             return db.Thread.Where(m => m.ThreadId == threadId).Select(m => m.Title).FirstOrDefault();
           
         }
+
+
+
 
         /// <summary>
         /// Determines if the the book's forum id is being shared
@@ -178,6 +203,9 @@ namespace MVCCapstone.Helpers
             return false;
 
         }
+
+
+
 
         /// <summary>
         /// Get every title and bookid as an object that shares the forum id
@@ -206,6 +234,9 @@ namespace MVCCapstone.Helpers
 
             return bookList;
         }
+
+
+
 
         /// <summary>
         /// Gets the list of posts that is associated with the thread id
@@ -245,6 +276,8 @@ namespace MVCCapstone.Helpers
         }
 
 
+
+
         /// <summary>
         /// Get every thread that is being shared with the forum id
         /// </summary>
@@ -255,7 +288,6 @@ namespace MVCCapstone.Helpers
         public static IPagedList<ThreadModel> GetThreadList(int forumId, int page, int display)
         {
           
-
             // page viewed cannot be negative
             if (page <= 0) page = 1;
 
@@ -284,6 +316,8 @@ namespace MVCCapstone.Helpers
 
             return threads.ToPagedList(page, display) as IPagedList<ThreadModel>;
         }
+
+
 
 
         /// <summary>
@@ -318,6 +352,9 @@ namespace MVCCapstone.Helpers
             }
         }
 
+
+
+
         /// <summary>
         /// Create a thread based off of the user input.
         /// </summary>
@@ -343,6 +380,16 @@ namespace MVCCapstone.Helpers
             CreatePost(userId, threadId, post);
         }
 
+
+
+
+        /// <summary>
+        /// Find the post and change its values based on the input provided
+        /// </summary>
+        /// <param name="postId">The id of the post to be changed</param>
+        /// <param name="content">The content of the post</param>
+        /// <param name="replyTo">The name of the post being replied to</param>
+        /// <param name="replyContent">The replied content</param>
         public static void EditPost(int postId, string content, string replyTo = null, string replyContent = null)
         {
             UsersContext db = new UsersContext();
@@ -353,6 +400,9 @@ namespace MVCCapstone.Helpers
             post.ModifiedDate = DateTime.Today.ToShortDateString() + " - " + DateTime.Now.ToLongTimeString();
             db.SaveChanges();
         }
+
+
+
 
        /// <summary>
        /// Creates a post
@@ -381,6 +431,9 @@ namespace MVCCapstone.Helpers
             UpdateThreadInfo(threadId, userId); // updates the thread ifnromation
         }
 
+
+
+
         /// <summary>
         /// Updates the thread to show the most recent post and date posted
         /// </summary>
@@ -396,6 +449,9 @@ namespace MVCCapstone.Helpers
             db.SaveChanges();
         }
 
+
+
+
         /// <summary>
         /// Increments the total view of the thread
         /// </summary>
@@ -408,6 +464,9 @@ namespace MVCCapstone.Helpers
             db.SaveChanges();
 
         }
+
+
+
 
         /// <summary>
         /// Checks to see if there exist a post with the post id
@@ -422,6 +481,10 @@ namespace MVCCapstone.Helpers
 
             return true;
         }
+
+
+
+
         /// <summary>
         /// Finds the post by its id and return the content of that post
         /// </summary>
@@ -438,6 +501,9 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
+
         /// <summary>
         /// Get the username of the associated with the post id
         /// </summary>
@@ -453,6 +519,9 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
+
         /// <summary>
         /// Determine if there exists a post that is owned by the user id
         /// </summary>
@@ -466,6 +535,8 @@ namespace MVCCapstone.Helpers
                 return true;
             return false;
         }
+
+
 
 
         /// <summary>
@@ -490,6 +561,9 @@ namespace MVCCapstone.Helpers
 
         }
 
+
+
+
         /// <summary>
         /// Return a boolean indicating whether the thread is locked
         /// </summary>
@@ -502,6 +576,9 @@ namespace MVCCapstone.Helpers
 
             return (thread.State == "Locked") ? true : false;
         }
+
+
+
 
         /// <summary>
         /// Finds the thread associated with the post id and return the a boolean
