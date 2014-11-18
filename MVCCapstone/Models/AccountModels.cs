@@ -11,6 +11,7 @@ using System.Linq;
 namespace MVCCapstone.Models
 {
 
+    // model used to change the users current password on account management page
     public class LocalPasswordModel
     {
         [Required]
@@ -31,6 +32,7 @@ namespace MVCCapstone.Models
         public string ConfirmPassword { get; set; }
     }
 
+    // model used to change password when resetting
     public class NewPasswordModel
     {
         [Required]
@@ -45,6 +47,7 @@ namespace MVCCapstone.Models
         public string ConfirmPassword { get; set; }
     }
 
+    // login model
     public class LoginModel
     {
         [Required]
@@ -61,6 +64,7 @@ namespace MVCCapstone.Models
         public bool RememberMe { get; set; }
     }
 
+    // register model
     public class RegisterModel
     {
         [Required]
@@ -92,6 +96,7 @@ namespace MVCCapstone.Models
         public string User_Answer { get; set; }
     }
 
+    // model used to change users secret question on account management page
     public class ChangeQuestionModel
     {
 
@@ -120,6 +125,8 @@ namespace MVCCapstone.Models
         public string NewAnswerConfirm { get; set; }
     }
 
+
+    // model used to prompt user for their account / secret question / answer
     public class ResetPasswordModel
     {
         [Required]
@@ -134,6 +141,8 @@ namespace MVCCapstone.Models
         public string Answer { get; set; }
     }
 
+
+    // admin model used to display the account on the admin page
     public class EditUserModel
     {
         [Display(Name="User Id")]

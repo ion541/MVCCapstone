@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using WebMatrix.WebData;
 using MVCCapstone.Models;
 using MVCCapstone.Helpers;
+using PagedList;
 
 namespace MVCCapstone.Controllers
 {
@@ -17,8 +18,13 @@ namespace MVCCapstone.Controllers
         /// <summary>
         /// GET: Main home page
         /// </summary>
-        public ActionResult Index()
+        public ActionResult Index(int? page)
         {
+            if (!page.HasValue || page.Value < 0)
+                page = 1;
+
+            HomePageModel model = new HomePageModel();
+
             // user is locked, log them out and redirect them to the error page
             if (User.Identity.IsAuthenticated && User.IsInRole("locked"))
             {
@@ -27,10 +33,9 @@ namespace MVCCapstone.Controllers
             }
 
             // list of books to be displayed
-            List<BookDisplayModel> model = new List<BookDisplayModel>();
-           
+
+            List<BookDisplayModel> dispModel = new   List<BookDisplayModel>();
             List<Book> bookList = db.Book.ToList();
-            string ImageBasePath = Server.MapPath("~/");
             foreach (Book book in bookList)
             {
                 BookDisplayModel bookModel = new BookDisplayModel();
@@ -49,12 +54,16 @@ namespace MVCCapstone.Controllers
                     bookModel.Language = BookHelper.GetLanguage(book.LanguageId);
                     bookModel.Genre = BookHelper.GetBookGenreList(book.BookId);  // find every genre the book is associated with
 
-                    model.Add(bookModel);
+                    dispModel.Add(bookModel);
                 }
             }
-            ViewBag.BookList = model;
 
-            return View();
+            dispModel.OrderBy(m => m.Published).ToList();            
+
+            model.BookList = dispModel.ToPagedList(page.Value, 20) as IPagedList<BookDisplayModel>;
+
+
+            return View(model);
         }
 
 

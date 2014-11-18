@@ -727,6 +727,72 @@ namespace MVCCapstone.Controllers
 
 
 
+        /// <summary>
+        /// POST: Update the book in the database with the model's data
+        /// </summary>
+        /// <param name="model">The data of the book</param>
+        [RoleAuthorize(Roles = "admin")]
+        [AjaxAction]
+        public PartialViewResult EditImage(int id)
+        {
+
+
+            EditImageModel model = new EditImageModel();
+            model.bookId = id;
+            model.hasImage = false;
+
+            string basePath = Request.Url.Scheme + "://" + Request.Url.Authority +
+                                          Request.ApplicationPath.TrimEnd('/') + "/";
+
+            model.bookImage = basePath + BookHelper.GetDefaultImage();
+
+            if (db.Book.Find(id) != null)
+            {
+                if (db.Book.Find(id).ImageId != null)
+                {
+                    int imageId = Int32.Parse(db.Book.Find(id).ImageId);
+                    if (db.Image.Find(imageId) != null)
+                    {
+                        model.hasImage = true;
+                        model.bookImage = basePath + db.Image.Find(imageId).Path;
+                    }
+                }
+            }
+
+
+            model.images = db.Image.OrderByDescending(m => m.ImageId).ToList();
+
+            return PartialView("_EditImage",model);
+        }
+
+        /// <summary>
+        /// GET: Changes the book's image to the selected image
+        /// </summary>
+        /// <param name="bookId">the id of the book</param>
+        /// <param name="imageId">the id of the image to set to</param>
+        [RoleAuthorize(Roles = "admin")]
+        public ActionResult ChangeImage(int bookId, int? imageId)
+        {
+            if (db.Book.Find(bookId) != null)
+            {
+                Book book = db.Book.Find(bookId);
+
+                if (imageId.HasValue)
+                {
+                    book.ImageId = imageId.ToString();
+                }
+                else
+                {
+                    book.ImageId = null;
+                }
+
+                db.SaveChanges();
+            }
+           
+            // go back to the edit page
+            return RedirectToAction("managebook", "admin", new { id = bookId });
+        }
+
 
 
         /// <summary>
@@ -766,8 +832,6 @@ namespace MVCCapstone.Controllers
             return PartialView("_SeriesResult", model);
         }
     }
-
-
 
 
     /// <summary>

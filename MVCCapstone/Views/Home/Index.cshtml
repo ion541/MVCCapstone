@@ -1,4 +1,7 @@
-﻿@{
+﻿@model MVCCapstone.Models.HomePageModel
+@using PagedList
+@using PagedList.Mvc
+@{
     ViewBag.Title = "Home";
     List<MVCCapstone.Models.BookDisplayModel> bookList = ViewBag.BookList as List<MVCCapstone.Models.BookDisplayModel>;
 }
@@ -6,6 +9,9 @@
 
 <div class="message-success">@TempData["message"]</div>
 
+ <div class="pagedList pull-right">
+    @Html.PagedListPager(Model.BookList, page => Url.Action("Index", new { page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+</div>
 <table class="table">
 <tr>
     <th>Title</th>
@@ -13,15 +19,28 @@
     <th>Language</th>
     <th>Genres</th>
 </tr>
-@foreach (MVCCapstone.Models.BookDisplayModel book in bookList)
+@if (Model.BookList.Count() > 0)
 {
+    foreach (MVCCapstone.Models.BookDisplayModel book in Model.BookList)
+    {
 
- <tr>
-     <td>@Html.RouteLink(book.Title, new { controller = "book", action="details", bookid = book.BookId })
-     <td>@book.Author</td>
-     <td>@book.Language</td>
-     <td>@book.Genre</td>
- </tr>   
+     <tr>
+         <td>@Html.RouteLink(book.Title, new { controller = "book", action="details", bookid = book.BookId })
+         <td>@book.Author</td>
+         <td>@book.Language</td>
+         <td>@book.Genre</td>
+     </tr>   
+    }
+}
+else
+{
+    <tr>
+        <td colspan="4">There are no books in the database</td>
+    </tr> 
 }
 
 </table>  
+
+ <div class="pagedList pull-right">
+    @Html.PagedListPager(Model.BookList, page => Url.Action("Index", new { page }), PagedListRenderOptions.ClassicPlusFirstAndLast)
+</div>

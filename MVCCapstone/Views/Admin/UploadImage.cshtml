@@ -12,12 +12,12 @@
 <div class="row">
     <div id="status"></div>
 </div>
-<div class="row">
+<div class="row" id="uploadSection">
      @using (Ajax.BeginForm("uploadimage", "admin", new AjaxOptions() { HttpMethod = "POST" }, new { enctype = "multipart/form-data"}))
     {
         @Html.AntiForgeryToken()
-        <input id="fileInput" type="file" accept="image/*" name="files"> <br>
-        <input type="submit" value="Upload Image" disabled>
+        <input id="fileInput" type="file" accept="image/jpeg" name="files"> <span>(JPG / JPEG Only)</span><br>
+        <input id="submitButton" type="submit" value="Upload Image" disabled class="btn btn-primary">
     }
 </div>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.js"></script>
@@ -25,11 +25,26 @@
 
 <script>
 (function () {
-    // prevent user from uploading until they selected an image
+    // prevent user from uploading until they select an appropriate jpg/jpeg file
     $('input:file').change(
         function () {
-            if ($(this).val()) {
-                $('input:submit').attr('disabled', false);
+            try
+            {
+                if ($(this).val()) {
+                    var ext = $(this).val().substr($(this).val().lastIndexOf('.') + 1);
+                    if (ext == "jpg" || ext == "jpeg") {
+                        $('input:submit').attr('disabled', false);
+                    }
+                    else {
+                        alert("JPEG or JPG files only!");
+                        $('input:submit').attr('disabled', true);
+                    }
+                }
+            }
+            catch (error)
+            {
+                alert("Invalid file");
+                $('input:submit').attr('disabled', true);
             }
         }
     );
@@ -59,6 +74,7 @@ $('form').ajaxForm({
     },
     complete: function(xhr) {
         status.html(xhr.responseText);
+        $("#uploadSection").hide();
     }
 }); 
 

@@ -6,6 +6,7 @@ using System.Web;
 namespace MVCCapstone.Models
 {
 
+    // model used to display a users bookmark
     public class BookmarkDisplayModel
     {
         public int BookId { get; set; }

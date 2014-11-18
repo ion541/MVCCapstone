@@ -11,7 +11,7 @@ using PagedList;
 namespace MVCCapstone.Models
 {
 
-
+    // model used to get user account name on admin account management page
     public class UserInfoModel
     {
         [Editable(false)]
@@ -22,6 +22,7 @@ namespace MVCCapstone.Models
         public List<UserRole> UserRoles { get; set; }
     }
 
+    // model used to display account list info
     public class AccountListModel
     {
         [RegularExpression("([a-zA-Z0-9_-]+)", ErrorMessage = "Only letters, numbers, and characters '-' and '_' are allowed.")]
@@ -31,7 +32,7 @@ namespace MVCCapstone.Models
         public string Display { get; set; }
     }
 
-
+    // model used to display individla account info
     public class AccountDisplayModel
     {
         [RegularExpression("([0-9]+)", ErrorMessage = "Numbers Only")]
@@ -43,6 +44,7 @@ namespace MVCCapstone.Models
         public string UserName { get; set; }
     }
 
+    // model used to get users input to select user
     public class AccountManagementModel
     {
         [Required]
@@ -55,6 +57,7 @@ namespace MVCCapstone.Models
         public string Role { get; set; }
     }
 
+    // model used to display a users id, name, role selected and roles available
     public class AccountSearchViewModel
     {
         public IList<RoleList> AvailableRoles { get; set; }
@@ -72,7 +75,7 @@ namespace MVCCapstone.Models
 
     }
 
-
+    // model used to store a books information when adding to database
     public class BookDetailsModel
     {
         [Required]
@@ -140,10 +143,13 @@ namespace MVCCapstone.Models
         public string State { get; set; }
     }
 
+    // genres posted when adding a book
     public class PostedGenres
     {
         public string[] GenreId { get; set; }
     }
+    
+    // display list of genres from database
     public class GenreList
     {
         [Key]
@@ -152,22 +158,26 @@ namespace MVCCapstone.Models
         public string Genre { get; set; }
     }
 
+    // display list of forum series in database
     public class SeriesListModel
     {
         public List<Forum> seriesList { get; set; }
     }
 
+    // display list of books
     public class BookResultModel
     {
         public List<string> errors { get; set; }
         public int bookId { get; set; }
     }
 
+    // display list of images
     public class DisplayImageModel
     {
         public List<Image> images { get; set; } 
     }
 
+    // model used to query for books in database
     public class ManageBookModel
     {
         [StringLength(50, ErrorMessage = "The {0} must be at a maximum of {1} characters")]
@@ -181,15 +191,14 @@ namespace MVCCapstone.Models
 
     }
 
-    /// <summary>
-    /// Model passed to the view of the search result
-    /// </summary>
+    // model passed to the view of the search result
     public class ManageBookSearchModel
     {
         public List<Book> bookResults { get; set; }
     }
 
 
+    // model used to edit book information
     public class EditBookModel : BookDetailsModel
     {
         public bool displayEdit { get; set; }
@@ -209,6 +218,18 @@ namespace MVCCapstone.Models
         /// Solution is to use another list with another name (Language => LanguageDisplay)
         /// </summary>
         public List<SelectListItem> LanguageDisplay { get; set; }
+    }
+
+    // model displayed when changing a books image
+    public class EditImageModel
+    {
+        public int bookId { get; set; }
+        public bool hasImage { get; set; }
+
+        [Display(Name="Current Image")]
+        public string bookImage { get; set; }
+        [Display(Name = "Select Image")]
+        public List<Image> images { get; set; } 
     }
 
 

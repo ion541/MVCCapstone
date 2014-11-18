@@ -46,6 +46,7 @@ namespace MVCCapstone.Models
         public int rateTotal { get; set; }
     }
 
+    // modle used to display a reviews information
     public class ReviewList
     {
         public int bookId { get; set; }

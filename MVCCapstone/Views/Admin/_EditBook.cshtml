@@ -25,7 +25,8 @@
         <div class="form-group">
             @Html.Label(" ", new {@class="col-sm-2 control-label" })
             <div class="col-sm-8">
-                @Html.ActionLink("To Book", "details", new { controller = "book", action = "details", bookid = @Model.BookId }, new {@class="btn btn-success", style="min-width:100px" })
+                @Html.ActionLink("To Book", "details", new { controller = "book", action = "details", bookid = @Model.BookId }, new {@class="btn btn-primary", style="min-width:100px" })
+                @Ajax.ActionLink("Change Image", "editimage", new {id = @Model.BookId }, new AjaxOptions() { HttpMethod = "GET", UpdateTargetId = "editForm", OnSuccess = "scrollToTop" }, new { @class = "btn btn-primary", style = "min-width:100px" })
             </div>
         </div>
         

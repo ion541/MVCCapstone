@@ -11,6 +11,7 @@ using MVCCapstone.Models;
 namespace MVCCapstone.Models
 {
 
+    // model used to display a users role
     public class UserInfo
     {
         [Key]
@@ -20,6 +21,7 @@ namespace MVCCapstone.Models
         public string RoleName { get; set; }
     }
 
+    // list of roles in database
     public class RoleList
     {
         [Key]
@@ -28,6 +30,7 @@ namespace MVCCapstone.Models
         public string RoleName { get; set; }
     }
 
+    // posted user roles
     public class PostedRoles
     {
         public string[] UserRoleIDs { get; set; }

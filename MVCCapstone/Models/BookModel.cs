@@ -6,6 +6,13 @@ using PagedList;
 
 namespace MVCCapstone.Models
 {
+    // used for the home page to display a list of book
+    public class HomePageModel
+    {
+        public IPagedList<BookDisplayModel> BookList { get; set; }
+    }
+
+    // model used to display a books information, latest forum post and reviews
     public class BookDisplayModel
     {
         public string BookId { get; set; }

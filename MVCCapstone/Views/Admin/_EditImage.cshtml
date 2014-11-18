@@ -1,0 +1,41 @@
+﻿@model MVCCapstone.Models.EditImageModel
+
+<div class="row">
+    @Html.Label(" ", new {@class="col-sm-2 control-label" })
+    <div class="col-sm-8">
+         @Html.ActionLink("To Book", "details", new { controller = "book", action = "details", bookid = @Model.bookId }, new {@class="btn btn-primary", style="min-width:100px" })
+         @Html.ActionLink("Edit",null, new {controller = "admin", action = "managebook", id = @Model.bookId}, new {style="min-width: 100px;", @class = "btn btn-primary"})
+    </div>
+</div>
+
+
+<br />
+
+<div class="row">
+    @Html.LabelFor(m => m.bookImage, new { @class = "col-sm-2 control-label" })
+    <div class="col-sm-3">
+        <img class="thumbnail img-responsive" src="@Url.Content(@Model.bookImage)" />
+    </div>
+</div>
+ 
+
+<div class="row-fluid">
+    @Html.LabelFor(m => m.images, new { @class = "col-sm-2 control-label" })
+
+    <div class="row col-sm-9">
+        @Html.ActionLink("No Image", "changeimage", new {bookId = @Model.bookId }, new { @class = "btn btn-primary", style = "margin-left:10px; min-width: 100px" })
+        <br />
+
+    @foreach (MVCCapstone.Models.Image image in Model.images)
+    {
+        <div class="col-sm-3">
+            @Html.Raw(@Html.ActionLink("[replacetext]", "changeimage", new {bookId = @Model.bookId, imageid = @image.ImageId }).ToHtmlString().Replace("[replacetext]",  "<img style='max-height: 125px; max-width: 125px; margin:auto;margin-top:10px;' class='img-responsive thumbnail' src='" +    @Url.Content("../" + @image.Path) + "' />"))
+        </div>
+    }
+    </div>
+</div>
+
+<script>
+// required for partial forms
+$.validator.unobtrusive.parse("form");
+</script>

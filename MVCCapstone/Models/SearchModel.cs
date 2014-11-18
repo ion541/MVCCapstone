@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace MVCCapstone.Models
 {
+    // model used for querying in a search
     public class SearchModel
     {
         public SearchQuery query { get; set; }
@@ -19,6 +20,7 @@ namespace MVCCapstone.Models
         public List<SelectListItem> availableLanguage { get; set; }
     }
 
+    // model used to store users input for querying
     public class SearchQuery
     {
         [Display(Name = "Title")]
@@ -44,6 +46,7 @@ namespace MVCCapstone.Models
         public string language { get; set; }
     }
 
+    // display list of books
     public class SearchResult
     {
         public List<Book> books { get; set; }

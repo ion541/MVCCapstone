@@ -12,7 +12,6 @@
     @foreach (MVCCapstone.Models.Image image in Model.images)
     {
         <div class="col-sm-3">
-         
             @Html.Raw(@Html.ActionLink("[replacetext]", "bookdetails", new {imageid = @image.ImageId }).ToHtmlString().Replace("[replacetext]",  "<img style='max-height: 200px; max-width: 200px; margin:auto;margin-top:10px;' class='img-responsive thumbnail' src='" +    @Url.Content(@image.Path) + "' />"))
         </div>
     }
